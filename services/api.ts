@@ -161,7 +161,7 @@ export const api = {
     ),
     resetPassword: (token: string, password: string) => fromApi<{ message?: string }>(
       "/auth/reset-password",
-      { method: "POST", body: { token, password }, suppressErrorNotification: true },
+      { method: "POST", body: { reset_token: token, new_password: password }, suppressErrorNotification: true },
     ),
     verifyTwoFa: (twoFaChallengeToken: string, code: string) =>
       fromApi<AuthTokenResponse>(
