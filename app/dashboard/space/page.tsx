@@ -704,14 +704,14 @@ export default function SpacePage() {
 
   return (
     <>
-      <div className="relative flex h-full min-h-0 flex-col overflow-hidden bg-white xl:flex-row">
-        <div className="flex shrink-0 border-b border-grey-4 bg-white xl:hidden">
+      <div className="relative flex h-full min-h-0 flex-col overflow-hidden bg-white lg:flex-row">
+        <div className="flex shrink-0 border-b border-grey-4 bg-white lg:hidden">
           <button onClick={() => setActiveMobileTab("explore")} className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${activeMobileTab === "explore" ? "border-primary-1 text-primary-1" : "border-transparent text-grey-2"}`}>Explore</button>
           <button onClick={() => setActiveMobileTab("feed")} className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${activeMobileTab === "feed" ? "border-primary-1 text-primary-1" : "border-transparent text-grey-2"}`}>Feed</button>
           <button onClick={() => setActiveMobileTab("clubs")} className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${activeMobileTab === "clubs" ? "border-primary-1 text-primary-1" : "border-transparent text-grey-2"}`}>Clubs</button>
         </div>
 
-        <div className={`min-h-0 flex-1 w-full xl:w-[320px] xl:flex-none shrink-0 border-r border-grey-4 bg-white overflow-y-auto ${!isLeftColumnOpen ? "hidden" : activeMobileTab === "clubs" ? "block" : "hidden xl:block"}`}>
+        <div className={`min-h-0 flex-1 w-full lg:w-[320px] lg:flex-none shrink-0 border-r border-grey-4 bg-white overflow-y-auto ${!isLeftColumnOpen ? "hidden" : activeMobileTab === "clubs" ? "block" : "hidden lg:block"}`}>
           {restrictedResources.has("clubs") ? <RestrictedResource label="clubs" /> : <ClubSidebar
             isOpen={isLeftColumnOpen}
             onClose={() => setIsLeftColumnOpen(false)}
@@ -728,7 +728,7 @@ export default function SpacePage() {
           />}
         </div>
 
-        <div className={`flex-1 min-w-0 bg-[#FAFAFA] overflow-y-auto ${activeMobileTab === "feed" ? "block" : "hidden xl:block"}`}>
+        <div className={`flex-1 min-w-0 bg-[#FAFAFA] overflow-y-auto ${activeMobileTab === "feed" ? "block" : "hidden lg:block"}`}>
           {selectedClub ? (
             <ClubChatView
               club={activeClubData}
@@ -764,7 +764,7 @@ export default function SpacePage() {
               </div>
 
               <div className="flex-1 overflow-y-auto no-scrollbar p-3">
-                <div className="max-w-[600px] mx-auto mb-6">
+                <div className="w-full mb-6">
                   {restrictedResources.has("stories") ? <RestrictedResource label="stories" /> : <StoriesSection
                     stories={stories}
                     getMember={getMember}
@@ -806,7 +806,7 @@ export default function SpacePage() {
           )}
         </div>
 
-       <div className={`min-h-0 flex-1 w-full xl:w-[320px] xl:flex-none shrink-0 border-l border-grey-4 bg-white overflow-y-auto ${activeMobileTab === "explore" ? "block" : "hidden xl:block"}`}>
+       <div className={`min-h-0 flex-1 w-full lg:w-[320px] lg:flex-none shrink-0 border-l border-grey-4 bg-white overflow-y-auto ${activeMobileTab === "explore" ? "block" : "hidden lg:block"}`}>
   <div className="w-full border-l border-grey-4 bg-[#ffffff] p-6 overflow-y-auto no-scrollbar h-full">
     <ActivitySection
       organizationId={organizationId ?? undefined}

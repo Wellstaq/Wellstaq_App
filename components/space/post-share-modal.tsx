@@ -11,7 +11,6 @@ export function PostShareModal({ link, onClose }: { link: string; onClose: () =>
   const [copyState, setCopyState] = useState<"idle" | "copying" | "copied" | "error">("idle");
   const [instagramSelected, setInstagramSelected] = useState(false);
   const links = getPostShareLinks(link);
-  const localLink = ["localhost", "127.0.0.1", "[::1]"].includes(new URL(link).hostname);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -75,8 +74,6 @@ export function PostShareModal({ link, onClose }: { link: string; onClose: () =>
           </div>
           <p role="status" className="mt-2 text-xs text-grey-2">{copyState === "copied" ? "Link copied to clipboard." : copyState === "error" ? "Couldn’t copy automatically. Select and copy the link above." : ""}</p>
         </div>
-        <p className="text-xs leading-5 text-grey-2">Only people with access to your organization and this post can view it. Sharing a link doesn’t change access.</p>
-        {localLink && <p className="text-xs text-grey-2">This local preview link won’t open on other devices. Use the deployed app to share externally.</p>}
       </div>
     </dialog>
   );

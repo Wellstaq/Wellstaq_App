@@ -163,7 +163,7 @@ function PostCard({
   const isMine = post.userId === user.id;
   return (
     <div id={`post-${post.id}`} className="scroll-mt-4 bg-white rounded-[12px] border border-grey-4 overflow-hidden target:ring-2 target:ring-grey-3">
-      <div className="p-4">
+      <div className="p-4 pb-1">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             <Avatar url={author?.avatarUrl} seed={post.userId} firstName={author?.firstName} lastName={author?.lastName} size={40} showPlaceholderBadge />
@@ -351,7 +351,7 @@ export function PostsSection({
   }, [posts, postsLoading, sharedPostId]);
   return (
     <>
-    <div className="max-w-[600px] mx-auto space-y-6">
+    <div className="w-full space-y-6">
       {!postsLoading && sharedPostId && !posts.some((post) => post.id === sharedPostId) && (
         <p role="status" className="rounded-lg border border-grey-4 bg-white p-4 text-sm text-grey-2">This shared post isn’t available in this feed. It may have been removed, or you may need access to its organization or branch.</p>
       )}

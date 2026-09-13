@@ -182,7 +182,7 @@ export function StoriesSection({
 
   return (
     <>
-      <div className="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
+      <div className="flex gap-4 overflow-x-auto pb-0 no-scrollbar">
         <div className="flex-shrink-0 flex flex-col items-center gap-1">
           <input type="file" accept="image/*,video/*" className="hidden" ref={fileInputRef} onChange={onUploadStory} />
           {/*
