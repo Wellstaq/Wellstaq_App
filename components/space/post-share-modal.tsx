@@ -4,13 +4,21 @@ import { useEffect, useId, useRef, useState } from "react";
 import { Check, Copy, ExternalLink, Facebook, Instagram, Linkedin, MessageCircle, X } from "lucide-react";
 import { getPostShareLinks } from "@/lib/post-sharing";
 
-export function PostShareModal({ link, onClose }: { link: string; onClose: () => void }) {
+export function PostShareModal({ link, onShared, onClose }: { link: string; onShared?: () => void; onClose: () => void }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const titleId = useId();
   const [copyState, setCopyState] = useState<"idle" | "copying" | "copied" | "error">("idle");
   const [instagramSelected, setInstagramSelected] = useState(false);
   const links = getPostShareLinks(link);
+  // The share count is incremented once per opening of this dialog, however many
+  // destinations the reader then picks.
+  const reported = useRef(false);
+  const reportShare = () => {
+    if (reported.current) return;
+    reported.current = true;
+    onShared?.();
+  };
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -28,6 +36,7 @@ export function PostShareModal({ link, onClose }: { link: string; onClose: () =>
     try {
       await navigator.clipboard.writeText(link);
       setCopyState("copied");
+      reportShare();
     } catch {
       setCopyState("error");
       inputRef.current?.focus();
@@ -54,9 +63,9 @@ export function PostShareModal({ link, onClose }: { link: string; onClose: () =>
       <div className="space-y-5 p-5">
         <p className="text-sm text-grey-2">Choose where to share, or copy the post link.</p>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <a className={optionClass} href={links.whatsapp} target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp (opens a new tab)"><MessageCircle className="h-6 w-6" aria-hidden="true" />WhatsApp</a>
-          <a className={optionClass} href={links.facebook} target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook (opens a new tab)"><Facebook className="h-6 w-6" aria-hidden="true" />Facebook</a>
-          <a className={optionClass} href={links.linkedin} target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn (opens a new tab)"><Linkedin className="h-6 w-6" aria-hidden="true" />LinkedIn</a>
+          <a className={optionClass} onClick={reportShare} href={links.whatsapp} target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp (opens a new tab)"><MessageCircle className="h-6 w-6" aria-hidden="true" />WhatsApp</a>
+          <a className={optionClass} onClick={reportShare} href={links.facebook} target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook (opens a new tab)"><Facebook className="h-6 w-6" aria-hidden="true" />Facebook</a>
+          <a className={optionClass} onClick={reportShare} href={links.linkedin} target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn (opens a new tab)"><Linkedin className="h-6 w-6" aria-hidden="true" />LinkedIn</a>
           <button type="button" className={optionClass} aria-pressed={instagramSelected} onClick={() => { setInstagramSelected(true); void copyLink(); }}><Instagram className="h-6 w-6" aria-hidden="true" />Instagram</button>
         </div>
         {instagramSelected && <div className="space-y-2 rounded-lg bg-grey-5 p-3 text-sm text-grey-2">

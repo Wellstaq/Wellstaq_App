@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { toast } from "sonner";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { SelectablePill } from "@/components/ui/selectable-pill";
+import { FilterDropdown } from "@/components/ui/filter-dropdown";
 import { ModalLayer } from "@/components/ui/modal-layer";
 import { api } from "@/services/api";
 import { ApiError } from "@/services/http";
@@ -15,6 +16,10 @@ import { useDashboardData } from "@/components/providers/dashboard-data-provider
 import { useDashboardScope } from "@/lib/scope";
 import { hasPermission } from "@/lib/permissions";
 import { getUserErrorMessage } from "@/lib/errors";
+import { findUploadRejection, mediaKindOf, MAX_POST_ATTACHMENTS, type PostAttachment } from "@/lib/media";
+import {
+  publishPostInBackground, POST_PUBLISHED_EVENT, POST_FAILED_EVENT, type PostDraft,
+} from "@/lib/post-queue";
 import type {
   Club, ClubCategory, Post, Comment, Story,
   OrganizationMemberInfo, ClubMemberInfo, MessageResponse,
@@ -346,15 +351,31 @@ export default function SpacePage() {
   };
 
   // ── Posts ──────────────────────────────────────────────────────────────
-  const sharedPostId = useSearchParams().get("postId");
+  const searchParams = useSearchParams();
+  const sharedPostId = searchParams.get("postId");
+  const sharedStoryId = searchParams.get("storyId");
   const [posts, setPosts] = useState<Post[]>([]);
   const [postsLoading, setPostsLoading] = useState(true);
+  const [postsTotal, setPostsTotal] = useState(0);
+  const [isLoadingMorePosts, setIsLoadingMorePosts] = useState(false);
   const [postContent, setPostContent] = useState("");
-  const [postImage, setPostImage] = useState<string | null>(null);
-  const [postImagePreview, setPostImagePreview] = useState<string | null>(null);
-  const [isUploadingPostImage, setIsUploadingPostImage] = useState(false);
+  const [attachments, setAttachments] = useState<PostAttachment[]>([]);
   const [postLocation, setPostLocation] = useState<string | null>(null);
   const [likedPostIds, setLikedPostIds] = useState<Set<string>>(new Set());
+  // The audience is chosen explicitly and defaults to Everyone. It is deliberately
+  // independent of the feed being viewed: posting to Everyone from a branch feed,
+  // or to a branch from Overview, both have to be possible.
+  const [audienceBranchId, setAudienceBranchId] = useState<string | null>(null);
+  const audienceName = branches.find((branch) => branch.id === audienceBranchId)?.name ?? "Everyone";
+  // One promise per attachment, so pressing Post can hand the still-running
+  // uploads to the background publisher instead of waiting on them.
+  const uploadPromises = useRef(new Map<string, Promise<string>>());
+
+  const fetchPostsPage = useCallback((orgId: string, offset: number) => (
+    effectiveFeedScope === "org_only"
+      ? api.post.getPosts(orgId, { scope: "org_only", offset })
+      : api.post.getPosts(orgId, { branchId: scope.type === "branch" ? scope.branchId : undefined, scope: "branch_and_org", offset })
+  ), [effectiveFeedScope, scope]);
 
   useEffect(() => {
     if (!organizationId) return;
@@ -362,20 +383,27 @@ export default function SpacePage() {
     async function loadPosts(orgId: string) {
       setPostsLoading(true);
       try {
+        // `loadFeedThroughPost` returns items only, so the page total is picked up
+        // from the last response it read — that is what tells paging when to stop.
+        let total = 0;
         const items = await loadFeedThroughPost(
-          (offset) => effectiveFeedScope === "org_only"
-            ? api.post.getPosts(orgId, { scope: "org_only", offset })
-            : api.post.getPosts(orgId, { branchId: scope.type === "branch" ? scope.branchId : undefined, scope: "branch_and_org", offset }),
+          async (offset) => {
+            const response = await fetchPostsPage(orgId, offset);
+            total = response.total;
+            return response;
+          },
           sharedPostId,
           () => cancelled,
         );
         if (!cancelled) {
           setPosts(items);
+          setPostsTotal(total);
           setResourceForbidden("posts");
         }
       } catch (error) {
         if (!cancelled) {
           setPosts([]);
+          setPostsTotal(0);
           setResourceForbidden("posts", error);
         }
       } finally {
@@ -384,56 +412,163 @@ export default function SpacePage() {
     }
     void loadPosts(organizationId);
     return () => { cancelled = true; };
-  }, [organizationId, scope, effectiveFeedScope, setResourceForbidden, sharedPostId]);
+  }, [organizationId, fetchPostsPage, setResourceForbidden, sharedPostId]);
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setPostImagePreview(URL.createObjectURL(file));
-    setPostImage(null);
-    setIsUploadingPostImage(true);
+  const handleLoadMorePosts = useCallback(async () => {
+    if (!organizationId || isLoadingMorePosts || postsLoading) return;
+    const offset = posts.length;
+    if (offset >= postsTotal) return;
+    setIsLoadingMorePosts(true);
     try {
-      const { uploadUrl, mediaUrl } = await api.storage.requestUploadUrl({ domain: "posts", contentType: file.type });
-      const putResponse = await fetch(uploadUrl, { method: "PUT", headers: { "Content-Type": file.type }, body: file });
-      if (!putResponse.ok) throw new Error(`Upload failed with ${putResponse.status}`);
-      setPostImage(mediaUrl);
-    } catch (err) {
-      console.error("Post image upload error:", err);
-      toast.error("Image upload failed. You can retry or post without an image.");
-      setPostImagePreview(null);
-      setPostImage(null);
+      const response = await fetchPostsPage(organizationId, offset);
+      setPosts((prev) => {
+        const seen = new Set(prev.map((post) => post.id));
+        return [...prev, ...response.items.filter((post) => !seen.has(post.id))];
+      });
+      setPostsTotal(response.total);
+    } catch {
+      toast.error("We couldn't load more posts. Try again.");
     } finally {
-      setIsUploadingPostImage(false);
+      setIsLoadingMorePosts(false);
     }
-  };
+  }, [organizationId, isLoadingMorePosts, postsLoading, posts.length, postsTotal, fetchPostsPage]);
 
-  const handleCreatePost = async () => {
-    if (!organizationId) return;
-    if (!postContent.trim() && !postImage && !postLocation) return;
-    if (isUploadingPostImage) {
-      toast.error("Please wait for the image to finish uploading.");
+  const handleMediaSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target;
+    const files = Array.from(input.files ?? []);
+    input.value = "";
+    if (files.length === 0) return;
+
+    const room = MAX_POST_ATTACHMENTS - attachments.length;
+    if (files.length > room) {
+      toast.error(`You can attach up to ${MAX_POST_ATTACHMENTS} files. There is room for ${room} more.`);
       return;
     }
-    const content = postContent + (postLocation ? `\n📍 ${postLocation}` : "");
-    const branchId = scope.type === "branch" ? scope.branchId : undefined;
-    try {
-      const created = await api.post.createPost(organizationId, {
-        branchId,
-        content: content.trim() || undefined,
-        mediaUrl: postImage || undefined,
-        mediaType: postImage ? "image" : undefined,
-      });
-      if (effectiveFeedScope === "org_only" ? !created.branchId : (scope.type === "branch" && created.branchId === scope.branchId)) {
-        setPosts((prev) => [created, ...prev]);
-      }
+    // Every file in the batch is checked before any upload starts, so an
+    // unsupported or oversized file is refused at the picker — by name — rather
+    // than failing halfway through the batch.
+    const rejection = findUploadRejection(files);
+    if (rejection) {
+      toast.error(rejection.reason);
+      return;
+    }
+
+    const pending: PostAttachment[] = files.map((file) => ({
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      name: file.name,
+      kind: mediaKindOf(file) ?? "image",
+      previewUrl: URL.createObjectURL(file),
+      mediaUrl: null,
+    }));
+    setAttachments((prev) => [...prev, ...pending]);
+
+    pending.forEach((attachment, index) => {
+      const file = files[index];
+      const upload = (async () => {
+        try {
+          const { uploadUrl, mediaUrl } = await api.storage.requestUploadUrl({ domain: "posts", contentType: file.type });
+          const putResponse = await fetch(uploadUrl, { method: "PUT", headers: { "Content-Type": file.type }, body: file });
+          if (!putResponse.ok) throw new Error(`Upload failed with ${putResponse.status}`);
+          setAttachments((prev) => prev.map((item) => (item.id === attachment.id ? { ...item, mediaUrl } : item)));
+          return mediaUrl;
+        } catch (err) {
+          // The PUT goes to object storage rather than the API, so it never reaches
+          // the shared API error channel — say so here or it fails silently.
+          console.error("Post media upload error:", err);
+          const message = `“${file.name}” didn't upload. Check your connection and add it again.`;
+          toast.error(message);
+          URL.revokeObjectURL(attachment.previewUrl);
+          setAttachments((prev) => prev.filter((item) => item.id !== attachment.id));
+          uploadPromises.current.delete(attachment.id);
+          throw new Error(message);
+        }
+      })();
+      uploadPromises.current.set(attachment.id, upload);
+      // Observed here so a failure before Post is pressed does not surface as an
+      // unhandled rejection; the post that needs it still sees the rejection.
+      upload.catch(() => {});
+    });
+  };
+
+  const handleRemoveAttachment = (attachmentId: string) => {
+    uploadPromises.current.delete(attachmentId);
+    setAttachments((prev) => {
+      const target = prev.find((item) => item.id === attachmentId);
+      if (target) URL.revokeObjectURL(target.previewUrl);
+      return prev.filter((item) => item.id !== attachmentId);
+    });
+  };
+
+  // Publishing runs outside this component, so its outcome arrives as an event.
+  useEffect(() => {
+    const onPublished = (event: Event) => {
+      const created = (event as CustomEvent<Post>).detail;
       setPostDelta((d) => d + 1);
-      setPostContent("");
-      setPostImage(null);
-      setPostImagePreview(null);
-      setPostLocation(null);
-      toast.success("Post created successfully!");
+      // A post only joins the list in front of you when this feed would show it —
+      // an org-wide post does belong in a branch feed, which also reads org posts.
+      const belongsInCurrentFeed = effectiveFeedScope === "org_only"
+        ? !created.branchId
+        : !created.branchId || (scope.type === "branch" && created.branchId === scope.branchId);
+      if (!belongsInCurrentFeed) return;
+      setPosts((prev) => (prev.some((post) => post.id === created.id) ? prev : [created, ...prev]));
+      setPostsTotal((total) => total + 1);
+    };
+    const onFailed = (event: Event) => {
+      // Give the wording back rather than losing it. Attachments cannot be
+      // restored, and the upload error already named the file that failed.
+      const draft = (event as CustomEvent<PostDraft>).detail;
+      setPostContent((current) => current || draft.content);
+      setPostLocation((current) => current ?? draft.location);
+      setAudienceBranchId(draft.branchId);
+    };
+    window.addEventListener(POST_PUBLISHED_EVENT, onPublished);
+    window.addEventListener(POST_FAILED_EVENT, onFailed);
+    return () => {
+      window.removeEventListener(POST_PUBLISHED_EVENT, onPublished);
+      window.removeEventListener(POST_FAILED_EVENT, onFailed);
+    };
+  }, [effectiveFeedScope, scope]);
+
+  const handleCreatePost = () => {
+    if (!organizationId) return;
+    if (!postContent.trim() && attachments.length === 0 && !postLocation) return;
+
+    const queued = attachments.slice();
+    const uploads = queued.map((item) => (
+      uploadPromises.current.get(item.id)
+        ?? (item.mediaUrl
+          ? Promise.resolve(item.mediaUrl)
+          : Promise.reject(new Error(`“${item.name}” didn't upload. Add it again and repost.`)))
+    ));
+
+    void publishPostInBackground({
+      organizationId,
+      branchId: audienceBranchId,
+      audienceName,
+      content: postContent,
+      location: postLocation,
+      // Typed from the file itself. `media_url` carries the first attachment, so
+      // the single `media_type` describes that one.
+      mediaType: queued[0]?.kind,
+      uploads,
+    });
+
+    // Cleared immediately: publishing continues in the background, so the
+    // composer is free for the next thing rather than held open by an upload.
+    setPostContent("");
+    setPostLocation(null);
+    setAttachments([]);
+    uploadPromises.current.clear();
+    queued.forEach((item) => URL.revokeObjectURL(item.previewUrl));
+  };
+
+  const handleShared = async (postId: string) => {
+    if (!organizationId) return;
+    try {
+      await api.post.sharePost(organizationId, postId);
+      setPosts((prev) => prev.map((post) => (post.id === postId ? { ...post, shareCount: post.shareCount + 1 } : post)));
     } catch {
-      toast.error("We couldn't publish the post. Try again.");
+      toast.error("Your link is ready, but we couldn't record the share.");
     }
   };
 
@@ -481,16 +616,49 @@ export default function SpacePage() {
     }
   };
 
-  const handleAddComment = async (postId: string, content: string) => {
+  /** `parentCommentId` must always be a top-level comment id — the reply UI
+   *  resolves a reply's parent before calling this, because the API only
+   *  supports one level of nesting. */
+  const handleAddComment = async (postId: string, content: string, parentCommentId?: string) => {
     if (!content.trim() || !organizationId) return;
     try {
-      const comment = await api.post.addComment(organizationId, postId, content);
-      setCommentsByPost((prev) => ({ ...prev, [postId]: [...(prev[postId] ?? []), comment] }));
+      const comment = await api.post.addComment(organizationId, postId, content, parentCommentId);
+      setCommentsByPost((prev) => {
+        const existing = prev[postId] ?? [];
+        if (!parentCommentId) return { ...prev, [postId]: [...existing, comment] };
+        return {
+          ...prev,
+          [postId]: existing.map((c) => (c.id === parentCommentId
+            ? { ...c, replies: [...(c.replies ?? []), comment] }
+            : c)),
+        };
+      });
       setPosts((prev) => prev.map((p) => (p.id === postId ? { ...p, commentCount: p.commentCount + 1 } : p)));
       if (!expandedComments.includes(postId)) setExpandedComments((prev) => [...prev, postId]);
-      toast.success("Comment added!");
+      toast.success(parentCommentId ? "Reply added!" : "Comment added!");
     } catch {
-      toast.error("We couldn't add the comment. Try again.");
+      toast.error(parentCommentId ? "We couldn't add the reply. Try again." : "We couldn't add the comment. Try again.");
+    }
+  };
+
+  const handleEditComment = async (postId: string, commentId: string, content: string) => {
+    if (!content.trim() || !organizationId) return;
+    try {
+      const updated = await api.post.editComment(organizationId, postId, commentId, content);
+      setCommentsByPost((prev) => ({
+        ...prev,
+        [postId]: (prev[postId] ?? []).map((c) => (c.id === commentId
+          ? { ...c, content: updated.content, updatedAt: updated.updatedAt }
+          : {
+            ...c,
+            replies: c.replies?.map((r) => (r.id === commentId
+              ? { ...r, content: updated.content, updatedAt: updated.updatedAt }
+              : r)),
+          })),
+      }));
+      toast.success("Comment updated!");
+    } catch {
+      toast.error("We couldn't update the comment. Try again.");
     }
   };
 
@@ -498,7 +666,14 @@ export default function SpacePage() {
     if (!organizationId) return;
     try {
       await api.post.deleteComment(organizationId, postId, commentId);
-      setCommentsByPost((prev) => ({ ...prev, [postId]: (prev[postId] ?? []).filter((c) => c.id !== commentId) }));
+      setCommentsByPost((prev) => ({
+        ...prev,
+        [postId]: (prev[postId] ?? [])
+          .filter((c) => c.id !== commentId)
+          .map((c) => (c.replies?.some((r) => r.id === commentId)
+            ? { ...c, replies: c.replies.filter((r) => r.id !== commentId) }
+            : c)),
+      }));
       setPosts((prev) => prev.map((p) => (p.id === postId ? { ...p, commentCount: Math.max(0, p.commentCount - 1) } : p)));
       toast.success("Comment deleted!");
     } catch {
@@ -522,6 +697,36 @@ export default function SpacePage() {
   // ── Stories ────────────────────────────────────────────────────────────
   const [stories, setStories] = useState<Story[]>([]);
   const [isUploadingStory, setIsUploadingStory] = useState(false);
+  const [deleteConfirmStoryId, setDeleteConfirmStoryId] = useState<string | null>(null);
+  // There is no endpoint reporting whether you already liked a story, so this
+  // only ever holds stories toggled in this session; everything else starts
+  // unfilled from the story's own `likeCount`.
+  const [storyLikes, setStoryLikes] = useState<Record<string, { liked: boolean; likeCount: number }>>({});
+
+  const handleToggleStoryLike = async (storyId: string, liked: boolean) => {
+    if (!organizationId) return;
+    try {
+      const result = liked
+        ? await api.story.unlikeStory(organizationId, storyId)
+        : await api.story.likeStory(organizationId, storyId);
+      setStoryLikes((prev) => ({ ...prev, [storyId]: { liked: result.liked, likeCount: result.likeCount } }));
+    } catch {
+      toast.error("We couldn't update your reaction. Try again.");
+    }
+  };
+
+  const handleDeleteStory = async (storyId: string) => {
+    if (!organizationId) return;
+    try {
+      await api.story.deleteStory(organizationId, storyId);
+      setStories((prev) => prev.filter((story) => story.id !== storyId));
+      toast.success("Story deleted.");
+    } catch {
+      toast.error("We couldn't delete the story. Try again.");
+    } finally {
+      setDeleteConfirmStoryId(null);
+    }
+  };
 
   useEffect(() => {
     if (!organizationId) return;
@@ -563,6 +768,13 @@ export default function SpacePage() {
     const file = e.target.files?.[0];
     if (!file || !organizationId) return;
 
+    const rejection = findUploadRejection([file]);
+    if (rejection) {
+      toast.error(rejection.reason);
+      e.target.value = "";
+      return;
+    }
+
     if (file.type.startsWith("video/")) {
       try {
         const duration = await getVideoDuration(file);
@@ -584,14 +796,13 @@ export default function SpacePage() {
       const putResponse = await fetch(uploadUrl, { method: "PUT", headers: { "Content-Type": file.type }, body: file });
       if (!putResponse.ok) throw new Error(`Upload failed with ${putResponse.status}`);
 
-      const branchId = scope.type === "branch" ? scope.branchId : undefined;
       const created = await api.story.createStory(organizationId, {
-        branchId,
+        branchId: audienceBranchId,
         mediaUrl,
         mediaType: file.type.startsWith("video/") ? "video" : "image",
       });
       setStories((prev) => [created, ...prev]);
-      toast.success("Story posted!");
+      toast.success(`Story posted to ${audienceName}.`);
     } catch (err) {
       console.error("Story upload error:", err);
       toast.error("We couldn't publish the story. Try again.");
@@ -755,12 +966,27 @@ export default function SpacePage() {
                   </button>
                 )}
                 <h2 className="page-title">Feed</h2>
-                {scope.type === "branch" && (
-                  <div className="ml-auto flex bg-grey-5 rounded-lg p-0.5">
-                    <SelectablePill onClick={() => setFeedView("branch")} selected={feedView === "branch"} appearance="plain" className="px-3">My Branch</SelectablePill>
-                    <SelectablePill onClick={() => setFeedView("org")} selected={feedView === "org"} appearance="plain" className="px-3">General</SelectablePill>
-                  </div>
-                )}
+                <div className="ml-auto flex items-center gap-2">
+                  {scope.type === "branch" && (
+                    <div className="flex bg-grey-5 rounded-lg p-0.5">
+                      <SelectablePill onClick={() => setFeedView("branch")} selected={feedView === "branch"} appearance="plain" className="px-3">My Branch</SelectablePill>
+                      <SelectablePill onClick={() => setFeedView("org")} selected={feedView === "org"} appearance="plain" className="px-3">General</SelectablePill>
+                    </div>
+                  )}
+                  {/* Who a new story goes to. Shares the composer's audience, so the
+                      two can never disagree about where something was published.
+                      Borderless, and sized to its label rather than to the widest
+                      branch name, so the chevron sits right beside the text. */}
+                  <FilterDropdown
+                    ariaLabel="Story audience"
+                    align="right"
+                    value={audienceBranchId ?? ""}
+                    options={[{ label: "Everyone", value: "" }, ...branches.map((branch) => ({ label: branch.name, value: branch.id }))]}
+                    onValueChange={(value) => setAudienceBranchId(value || null)}
+                    className="max-w-[180px]"
+                    buttonClassName="h-8 gap-1.5 border-0 bg-transparent px-2 text-xs font-normal"
+                  />
+                </div>
               </div>
 
               <div className="flex-1 overflow-y-auto no-scrollbar p-3">
@@ -771,6 +997,10 @@ export default function SpacePage() {
                     currentUser={currentUser}
                     isUploading={isUploadingStory}
                     onUploadStory={handleCreateStory}
+                    openStoryId={sharedStoryId}
+                    storyLikes={storyLikes}
+                    onToggleLike={handleToggleStoryLike}
+                    onDeleteStory={setDeleteConfirmStoryId}
                   />}
                 </div>
                 {restrictedResources.has("posts") ? <RestrictedResource label="posts" /> : <PostsSection
@@ -785,21 +1015,28 @@ export default function SpacePage() {
                   expandedComments={expandedComments}
                   postContent={postContent}
                   onContentChange={setPostContent}
-                  postImagePreview={postImagePreview}
-                  isUploadingPostImage={isUploadingPostImage}
-                  onImageSelect={handleImageUpload}
-                  onRemoveImage={() => { setPostImage(null); setPostImagePreview(null); }}
+                  attachments={attachments}
+                  onMediaSelect={handleMediaSelect}
+                  onRemoveAttachment={handleRemoveAttachment}
                   postLocation={postLocation}
                   onShareLocation={handleShareLocation}
                   onClearLocation={() => setPostLocation(null)}
+                  audienceBranchId={audienceBranchId}
+                  branches={branches}
+                  onAudienceChange={setAudienceBranchId}
                   onSubmitPost={handleCreatePost}
                   placeholder={effectiveFeedScope === "org_only" ? "Share something in General..." : "Share a workout, milestone, or wellness tip..."}
                   onToggleLike={handleToggleLike}
                   onToggleComments={handleToggleComments}
                   onAddComment={handleAddComment}
+                  onEditComment={handleEditComment}
                   onRequestDeletePost={setDeleteConfirmPostId}
                   onRequestDeleteComment={(postId, commentId) => setDeleteConfirmComment({ postId, commentId })}
                   onHashtagClick={handleSelectHashtag}
+                  onShared={handleShared}
+                  hasMore={posts.length < postsTotal}
+                  isLoadingMore={isLoadingMorePosts}
+                  onLoadMore={handleLoadMorePosts}
                 />}
               </div>
             </div>
@@ -839,6 +1076,7 @@ export default function SpacePage() {
 
       <ConfirmModal isOpen={!!deleteConfirmPostId} onClose={() => setDeleteConfirmPostId(null)} onConfirm={() => deleteConfirmPostId && handleDeletePost(deleteConfirmPostId)} title="Delete Post" description="Are you sure you want to delete this post? This action cannot be undone." confirmText="Delete Post" isDestructive />
       <ConfirmModal isOpen={!!deleteConfirmComment} onClose={() => setDeleteConfirmComment(null)} onConfirm={() => deleteConfirmComment && handleDeleteComment(deleteConfirmComment.postId, deleteConfirmComment.commentId)} title="Delete Comment" description="Are you sure you want to delete this comment? This action cannot be undone." confirmText="Delete Comment" isDestructive />
+      <ConfirmModal isOpen={!!deleteConfirmStoryId} onClose={() => setDeleteConfirmStoryId(null)} onConfirm={() => deleteConfirmStoryId && handleDeleteStory(deleteConfirmStoryId)} title="Delete Story" description="Are you sure you want to delete this story? This action cannot be undone." confirmText="Delete Story" isDestructive />
 
       <AnimatePresence>
         {hashtagModalTag && (

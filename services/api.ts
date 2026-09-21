@@ -30,8 +30,12 @@ import type {
   Comment,
   CommentListResponse,
   LikeActionResponse,
+  ShareResponse,
+  SaveActionResponse,
+  SavedPostsListResponse,
   Story,
   StoryListResponse,
+  StoryLikeActionResponse,
   CreateStoryPayload,
    OrganizationMembersListResponse,
   ClubMembersListResponse,
@@ -740,11 +744,32 @@ post: {
       `/organizations/${orgId}/posts/likes/given/count${qs ? `?${qs}` : ""}`,
     );
   },
-  createPost: (orgId: string, payload: CreatePostPayload) =>
-    fromApi<Post>(`/organizations/${orgId}/posts`, {
+  createPost: (orgId: string, payload: CreatePostPayload) => {
+    // Send both shapes: `media_urls` carries every attachment (the API allows 15),
+    // while `media_url` stays set to the first so anything still reading the old
+    // single field keeps working. `branch_id` is sent explicitly as null for
+    // "Everyone" rather than omitted, so the audience is never inferred server-side.
+    const mediaUrls = payload.mediaUrls?.length ? payload.mediaUrls : undefined;
+    return fromApi<Post>(`/organizations/${orgId}/posts`, {
       method: "POST",
-      body: { branch_id: payload.branchId, content: payload.content, media_url: payload.mediaUrl, media_type: payload.mediaType },
-    }),
+      body: {
+        branch_id: payload.branchId ?? null,
+        content: payload.content,
+        media_url: payload.mediaUrl ?? mediaUrls?.[0],
+        media_type: payload.mediaType,
+        media_urls: mediaUrls,
+      },
+    });
+  },
+
+  getSavedPosts: (orgId: string, params: { offset?: number; limit?: number } = {}) => {
+    const query = new URLSearchParams();
+    query.set("limit", String(params.limit ?? 20));
+    query.set("offset", String(params.offset ?? 0));
+    return fromApi<SavedPostsListResponse>(
+      `/organizations/${orgId}/posts/saved?${query.toString()}`,
+    );
+  },
 
   deletePost: (orgId: string, postId: string) =>
     fromApi<{ success: true }>(`/organizations/${orgId}/posts/${postId}`, { method: "DELETE" }),
@@ -755,6 +780,23 @@ post: {
   unlikePost: (orgId: string, postId: string) =>
     fromApi<LikeActionResponse>(`/organizations/${orgId}/posts/${postId}/like`, { method: "DELETE" }),
 
+  // Unlike the notification read endpoints, /share declares a *required* JSON
+  // body (ShareCreateRequest). Both of its fields are nullable, so an empty
+  // object is the correct payload for an in-app share.
+  sharePost: (orgId: string, postId: string, destination?: { type: string; id: string }) =>
+    fromApi<ShareResponse>(`/organizations/${orgId}/posts/${postId}/share`, {
+      method: "POST",
+      body: destination
+        ? { destination_type: destination.type, destination_id: destination.id }
+        : {},
+    }),
+
+  savePost: (orgId: string, postId: string) =>
+    fromApi<SaveActionResponse>(`/organizations/${orgId}/posts/${postId}/save`, { method: "POST" }),
+
+  unsavePost: (orgId: string, postId: string) =>
+    fromApi<SaveActionResponse>(`/organizations/${orgId}/posts/${postId}/save`, { method: "DELETE" }),
+
   getComments: (orgId: string, postId: string, params: { offset?: number; limit?: number } = {}) => {
     const query = new URLSearchParams();
     query.set("limit", String(params.limit ?? 50));
@@ -764,10 +806,18 @@ post: {
     );
   },
 
-  addComment: (orgId: string, postId: string, content: string) =>
+  // Replies are one level deep. Callers must pass the *top-level* comment id as
+  // the parent, never a reply's own id — see handleAddComment in the space page.
+  addComment: (orgId: string, postId: string, content: string, parentCommentId?: string) =>
     fromApi<Comment>(`/organizations/${orgId}/posts/${postId}/comments`, {
-      method: "POST", body: { content },
+      method: "POST", body: { content, parent_comment_id: parentCommentId ?? null },
     }),
+
+  editComment: (orgId: string, postId: string, commentId: string, content: string) =>
+    fromApi<Comment>(
+      `/organizations/${orgId}/posts/${postId}/comments/${commentId}`,
+      { method: "PATCH", body: { content } },
+    ),
 
   deleteComment: (orgId: string, postId: string, commentId: string) =>
     fromApi<{ success: true }>(
@@ -793,11 +843,20 @@ story: {
   createStory: (orgId: string, payload: CreateStoryPayload) =>
     fromApi<Story>(`/organizations/${orgId}/stories`, {
       method: "POST",
-      body: { branch_id: payload.branchId, media_url: payload.mediaUrl, media_type: payload.mediaType },
+      // null, not undefined: "Everyone" must be stated, not inferred.
+      body: { branch_id: payload.branchId ?? null, media_url: payload.mediaUrl, media_type: payload.mediaType },
     }),
 
   deleteStory: (orgId: string, storyId: string) =>
     fromApi<{ success: true }>(`/organizations/${orgId}/stories/${storyId}`, { method: "DELETE" }),
+
+  // There is no endpoint reporting whether you already liked a story, so the
+  // `liked` flag in this response is the only way to know.
+  likeStory: (orgId: string, storyId: string) =>
+    fromApi<StoryLikeActionResponse>(`/organizations/${orgId}/stories/${storyId}/like`, { method: "POST" }),
+
+  unlikeStory: (orgId: string, storyId: string) =>
+    fromApi<StoryLikeActionResponse>(`/organizations/${orgId}/stories/${storyId}/like`, { method: "DELETE" }),
 },
   storage: {
     requestUploadUrl: (payload: { domain: string; contentType: string }) =>

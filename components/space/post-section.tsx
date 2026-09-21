@@ -4,12 +4,15 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
   ImageIcon, Video, MapPin, Send, Heart, MessageCircle, Share2, Trash2, X, Loader2,
+  Check, CornerDownRight,
 } from "lucide-react";
-import type { Post, Comment, OrganizationMemberInfo } from "@/types/api";
+import type { Post, Comment, CommentReply, OrganizationMemberInfo } from "@/types/api";
+import { MAX_POST_ATTACHMENTS, looksLikeVideo, postMediaUrls, type PostAttachment } from "@/lib/media";
 import { Avatar } from "@/components/space/story-section";
 import { formatRelativeTime } from "@/lib/time";
 import { buildPostLink } from "@/lib/post-sharing";
 import { PostShareModal } from "@/components/space/post-share-modal";
+import { FilterDropdown } from "@/components/ui/filter-dropdown";
 
 interface Badge { emoji: string; label: string; rank: number; }
 
@@ -50,13 +53,15 @@ function CreatePostBox({
   placeholder,
   postContent,
   onContentChange,
-  postImagePreview,
-  isUploadingImage,
-  onImageSelect,
-  onRemoveImage,
+  attachments,
+  onMediaSelect,
+  onRemoveAttachment,
   postLocation,
   onShareLocation,
   onClearLocation,
+  audienceBranchId,
+  branches,
+  onAudienceChange,
   onSubmit,
   canSubmit,
 }: {
@@ -64,16 +69,19 @@ function CreatePostBox({
   placeholder: string;
   postContent: string;
   onContentChange: (v: string) => void;
-  postImagePreview: string | null;
-  isUploadingImage: boolean;
-  onImageSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onRemoveImage: () => void;
+  attachments: PostAttachment[];
+  onMediaSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onRemoveAttachment: (attachmentId: string) => void;
   postLocation: string | null;
   onShareLocation: () => void;
   onClearLocation: () => void;
+  audienceBranchId: string | null;
+  branches: Array<{ id: string; name: string }>;
+  onAudienceChange: (branchId: string | null) => void;
   onSubmit: () => void;
   canSubmit: boolean;
 }) {
+  const atAttachmentLimit = attachments.length >= MAX_POST_ATTACHMENTS;
   return (
     <div className="bg-white p-4 rounded-[8px] border border-grey-4">
       <div className="flex gap-3 mb-4">
@@ -86,17 +94,30 @@ function CreatePostBox({
             value={postContent}
             onChange={(e) => onContentChange(e.target.value)}
           />
-          {postImagePreview && (
-            <div className="relative w-full h-32 mt-2 rounded-lg overflow-hidden border border-grey-4">
-              <Image src={postImagePreview} alt="Upload preview" fill className="object-cover" />
-              {isUploadingImage && (
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                  <Loader2 className="w-6 h-6 text-white animate-spin" />
+          {attachments.length > 0 && (
+            <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4">
+              {attachments.map((attachment) => (
+                <div key={attachment.id} className="relative h-24 overflow-hidden rounded-lg border border-grey-4 bg-grey-5">
+                  {attachment.kind === "video" ? (
+                    <video src={attachment.previewUrl} className="h-full w-full object-cover" muted playsInline />
+                  ) : (
+                    <Image src={attachment.previewUrl} alt={attachment.name} fill unoptimized className="object-cover" />
+                  )}
+                  {!attachment.mediaUrl && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                      <Loader2 className="h-5 w-5 animate-spin text-white" />
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => onRemoveAttachment(attachment.id)}
+                    aria-label={`Remove ${attachment.name}`}
+                    className="absolute right-1 top-1 rounded-full bg-black/50 p-1 text-white hover:bg-black/70"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
                 </div>
-              )}
-              <button onClick={onRemoveImage} className="absolute top-2 right-2 bg-black/50 text-white rounded-full p-1 hover:bg-black/70">
-                <X className="w-4 h-4" />
-              </button>
+              ))}
             </div>
           )}
           {postLocation && (
@@ -107,20 +128,133 @@ function CreatePostBox({
           )}
         </div>
       </div>
-      <div className="flex items-center justify-between pt-3 border-t border-grey-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-grey-4">
         <div className="flex items-center gap-4">
-          <input type="file" accept="image/*" id="post-image-input" className="hidden" onChange={onImageSelect} />
-          <label htmlFor="post-image-input" className="text-grey-2 hover:text-grey-1 cursor-pointer"><ImageIcon className="w-5 h-5" /></label>
-          <button className="text-grey-2 hover:text-grey-1"><Video className="w-5 h-5" /></button>
-          <button onClick={onShareLocation} className="text-grey-2 hover:text-grey-1"><MapPin className="w-5 h-5" /></button>
+          {/* One input for both: the media type is derived from each file, never
+              assumed from which icon was clicked. */}
+          <input
+            type="file"
+            accept="image/*,video/*"
+            multiple
+            id="post-media-input"
+            className="hidden"
+            onChange={onMediaSelect}
+            disabled={atAttachmentLimit}
+          />
+          <label
+            htmlFor="post-media-input"
+            aria-disabled={atAttachmentLimit}
+            title={atAttachmentLimit ? `You can attach up to ${MAX_POST_ATTACHMENTS} files.` : "Add photos"}
+            className={`text-grey-2 hover:text-grey-1 ${atAttachmentLimit ? "pointer-events-none opacity-40" : "cursor-pointer"}`}
+          >
+            <ImageIcon className="w-5 h-5" />
+          </label>
+          <label
+            htmlFor="post-media-input"
+            aria-disabled={atAttachmentLimit}
+            title={atAttachmentLimit ? `You can attach up to ${MAX_POST_ATTACHMENTS} files.` : "Add a video"}
+            className={`text-grey-2 hover:text-grey-1 ${atAttachmentLimit ? "pointer-events-none opacity-40" : "cursor-pointer"}`}
+          >
+            <Video className="w-5 h-5" />
+          </label>
+          <button type="button" onClick={onShareLocation} className="text-grey-2 hover:text-grey-1"><MapPin className="w-5 h-5" /></button>
+          {attachments.length > 0 && (
+            <span className="text-xs text-grey-3">{attachments.length}/{MAX_POST_ATTACHMENTS}</span>
+          )}
         </div>
-        <button
-          onClick={onSubmit}
-          disabled={!canSubmit || isUploadingImage}
-          className="px-6 py-2 bg-primary-5 text-primary-1 font-medium text-sm rounded-lg hover:bg-primary-1 hover:text-white transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <Send className="w-4 h-4" /> Post
-        </button>
+        <div className="flex items-center gap-3">
+          {/* Audience is chosen, never inferred from the feed being viewed. */}
+          <FilterDropdown
+            ariaLabel="Post audience"
+            align="right"
+            value={audienceBranchId ?? ""}
+            options={[{ label: "Everyone", value: "" }, ...branches.map((branch) => ({ label: branch.name, value: branch.id }))]}
+            onValueChange={(value) => onAudienceChange(value || null)}
+            className="max-w-[180px]"
+            buttonClassName="h-9 gap-1.5 border-0 bg-transparent px-2 text-xs font-normal"
+          />
+          <button
+            onClick={onSubmit}
+            disabled={!canSubmit}
+            className="px-6 py-2 bg-primary-5 text-primary-1 font-medium text-sm rounded-lg hover:bg-primary-1 hover:text-white transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Send className="w-4 h-4" /> Post
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function memberName(member: OrganizationMemberInfo | undefined, isMine: boolean) {
+  if (isMine) return "You";
+  return member ? `${member.firstName} ${member.lastName}` : "Member";
+}
+
+// ── One comment or reply, with inline edit ──────────────────────────────
+function CommentRow({
+  comment,
+  author,
+  isMine,
+  isReply = false,
+  onStartReply,
+  onEdit,
+  onDelete,
+}: {
+  comment: Comment | CommentReply;
+  author: OrganizationMemberInfo | undefined;
+  isMine: boolean;
+  isReply?: boolean;
+  onStartReply: () => void;
+  onEdit: (content: string) => void;
+  onDelete: () => void;
+}) {
+  const [draft, setDraft] = useState<string | null>(null);
+  const commit = () => {
+    const next = draft?.trim();
+    if (next && next !== comment.content) onEdit(next);
+    setDraft(null);
+  };
+  // Time and actions sit on a meta row under the bubble rather than inside it.
+  // Inside, a justify-between header stranded the timestamp against the far
+  // edge on a wide column and wrapped both it and the name on a narrow one.
+  const metaAction = "font-medium text-grey-3 transition-colors hover:text-primary-1";
+  return (
+    <div className="flex gap-2.5">
+      <Avatar url={author?.avatarUrl} seed={comment.userId} firstName={author?.firstName} lastName={author?.lastName} size={isReply ? 28 : 32} showPlaceholderBadge />
+      <div className="min-w-0 flex-1">
+        <div className="rounded-2xl bg-grey-5 px-3 py-2">
+          <p className="truncate text-[13px] font-semibold leading-5 text-grey-1">{memberName(author, isMine)}</p>
+          {draft === null ? (
+            <p className="whitespace-pre-wrap break-words text-sm leading-5 text-grey-2">{comment.content}</p>
+          ) : (
+            <div className="mt-1 flex items-center gap-1.5">
+              <input
+                autoFocus
+                value={draft}
+                aria-label="Edit comment"
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") commit();
+                  if (e.key === "Escape") setDraft(null);
+                }}
+                className="min-w-0 flex-1 rounded-lg border border-grey-4 bg-white px-2 py-1 text-sm text-grey-1 focus:border-primary-1 focus:outline-none"
+              />
+              <button type="button" aria-label="Save comment" onClick={commit} className="shrink-0 text-primary-1"><Check className="w-4 h-4" /></button>
+              <button type="button" aria-label="Cancel edit" onClick={() => setDraft(null)} className="shrink-0 text-grey-3"><X className="w-4 h-4" /></button>
+            </div>
+          )}
+        </div>
+        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 pl-3 text-[11px] leading-4 text-grey-3">
+          <span className="whitespace-nowrap">{formatRelativeTime(comment.createdAt)}</span>
+          <button type="button" onClick={onStartReply} className={metaAction}>Reply</button>
+          {isMine && draft === null && (
+            <>
+              <button type="button" onClick={() => setDraft(comment.content ?? "")} className={metaAction}>Edit</button>
+              <button type="button" onClick={onDelete} className="font-medium text-grey-3 transition-colors hover:text-red-500">Delete</button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -132,6 +266,7 @@ function PostCard({
   user,
   author,
   badge,
+  branchLabel,
   isLiked,
   comments,
   commentsExpanded,
@@ -139,6 +274,7 @@ function PostCard({
   onToggleLike,
   onToggleComments,
   onAddComment,
+  onEditComment,
   onDeletePost,
   onDeleteComment,
   onHashtagClick,
@@ -148,19 +284,39 @@ function PostCard({
   user: { id: string; avatarUrl?: string; firstName?: string; lastName?: string };
   author: OrganizationMemberInfo | undefined;
   badge: Badge | undefined;
+  /** Where the post was published — a branch name, or "General" for org-wide. */
+  branchLabel: string | null;
   isLiked: boolean;
   comments: Comment[];
   commentsExpanded: boolean;
   getMember: (userId: string) => OrganizationMemberInfo | undefined;
   onToggleLike: () => void;
   onToggleComments: () => void;
-  onAddComment: (content: string) => void;
+  onAddComment: (content: string, parentCommentId?: string) => void;
+  onEditComment: (commentId: string, content: string) => void;
   onDeletePost: () => void;
   onDeleteComment: (commentId: string) => void;
   onHashtagClick: (tag: string) => void;
   onShare: () => void;
 }) {
   const isMine = post.userId === user.id;
+  const commentInputRef = useRef<HTMLInputElement>(null);
+  const [replyTo, setReplyTo] = useState<{ id: string; name: string } | null>(null);
+  const mediaItems = postMediaUrls(post).map((url) => ({ url, isVideo: looksLikeVideo(url, post.mediaType) }));
+
+  const startReply = (parentId: string, name: string) => {
+    setReplyTo({ id: parentId, name });
+    commentInputRef.current?.focus();
+  };
+
+  const submitComment = () => {
+    const input = commentInputRef.current;
+    const value = input?.value.trim();
+    if (!value) return;
+    onAddComment(value, replyTo?.id);
+    if (input) input.value = "";
+    setReplyTo(null);
+  };
   return (
     <div id={`post-${post.id}`} className="scroll-mt-4 bg-white rounded-[12px] border border-grey-4 overflow-hidden target:ring-2 target:ring-grey-3">
       <div className="p-4 pb-1">
@@ -176,7 +332,7 @@ function PostCard({
                   </span>
                 )}
               </div>
-              <p className="text-xs text-grey-3">{author?.email ?? ""} · {formatRelativeTime(post.createdAt)}</p>
+              <p className="text-xs text-grey-3">{branchLabel ? `${branchLabel} · ` : ""}{formatRelativeTime(post.createdAt)}</p>
             </div>
           </div>
           {isMine && (
@@ -192,9 +348,27 @@ function PostCard({
         )}
       </div>
 
-      {post.mediaUrl && (
+      {mediaItems.length === 1 && (
         <div className="relative w-full h-[400px]">
-          <Image src={post.mediaUrl} alt="Post image" fill className="object-cover" referrerPolicy="no-referrer" />
+          {mediaItems[0].isVideo ? (
+            <video src={mediaItems[0].url} controls playsInline className="h-full w-full bg-black object-contain" />
+          ) : (
+            <Image src={mediaItems[0].url} alt="Post attachment" fill className="object-cover" referrerPolicy="no-referrer" />
+          )}
+        </div>
+      )}
+
+      {mediaItems.length > 1 && (
+        <div className="grid grid-cols-2 gap-1">
+          {mediaItems.map((item, index) => (
+            <div key={`${item.url}-${index}`} className="relative aspect-square bg-grey-5">
+              {item.isVideo ? (
+                <video src={item.url} controls playsInline className="h-full w-full bg-black object-contain" />
+              ) : (
+                <Image src={item.url} alt={`Post attachment ${index + 1}`} fill className="object-cover" referrerPolicy="no-referrer" />
+              )}
+            </div>
+          ))}
         </div>
       )}
 
@@ -225,56 +399,76 @@ function PostCard({
         </div>
 
         {commentsExpanded && comments.length > 0 && (
-          <div className="mb-4 space-y-3">
+          <div className="mb-4 space-y-4">
             {comments.map((comment) => {
               const cAuthor = getMember(comment.userId);
               return (
-                <div key={comment.id} className="flex gap-3">
-                  <Avatar url={cAuthor?.avatarUrl} seed={comment.userId} firstName={cAuthor?.firstName} lastName={cAuthor?.lastName} size={32} showPlaceholderBadge />
-                  <div className="flex-1 bg-grey-5 rounded-xl p-3 relative group">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-bold text-grey-1">{comment.userId === user.id ? "You" : cAuthor ? `${cAuthor.firstName} ${cAuthor.lastName}` : "Member"}</span>
-                      <span className="text-[10px] text-grey-3">{formatRelativeTime(comment.createdAt)}</span>
+                <div key={comment.id} className="space-y-3">
+                  <CommentRow
+                    comment={comment}
+                    author={cAuthor}
+                    isMine={comment.userId === user.id}
+                    onStartReply={() => startReply(comment.id, memberName(cAuthor, comment.userId === user.id))}
+                    onEdit={(content) => onEditComment(comment.id, content)}
+                    onDelete={() => onDeleteComment(comment.id)}
+                  />
+                  {comment.replies && comment.replies.length > 0 && (
+                    /* 42px = the parent's 32px avatar + its 10px gap, so a reply
+                       lines up with the bubble it belongs to. */
+                    <div className="ml-[42px] space-y-3">
+                      {comment.replies.map((reply) => {
+                        const rAuthor = getMember(reply.userId);
+                        return (
+                          <CommentRow
+                            key={reply.id}
+                            comment={reply}
+                            author={rAuthor}
+                            isMine={reply.userId === user.id}
+                            isReply
+                            /* Replies are one level deep: replying to a reply must
+                               target its top-level parent, never the reply's own id. */
+                            onStartReply={() => startReply(reply.parentCommentId ?? comment.id, memberName(rAuthor, reply.userId === user.id))}
+                            onEdit={(content) => onEditComment(reply.id, content)}
+                            onDelete={() => onDeleteComment(reply.id)}
+                          />
+                        );
+                      })}
                     </div>
-                    <p className="text-sm text-grey-2">{comment.content}</p>
-                    {comment.userId === user.id && (
-                      <button onClick={() => onDeleteComment(comment.id)} className="absolute top-2 right-2 text-grey-3 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    )}
-                  </div>
+                  )}
                 </div>
               );
             })}
           </div>
         )}
 
-        <div className="flex items-center gap-3">
-          <Avatar url={user.avatarUrl} seed={user.id} firstName={user.firstName} lastName={user.lastName} size={32} showPlaceholderBadge />
-          <div className="flex-1 relative">
-            <input
-              type="text"
-              placeholder="Write a comment..."
-              className="w-full pl-4 pr-10 py-2 bg-white border border-grey-4 rounded-full text-sm focus:outline-none focus:border-primary-1 focus:ring-1 focus:ring-primary-1"
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && e.currentTarget.value.trim()) {
-                  onAddComment(e.currentTarget.value);
-                  e.currentTarget.value = "";
-                }
-              }}
-            />
-            <button
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-1"
-              onClick={(e) => {
-                const input = e.currentTarget.previousElementSibling as HTMLInputElement;
-                if (input && input.value.trim()) {
-                  onAddComment(input.value);
-                  input.value = "";
-                }
-              }}
-            >
-              <Send className="w-4 h-4" />
-            </button>
+        <div className="flex flex-col gap-2">
+          {replyTo && (
+            <div className="flex w-fit items-center gap-2 rounded-full bg-primary-5 px-3 py-1 text-xs text-primary-1">
+              <CornerDownRight className="w-3 h-3" />
+              Replying to {replyTo.name}
+              <button type="button" aria-label="Cancel reply" onClick={() => setReplyTo(null)} className="hover:text-primary-2">
+                <X className="w-3 h-3" />
+              </button>
+            </div>
+          )}
+          <div className="flex items-center gap-2.5">
+            <Avatar url={user.avatarUrl} seed={user.id} firstName={user.firstName} lastName={user.lastName} size={32} showPlaceholderBadge />
+            <div className="flex-1 relative">
+              <input
+                ref={commentInputRef}
+                type="text"
+                aria-label={replyTo ? `Reply to ${replyTo.name}` : "Write a comment"}
+                placeholder={replyTo ? `Reply to ${replyTo.name}...` : "Write a comment..."}
+                className="w-full pl-4 pr-10 py-2 bg-white border border-grey-4 rounded-full text-sm focus:outline-none focus:border-primary-1 focus:ring-1 focus:ring-primary-1"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") submitComment();
+                  if (e.key === "Escape") setReplyTo(null);
+                }}
+              />
+              <button type="button" aria-label="Send comment" className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-1" onClick={submitComment}>
+                <Send className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -295,21 +489,28 @@ export function PostsSection({
   expandedComments,
   postContent,
   onContentChange,
-  postImagePreview,
-  isUploadingPostImage,
-  onImageSelect,
-  onRemoveImage,
+  attachments,
+  onMediaSelect,
+  onRemoveAttachment,
   postLocation,
   onShareLocation,
   onClearLocation,
+  audienceBranchId,
+  branches,
+  onAudienceChange,
   onSubmitPost,
   placeholder,
   onToggleLike,
   onToggleComments,
   onAddComment,
+  onEditComment,
   onRequestDeletePost,
   onRequestDeleteComment,
   onHashtagClick,
+  onShared,
+  hasMore = false,
+  isLoadingMore = false,
+  onLoadMore,
 }: {
   user: { id: string; avatarUrl?: string; firstName?: string; lastName?: string };
   posts: Post[];
@@ -322,24 +523,46 @@ export function PostsSection({
   expandedComments: string[];
   postContent: string;
   onContentChange: (v: string) => void;
-  postImagePreview: string | null;
-  isUploadingPostImage: boolean;
-  onImageSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onRemoveImage: () => void;
+  attachments: PostAttachment[];
+  onMediaSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onRemoveAttachment: (attachmentId: string) => void;
   postLocation: string | null;
   onShareLocation: () => void;
   onClearLocation: () => void;
+  audienceBranchId: string | null;
+  branches: Array<{ id: string; name: string }>;
+  onAudienceChange: (branchId: string | null) => void;
   onSubmitPost: () => void;
   placeholder: string;
   onToggleLike: (postId: string) => void;
   onToggleComments: (postId: string) => void;
-  onAddComment: (postId: string, content: string) => void;
+  onAddComment: (postId: string, content: string, parentCommentId?: string) => void;
+  onEditComment: (postId: string, commentId: string, content: string) => void;
   onRequestDeletePost: (postId: string) => void;
   onRequestDeleteComment: (postId: string, commentId: string) => void;
   onHashtagClick: (tag: string) => void;
+  onShared: (postId: string) => void;
+  hasMore?: boolean;
+  isLoadingMore?: boolean;
+  onLoadMore?: () => void;
 }) {
-  const [shareLink, setShareLink] = useState<string | null>(null);
+  const [shareTarget, setShareTarget] = useState<{ postId: string; link: string } | null>(null);
+  const branchNames = new Map(branches.map((branch) => [branch.id, branch.name]));
   const scrolledPost = useRef<string | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  // Prefetch the next page before the list runs out, rather than waiting for the
+  // reader to hit the very bottom.
+  useEffect(() => {
+    const sentinel = loadMoreRef.current;
+    if (!sentinel || !hasMore || !onLoadMore) return;
+    const observer = new IntersectionObserver(
+      (entries) => { if (entries[0].isIntersecting) onLoadMore(); },
+      { rootMargin: "600px" },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, onLoadMore, posts.length]);
   useEffect(() => {
     if (postsLoading) { scrolledPost.current = null; return; }
     if (!sharedPostId || scrolledPost.current === sharedPostId) return;
@@ -360,15 +583,17 @@ export function PostsSection({
         placeholder={placeholder}
         postContent={postContent}
         onContentChange={onContentChange}
-        postImagePreview={postImagePreview}
-        isUploadingImage={isUploadingPostImage}
-        onImageSelect={onImageSelect}
-        onRemoveImage={onRemoveImage}
+        attachments={attachments}
+        onMediaSelect={onMediaSelect}
+        onRemoveAttachment={onRemoveAttachment}
         postLocation={postLocation}
         onShareLocation={onShareLocation}
         onClearLocation={onClearLocation}
+        audienceBranchId={audienceBranchId}
+        branches={branches}
+        onAudienceChange={onAudienceChange}
         onSubmit={onSubmitPost}
-        canSubmit={!!(postContent.trim() || postImagePreview || postLocation)}
+        canSubmit={!!(postContent.trim() || attachments.length > 0 || postLocation)}
       />
 
       {postsLoading && (
@@ -384,21 +609,37 @@ export function PostsSection({
           user={user}
           author={getMember(post.userId)}
           badge={badgeMap.get(post.userId)}
+          branchLabel={post.branchId ? branchNames.get(post.branchId) ?? null : "General"}
           isLiked={likedPostIds.has(post.id)}
           comments={commentsByPost[post.id] ?? []}
           commentsExpanded={expandedComments.includes(post.id)}
           getMember={getMember}
           onToggleLike={() => onToggleLike(post.id)}
           onToggleComments={() => onToggleComments(post.id)}
-          onAddComment={(content) => onAddComment(post.id, content)}
+          onAddComment={(content, parentCommentId) => onAddComment(post.id, content, parentCommentId)}
+          onEditComment={(commentId, content) => onEditComment(post.id, commentId, content)}
           onDeletePost={() => onRequestDeletePost(post.id)}
           onDeleteComment={(commentId) => onRequestDeleteComment(post.id, commentId)}
           onHashtagClick={onHashtagClick}
-          onShare={() => setShareLink(buildPostLink(window.location.origin, post))}
+          onShare={() => setShareTarget({ postId: post.id, link: buildPostLink(window.location.origin, post) })}
         />
       ))}
+
+      {!postsLoading && hasMore && (
+        <div ref={loadMoreRef} className="flex justify-center py-4">
+          {isLoadingMore
+            ? <Loader2 className="h-5 w-5 animate-spin text-grey-3" />
+            : <button type="button" onClick={onLoadMore} className="rounded-lg border border-grey-4 bg-white px-4 py-2 text-sm text-grey-2 hover:bg-grey-5">Load more</button>}
+        </div>
+      )}
     </div>
-    {shareLink && <PostShareModal link={shareLink} onClose={() => setShareLink(null)} />}
+    {shareTarget && (
+      <PostShareModal
+        link={shareTarget.link}
+        onShared={() => onShared(shareTarget.postId)}
+        onClose={() => setShareTarget(null)}
+      />
+    )}
     </>
   );
 }

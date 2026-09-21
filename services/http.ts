@@ -155,11 +155,16 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
     }
 
     const contentType = response.headers.get("content-type") ?? "";
+    const isJson = contentType.includes("application/json");
+    // Read the body as text first and only parse it when there is something to
+    // parse. Every DELETE in this API answers 204 with no body, and a 204 can
+    // still carry a JSON content-type — calling response.json() on that throws,
+    // which used to report a successful delete as a failure.
+    let rawText: string;
     let rawPayload: unknown;
     try {
-      rawPayload = contentType.includes("application/json")
-        ? await response.json()
-        : await response.text();
+      rawText = await response.text();
+      rawPayload = isJson && rawText.trim() ? JSON.parse(rawText) : rawText;
     } catch {
       throw new ApiError(
         getApiErrorMessage(
@@ -172,7 +177,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
         "INVALID_RESPONSE",
       );
     }
-    const payload = contentType.includes("application/json") ? toCamelCase(rawPayload) : rawPayload;
+    const payload = isJson && rawText.trim() ? toCamelCase(rawPayload) : rawPayload;
 
     if (!response.ok) {
       const errorBody = (typeof payload === "object" && payload ? payload : {}) as ApiErrorBody;

@@ -5,7 +5,7 @@ import { ModalLayer } from "@/components/ui/modal-layer";
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
-import { Plus, Video, X, Loader2, ImageIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Video, X, Loader2, ImageIcon, ChevronLeft, ChevronRight, Heart, Trash2 } from "lucide-react";
 import type { Story, OrganizationMemberInfo, CurrentUserResponse } from "@/types/api";
 
 const IMAGE_STORY_DURATION_MS = 5000;
@@ -74,12 +74,23 @@ export function StoriesSection({
   currentUser,
   isUploading,
   onUploadStory,
+  openStoryId = null,
+  storyLikes,
+  onToggleLike,
+  onDeleteStory,
 }: {
   stories: Story[];
   getMember: (userId: string) => OrganizationMemberInfo | undefined;
   currentUser: CurrentUserResponse | null;
   isUploading: boolean;
   onUploadStory: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  /** Story id deep-linked from a notification, opened once it has loaded. */
+  openStoryId?: string | null;
+  /** Only known for stories this viewer has toggled in this session — there is
+   *  no endpoint reporting whether you already liked a story. */
+  storyLikes: Record<string, { liked: boolean; likeCount: number }>;
+  onToggleLike: (storyId: string, liked: boolean) => void;
+  onDeleteStory: (storyId: string) => void;
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -94,17 +105,36 @@ export function StoriesSection({
   // cycles one person's stories before moving to the next person —
   // matching WhatsApp/Facebook story behavior.
   const storyGroups = useMemo<StoryGroup[]>(() => {
+    const now = Date.now();
     const map = new Map<string, Story[]>();
+    // Lapsed stories are dropped before grouping, so someone whose only story has
+    // expired leaves no empty group behind in the rail.
     stories.forEach((s) => {
+      if (new Date(s.expiresAt).getTime() <= now) return;
       const arr = map.get(s.userId) ?? [];
       arr.push(s);
       map.set(s.userId, arr);
     });
-    return Array.from(map.entries()).map(([userId, items]) => ({
+    const groups = Array.from(map.entries()).map(([userId, items]) => ({
       userId,
       stories: items.slice().sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()),
     }));
-  }, [stories]);
+    // The signed-in user's own story leads the rail.
+    const mine = currentUser?.userId;
+    if (!mine) return groups;
+    return groups.sort((a, b) => Number(b.userId === mine) - Number(a.userId === mine));
+  }, [stories, currentUser?.userId]);
+
+  // A notification deep link opens its story once, as soon as it has loaded.
+  const openedStoryId = useRef<string | null>(null);
+  useEffect(() => {
+    if (!openStoryId || openedStoryId.current === openStoryId) return;
+    const groupIdx = storyGroups.findIndex((group) => group.stories.some((s) => s.id === openStoryId));
+    if (groupIdx === -1) return;
+    openedStoryId.current = openStoryId;
+    setGroupIndex(groupIdx);
+    setStoryIndex(storyGroups[groupIdx].stories.findIndex((s) => s.id === openStoryId));
+  }, [openStoryId, storyGroups]);
 
   const currentGroup = groupIndex !== null ? storyGroups[groupIndex] : null;
   const currentStory = currentGroup ? currentGroup.stories[storyIndex] : null;
@@ -179,6 +209,11 @@ export function StoriesSection({
     if (tapX < width * 0.3) goPrev();
     else goNext();
   };
+
+  const isOwnStory = !!currentStory && currentStory.userId === currentUser?.userId;
+  const likeState = currentStory ? storyLikes[currentStory.id] : undefined;
+  const likeCount = likeState?.likeCount ?? currentStory?.likeCount ?? 0;
+  const isLiked = likeState?.liked ?? false;
 
   return (
     <>
@@ -272,9 +307,20 @@ export function StoriesSection({
                 </div>
               </div>
 
-              <button onClick={close} className="absolute top-6 right-3 z-20 w-8 h-8 rounded-full bg-black/50 text-white flex items-center justify-center">
-                <X className="w-5 h-5" />
-              </button>
+              <div className="absolute top-6 right-3 z-20 flex items-center gap-2">
+                {isOwnStory && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onDeleteStory(currentStory.id); }}
+                    aria-label="Delete story"
+                    className="w-8 h-8 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-red-500/80"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+                <button onClick={close} aria-label="Close story" className="w-8 h-8 rounded-full bg-black/50 text-white flex items-center justify-center">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
 
               <div className="absolute inset-0 z-10" onClick={handleTap}>
                 {currentStory.mediaType === "video" ? (
@@ -303,6 +349,18 @@ export function StoriesSection({
               <button onClick={(e) => { e.stopPropagation(); goNext(); }} className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-black/40 text-white items-center justify-center">
                 <ChevronRight className="w-5 h-5" />
               </button>
+
+              <div className="absolute bottom-4 left-3 right-3 z-20 flex items-center gap-2">
+                <button
+                  onClick={(e) => { e.stopPropagation(); onToggleLike(currentStory.id, isLiked); }}
+                  aria-pressed={isLiked}
+                  aria-label={isLiked ? "Unlike story" : "Like story"}
+                  className="flex items-center gap-2 rounded-full bg-black/50 px-3 py-2 text-white hover:bg-black/70"
+                >
+                  <Heart className={`w-5 h-5 ${isLiked ? "fill-red-500 text-red-500" : ""}`} />
+                  <span className="text-xs font-medium">{likeCount}</span>
+                </button>
+              </div>
             </motion.div>
           </ModalLayer>
         )}

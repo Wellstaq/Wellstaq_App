@@ -418,6 +418,8 @@ export interface Post {
   content: string | null;
   mediaUrl: string | null;
   mediaType: string | null;
+  /** Multi-attachment list (up to 15). Older posts only carry `mediaUrl`. */
+  mediaUrls: string[] | null;
   likeCount: number;
   commentCount: number;
   shareCount: number;
@@ -437,6 +439,27 @@ export interface CreatePostPayload {
   content?: string;
   mediaUrl?: string;
   mediaType?: string;
+  mediaUrls?: string[];
+}
+
+export interface ShareResponse {
+  postId: string;
+  userId: string;
+  message: string;
+}
+
+export interface SaveActionResponse {
+  postId: string;
+  userId: string;
+  saved: boolean;
+  message: string;
+}
+
+export interface SavedPostsListResponse {
+  items: Post[];
+  total: number;
+  offset: number;
+  limit: number;
 }
 
 export interface CommentReply {
@@ -457,7 +480,8 @@ export interface Comment {
   parentCommentId: string | null;
   createdAt: string;
   updatedAt: string;
-  replies: CommentReply[];
+  /** Absent on responses that don't expand replies — always guard before use. */
+  replies?: CommentReply[];
 }
 
 export interface CommentListResponse {
@@ -482,8 +506,18 @@ export interface Story {
   branchId: string | null;
   mediaUrl: string;
   mediaType: string;
+  likeCount: number;
   expiresAt: string;
   createdAt: string;
+}
+
+/** No endpoint reports whether you already liked a story, so `liked` is only
+ *  knowable from the response to your own toggle. */
+export interface StoryLikeActionResponse {
+  storyId: string;
+  userId: string;
+  liked: boolean;
+  likeCount: number;
 }
 
 export interface StoryListResponse {
