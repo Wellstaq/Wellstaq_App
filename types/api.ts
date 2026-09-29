@@ -355,6 +355,14 @@ export interface LivePulseResponse {
   doingWellPct: number | null;
 }
 
+export type WellbeingSurveyCadence = "weekly" | "biweekly" | "monthly";
+
+export interface WellbeingSurveyConfigResponse {
+  organizationId: string;
+  cadence: WellbeingSurveyCadence;
+  isActive: boolean;
+}
+
 
 export type ClubCategory =
   | "fitness"

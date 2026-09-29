@@ -8,7 +8,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { ASSETS } from "@/lib/constants";
 import { useDashboardData } from "@/components/providers/dashboard-data-provider";
 import { useDashboardScope } from "@/lib/scope";
-import { getSwitchableScopes, hasPermission } from "@/lib/permissions";
+import { getSwitchableScopes, hasOrgWidePermission, hasPermission } from "@/lib/permissions";
 import { useClickOutside } from "@/hooks/use-click-outside";
 import { 
   Home, 
@@ -29,6 +29,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   LoaderCircle,
+  HeartPulse,
   X
 } from "lucide-react";
 
@@ -63,6 +64,9 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
   const canCreateBranch = currentUser ? hasPermission(currentUser.permissions, "branch.create") : false;
   const canCreateChallenge = currentUser ? hasPermission(currentUser.permissions, "challenge.create", scope.type === "branch" ? scope.branchId : undefined) : false;
   const canManageInvites = currentUser ? hasPermission(currentUser.permissions, "member.invite", scope.type === "branch" ? scope.branchId : undefined) : false;
+  const canManagePulseCadence = currentUser
+    ? hasOrgWidePermission(currentUser.permissions, "org.settings.update")
+    : false;
   const isChallengesActive = pathname.startsWith("/dashboard/challenges");
   const isIntegrationsActive = pathname.startsWith("/dashboard/integrations");
 
@@ -309,6 +313,16 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
             <MailPlus size={18} strokeWidth={2} className="flex-shrink-0" />
             {!isCollapsed && <span className="text-sm whitespace-nowrap">Pending Invites</span>}
             {pathname === '/dashboard/invites' && <ActivePageStroke />}
+          </Link>}
+          {canManagePulseCadence && <Link
+            href="/dashboard/wellbeing-pulse"
+            onClick={onClose}
+            aria-current={pathname === "/dashboard/wellbeing-pulse" ? "page" : undefined}
+            className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${isCollapsed ? 'justify-center' : ''} ${pathname === '/dashboard/wellbeing-pulse' ? 'bg-primary-5 text-primary-1 font-bold' : 'text-grey-2 font-medium hover:bg-grey-5'}`}
+          >
+            <HeartPulse size={18} strokeWidth={2} className="flex-shrink-0" />
+            {!isCollapsed && <span className="text-sm whitespace-nowrap">Pulse cadence</span>}
+            {pathname === '/dashboard/wellbeing-pulse' && <ActivePageStroke />}
           </Link>}
           <Link 
             href={scopedHref("/dashboard/settings")} 

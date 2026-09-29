@@ -120,7 +120,10 @@ function actionForRequest(path: string, method: string): string {
   if (/\/stats/.test(cleanPath)) return "load the statistics";
   if (/\/activities\/summary/.test(cleanPath)) return "load the activity summary";
   if (/\/activity-log\/trend/.test(cleanPath)) return "load the activity trend";
-  if (/\/live-pulse/.test(cleanPath)) return "load the wellbeing pulse";
+  if (/\/wellbeing-survey\/config/.test(cleanPath)) {
+    return isRead ? "load the wellbeing pulse cadence" : "save the wellbeing pulse cadence";
+  }
+  if (/\/live-pulse|\/wellbeing-survey\/pulse\/live/.test(cleanPath)) return "load the wellbeing pulse";
   if (/\/trends/.test(cleanPath)) return "load the wellbeing trends";
   if (/\/leaderboard/.test(cleanPath)) return "load the leaderboard";
 

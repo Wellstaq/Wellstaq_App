@@ -21,6 +21,8 @@ import type {
   WellbeingChallengeListResponse,
   ChallengeStatsResponse,
   LivePulseResponse,
+  WellbeingSurveyCadence,
+  WellbeingSurveyConfigResponse,
   Club,
   ClubListResponse,
   CreateClubPayload,
@@ -418,6 +420,22 @@ export const api = {
         throw err;
       }
     },
+    getWellbeingSurveyConfig: async (orgId: string): Promise<WellbeingSurveyConfigResponse | null> => {
+      try {
+        return await fromApi<WellbeingSurveyConfigResponse>(
+          `/organizations/${orgId}/wellbeing-survey/config`,
+        );
+      } catch (err) {
+        // A missing config is a valid first-time setup state.
+        if (err instanceof ApiError && err.status === 404) return null;
+        throw err;
+      }
+    },
+    updateWellbeingSurveyCadence: (orgId: string, cadence: WellbeingSurveyCadence) =>
+      fromApi<WellbeingSurveyConfigResponse>(
+        `/organizations/${orgId}/wellbeing-survey/config`,
+        { method: "PUT", body: { cadence } },
+      ),
     getEngagementWellbeingTrends: (
       orgId: string,
       period: EngagementWellbeingTrendPeriod,
