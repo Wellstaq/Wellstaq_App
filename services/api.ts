@@ -424,6 +424,7 @@ export const api = {
       try {
         return await fromApi<WellbeingSurveyConfigResponse>(
           `/organizations/${orgId}/wellbeing-survey/config`,
+          { suppressErrorNotification: true },
         );
       } catch (err) {
         // A missing config is a valid first-time setup state.

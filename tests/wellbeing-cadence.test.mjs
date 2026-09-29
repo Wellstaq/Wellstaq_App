@@ -28,7 +28,7 @@ function compile(path, imports = {}) {
   return mod.exports;
 }
 
-function apiFixture() {
+function apiFixture(requestImplementation) {
   const calls = [];
   class ApiError extends Error {
     constructor(status) {
@@ -40,7 +40,9 @@ function apiFixture() {
     "@/services/http": {
       request: (path, options) => {
         calls.push({ path, options: options ?? {} });
-        return Promise.resolve({ organizationId: "org-1", cadence: "weekly", isActive: true });
+        return requestImplementation
+          ? requestImplementation(path, options, ApiError)
+          : Promise.resolve({ organizationId: "org-1", cadence: "weekly", isActive: true });
       },
       ApiError,
     },
@@ -56,11 +58,21 @@ test("wellbeing pulse cadence uses the organization config endpoints", async () 
   await api.organization.getWellbeingSurveyConfig("org-1");
   assert.equal(calls[0].path, "/organizations/org-1/wellbeing-survey/config");
   assert.equal(calls[0].options.method, undefined);
+  assert.equal(calls[0].options.suppressErrorNotification, true);
 
   await api.organization.updateWellbeingSurveyCadence("org-1", "biweekly");
   assert.equal(calls[1].path, "/organizations/org-1/wellbeing-survey/config");
   assert.equal(calls[1].options.method, "PUT");
   assert.deepEqual(JSON.parse(JSON.stringify(calls[1].options.body)), { cadence: "biweekly" });
+});
+
+test("a missing survey configuration becomes a quiet first-time setup state", async () => {
+  const { api, calls } = apiFixture((_path, _options, ApiError) => Promise.reject(new ApiError(404)));
+
+  const config = await api.organization.getWellbeingSurveyConfig("org-1");
+
+  assert.equal(config, null);
+  assert.equal(calls[0].options.suppressErrorNotification, true);
 });
 
 test("the cadence page and navigation require organization-wide settings permission", () => {
