@@ -77,9 +77,14 @@ test("a missing survey configuration becomes a quiet first-time setup state", as
 
 test("the cadence page and navigation require organization-wide settings permission", () => {
   const page = fs.readFileSync(new URL("../app/dashboard/wellbeing-pulse/page.tsx", import.meta.url), "utf8");
+  const settings = fs.readFileSync(new URL("../app/dashboard/settings/page.tsx", import.meta.url), "utf8");
+  const cadenceSettings = fs.readFileSync(new URL("../components/dashboard/wellbeing-pulse-cadence-settings.tsx", import.meta.url), "utf8");
   const sidebar = fs.readFileSync(new URL("../components/dashboard/sidebar.tsx", import.meta.url), "utf8");
 
-  assert.match(page, /hasOrgWidePermission\(currentUser\.permissions, "org\.settings\.update"\)/);
+  assert.match(page, /WellbeingPulseCadenceSettings/);
+  assert.match(cadenceSettings, /hasOrgWidePermission\(currentUser\.permissions, "org\.settings\.update"\)/);
+  assert.match(settings, /id: "wellbeing-pulse"/);
+  assert.match(settings, /hasOrgWidePermission\(currentUser\.permissions, "org\.settings\.update"\)/);
   assert.match(sidebar, /hasOrgWidePermission\(currentUser\.permissions, "org\.settings\.update"\)/);
   assert.match(sidebar, /href="\/dashboard\/wellbeing-pulse"/);
 });

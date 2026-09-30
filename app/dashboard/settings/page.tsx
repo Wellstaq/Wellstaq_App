@@ -10,6 +10,7 @@ import {
   Lock,
   Palette,
   CreditCard,
+  HeartPulse,
   LogOut,
   Camera,
   Plus,
@@ -32,11 +33,12 @@ import { api } from "@/services/api";
 import { useDashboardData } from "@/components/providers/dashboard-data-provider";
 import { useTheme } from "@/components/providers/theme-provider";
 import type { OrganizationMemberInfo, OrganizationSubscriptionInfo, PermissionCatalogueItem, RoleItem, SecuritySessionItem, SubscriptionPlanItem, UserPermissionDetail, UserPreferences } from "@/types/api";
-import { hasPermission, readablePermission } from "@/lib/permissions";
+import { hasOrgWidePermission, hasPermission, readablePermission } from "@/lib/permissions";
 import { clearAuthTokens } from "@/services/auth-token";
 import { humanizeIdentifier } from "@/lib/format";
 import { getUserErrorMessage } from "@/lib/errors";
 import { useDashboardScope } from "@/lib/scope";
+import { WellbeingPulseCadenceSettings } from "@/components/dashboard/wellbeing-pulse-cadence-settings";
 import { FilterDropdown, type FilterDropdownOption } from "@/components/ui/filter-dropdown";
 import { SelectablePill } from "@/components/ui/selectable-pill";
 
@@ -63,6 +65,7 @@ const NAV_ITEMS = [
   { id: "notifications", label: "Notifications", sublabel: "Alerts & reminders", icon: <Bell className="w-5 h-5" /> },
   { id: "privacy", label: "Privacy", sublabel: "Data & visibility", icon: <Lock className="w-5 h-5" /> },
   { id: "appearance", label: "Appearance", sublabel: "Theme & display", icon: <Palette className="w-5 h-5" /> },
+  { id: "wellbeing-pulse", label: "Pulse cadence", sublabel: "Wellbeing prompts", icon: <HeartPulse className="w-5 h-5" /> },
   { id: "roles", label: "Roles & Permissions", sublabel: "Manage access levels", icon: <Lock className="w-5 h-5" /> },
   { id: "billing", label: "Billing", sublabel: "Plan & payments", icon: <CreditCard className="w-5 h-5" /> },
 ];
@@ -137,6 +140,7 @@ export default function SettingsPage() {
   const [memberPermissions, setMemberPermissions] = useState<UserPermissionDetail[]>([]);
   const [permissionsLoading, setPermissionsLoading] = useState(false);
   const canManageBilling = currentUser ? hasPermission(currentUser.permissions, "org.billing.manage") : false;
+  const canManagePulseCadence = currentUser ? hasOrgWidePermission(currentUser.permissions, "org.settings.update") : false;
   const canAssignRoles = currentUser ? hasPermission(currentUser.permissions, "member.role.assign") : false;
   const canRevokeRoles = currentUser ? hasPermission(currentUser.permissions, "member.role.revoke") : false;
   const canGrantPermissions = currentUser ? hasPermission(currentUser.permissions, "member.permission.grant") : false;
@@ -509,7 +513,7 @@ export default function SettingsPage() {
       <div className="flex flex-col gap-[12px] border-0 bg-transparent p-0 lg:flex-row">
         {/* Left Sidebar */}
         <div className="w-full lg:w-[280px] flex flex-col gap-2 p-3 border border-grey-4 rounded-[8px] bg-white">
-          {NAV_ITEMS.filter((item) => item.id !== "billing" || canManageBilling).map((item) => (
+          {NAV_ITEMS.filter((item) => (item.id !== "billing" || canManageBilling) && (item.id !== "wellbeing-pulse" || canManagePulseCadence)).map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
@@ -548,7 +552,8 @@ export default function SettingsPage() {
         </div>
 
         {/* Right Content */}
-        <div className="flex flex-1 flex-col rounded-[8px] border border-grey-4 bg-white p-5 pb-10">
+        <div className={activeTab === "wellbeing-pulse" ? "min-w-0 flex-1" : "flex flex-1 flex-col rounded-[8px] border border-grey-4 bg-white p-5 pb-10"}>
+          {activeTab === "wellbeing-pulse" && <WellbeingPulseCadenceSettings embedded />}
           {activeTab === "profile" && (
             <>
               <h2 className="text-[18px] font-bold text-grey-1 mb-0 leading-[32px]">Profile Information</h2>

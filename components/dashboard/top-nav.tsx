@@ -132,6 +132,7 @@ export function TopNav({ onMenuClick }: { onMenuClick?: () => void }) {
     { label: "Profile settings", href: "/dashboard/settings?tab=profile", detail: "Settings", keywords: "personal information profile photo" },
     { label: "Account security / Password", href: "/dashboard/settings?tab=account", detail: "Settings", keywords: "login password two factor sessions" },
     { label: "Notification settings", href: "/dashboard/settings?tab=notifications", detail: "Settings", keywords: "alerts reminders email push" },
+    { label: "Pulse cadence settings", href: "/dashboard/settings?tab=wellbeing-pulse", detail: "Settings", keywords: "wellbeing pulse prompt frequency weekly biweekly monthly" },
     { label: "Privacy settings", href: "/dashboard/settings?tab=privacy", detail: "Settings", keywords: "visibility data activity" },
     { label: "Appearance / Theme", href: "/dashboard/settings?tab=appearance", detail: "Settings", keywords: "display dark light mode" },
     { label: "Roles & Permissions", href: "/dashboard/settings?tab=roles", detail: "Settings", keywords: "access roles permissions" },
