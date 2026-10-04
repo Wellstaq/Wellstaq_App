@@ -62,10 +62,10 @@ const NIGERIA_STATES = [
 const NAV_ITEMS = [
   { id: "profile", label: "Profile", sublabel: "Personal information", icon: <User className="w-5 h-5" /> },
   { id: "account", label: "Account", sublabel: "Security & login", icon: <Shield className="w-5 h-5" /> },
+  { id: "wellbeing-pulse", label: "Pulse cadence", sublabel: "Wellbeing prompts", icon: <HeartPulse className="w-5 h-5" /> },
   { id: "notifications", label: "Notifications", sublabel: "Alerts & reminders", icon: <Bell className="w-5 h-5" /> },
   { id: "privacy", label: "Privacy", sublabel: "Data & visibility", icon: <Lock className="w-5 h-5" /> },
   { id: "appearance", label: "Appearance", sublabel: "Theme & display", icon: <Palette className="w-5 h-5" /> },
-  { id: "wellbeing-pulse", label: "Pulse cadence", sublabel: "Wellbeing prompts", icon: <HeartPulse className="w-5 h-5" /> },
   { id: "roles", label: "Roles & Permissions", sublabel: "Manage access levels", icon: <Lock className="w-5 h-5" /> },
   { id: "billing", label: "Billing", sublabel: "Plan & payments", icon: <CreditCard className="w-5 h-5" /> },
 ];
