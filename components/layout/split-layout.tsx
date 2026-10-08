@@ -1,60 +1,37 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 
-const IMAGES = [
-  "https://res.cloudinary.com/dv7yvatu2/image/upload/f_auto,q_auto:eco,w_1200,dpr_auto/v1773334436/sports-men-standing-white-wall_mz07zp.jpg",
-  "https://res.cloudinary.com/dv7yvatu2/image/upload/f_auto,q_auto:eco,w_1200,dpr_auto/v1773334554/diverse-young-people-holding-hands_z0tupa.jpg",
-  "https://res.cloudinary.com/dv7yvatu2/image/upload/f_auto,q_auto:eco,w_1200,dpr_auto/v1773336671/freepik__wellness-africannigeria__84223_ia4f7l.png",
-  "https://res.cloudinary.com/dv7yvatu2/image/upload/f_auto,q_auto:eco,w_1200,dpr_auto/v1773336642/freepik__wellness-africannigeria-team__84224_kdkiow.png",
-  "https://res.cloudinary.com/dv7yvatu2/image/upload/f_auto,q_auto:eco,w_1200,dpr_auto/v1773336646/freepik__wellness__84222_popnho.png"
+// Progressive blur: each layer blurs a bit more than the last and is masked to
+// a band that starts higher up, so the photo softens gradually toward the
+// bottom edge instead of hitting a hard blur line.
+const BLUR_LAYERS = [
+  { blur: 1, from: 55, to: 70 },
+  { blur: 2, from: 62, to: 80 },
+  { blur: 4, from: 70, to: 90 },
+  { blur: 8, from: 78, to: 100 },
+  { blur: 16, from: 86, to: 100 },
 ];
 
 export function SplitLayout({ children, lockContentScroll = false }: { children: React.ReactNode; lockContentScroll?: boolean }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const reducedMotion = useReducedMotion();
-
-  useEffect(() => {
-    if (reducedMotion) return;
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % IMAGES.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [reducedMotion]);
-
-  useEffect(() => {
-    const nextImage = new window.Image();
-    nextImage.src = IMAGES[(currentIndex + 1) % IMAGES.length];
-  }, [currentIndex]);
-
   return (
     <div className="flex h-dvh w-full overflow-hidden bg-white">
-      {/* Left Pane - Animated Carousel */}
-      <div className="hidden xl:flex xl:w-[60%] relative overflow-hidden items-center justify-center" suppressHydrationWarning>
-        <AnimatePresence initial={false}>
-          <motion.div
-            key={currentIndex}
-            initial={{ opacity: 0, scale: 1.05 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: reducedMotion ? 0 : 1.5, ease: "easeInOut" }}
-            className="absolute inset-0"
-            suppressHydrationWarning
-          >
-            <Image
-              src={IMAGES[currentIndex]}
-              alt="Wellness and Community"
-              fill
-              className="object-cover"
-              referrerPolicy="no-referrer"
-              priority={currentIndex === 0}
-              sizes="60vw"
-            />
-          </motion.div>
-        </AnimatePresence>
-        <div className="absolute inset-0 bg-black/30 z-10" suppressHydrationWarning />
+      {/* Left Pane - Static hero (same photo as the employee app's welcome screen) */}
+      <div className="hidden xl:flex xl:w-[60%] relative overflow-hidden items-center justify-center">
+        <Image
+          src="/assets/welcome-hero.jpg"
+          alt="Wellness and Community"
+          fill
+          className="hero-scale-in object-cover object-[center_22%]"
+          priority
+          sizes="60vw"
+        />
+        <div className="absolute inset-0 bg-black/10 z-10" />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-[45%]">
+          {BLUR_LAYERS.map(({ blur, from, to }) => {
+            const mask = `linear-gradient(to bottom, transparent ${from}%, #000 ${to}%)`;
+            return <div key={blur} className="absolute inset-0" style={{ backdropFilter: `blur(${blur}px)`, WebkitBackdropFilter: `blur(${blur}px)`, maskImage: mask, WebkitMaskImage: mask }} />;
+          })}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/25" />
+        </div>
       </div>
       {/* Right Pane - Content */}
       <div className={`relative z-20 flex min-h-0 w-full flex-col overflow-y-auto overscroll-contain xl:w-[40%] ${lockContentScroll ? "md:overflow-y-hidden [@media(max-height:640px)]:overflow-y-auto" : ""}`}>
