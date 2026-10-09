@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, LogOut, Menu, PlugZap } from "lucide-react";
+import { ChevronDown, LogOut, Menu } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { useAdmin } from "@/components/providers/admin-session";
 import { adminApi } from "@/services/admin-api";
@@ -47,13 +47,6 @@ export function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
         <button type="button" onClick={onMenuClick} aria-label="Open menu" className="rounded-lg p-2 text-grey-2 hover:bg-grey-5 lg:hidden">
           <Menu className="h-5 w-5" aria-hidden="true" />
         </button>
-        {admin.isPreview && (
-          <span className="inline-flex items-center gap-1.5 rounded-[8px] border border-info-3 bg-info-4 px-2.5 py-1 text-xs font-medium text-warning-text">
-            <PlugZap className="h-3.5 w-3.5" aria-hidden="true" />
-            <span className="hidden sm:inline">Preview mode: no backend connected</span>
-            <span className="sm:hidden">Preview mode</span>
-          </span>
-        )}
       </div>
 
       <div ref={menuRef} className="relative">

@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
-import { AlertCircle, Lock, PlugZap, RefreshCw, SearchX } from "lucide-react";
+import { AlertCircle, Lock, RefreshCw, SearchX } from "lucide-react";
 import { Button } from "@wellstaq/ui/button";
 import { cn } from "@wellstaq/ui/utils";
 import { secondaryButton } from "@/components/ui/button-styles";
@@ -49,14 +49,10 @@ function describe(error: ApiError): { icon: LucideIcon; title: string; message: 
   if (error.status === 403) {
     return { icon: Lock, title: "You don't have access", message: "Your admin role doesn't include this section. Ask a super admin if you need it." };
   }
-  if (error.code === "API_NOT_CONFIGURED" || error.code === "UPSTREAM_UNAVAILABLE" || error.status === 404 || error.status === 501) {
-    return {
-      icon: PlugZap,
-      title: "This data isn't available yet",
-      message: error.status === 404 ? "The service didn't return this section. It may not be connected yet, or the record no longer exists." : error.message,
-    };
+  if (error.status === 404) {
+    return { icon: SearchX, title: "Nothing to show", message: "This record doesn't exist or may have been removed." };
   }
-  return { icon: AlertCircle, title: "We couldn't load this", message: error.message };
+  return { icon: AlertCircle, title: "We couldn't load this", message: "Something went wrong while loading. Try again in a moment." };
 }
 
 export function ErrorPanel({ error, onRetry, className }: { error: ApiError; onRetry?: () => void; className?: string }) {

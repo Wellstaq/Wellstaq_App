@@ -26,7 +26,7 @@ Browser  →  /api/admin/*  (same-origin proxy in this app)  →  ${BACKEND_API_
 - The proxy can only reach the `/app-admin` namespace, rejects unsafe paths and cross-origin writes, and refreshes expired access tokens server side.
 - `services/admin-api.ts` lists every call. `types/admin.ts` holds every response shape.
 
-The full backend contract, written for the backend developer, is in [`docs/ADMIN_API_CONTRACT.md`](docs/ADMIN_API_CONTRACT.md). No admin endpoints exist yet except support tickets; every screen shows a clear "isn't available yet" state until its endpoint is live.
+The full backend contract, written for the backend developer, is in [`docs/ADMIN_API_CONTRACT.md`](docs/ADMIN_API_CONTRACT.md). No admin endpoints exist yet except support tickets; every screen shows its error state until its endpoint is live.
 
 ## Local development
 

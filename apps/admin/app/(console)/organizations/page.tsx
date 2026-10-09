@@ -74,7 +74,7 @@ export default function OrganizationsPage() {
 
   return (
     <>
-      <PageHeader title="Organizations" description="Every company on Wellstaq, their setup and their people. Wellbeing data is never shown here." />
+      <PageHeader title="Organizations" description="Every company on Wellstaq, their setup and their people." />
 
       <section className="rounded-[12px] border border-grey-4 bg-white p-4 sm:p-6" aria-label="Organizations">
         <Toolbar>

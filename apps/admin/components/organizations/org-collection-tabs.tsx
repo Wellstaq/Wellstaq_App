@@ -103,7 +103,6 @@ export function OrgClubsTab({ organizationId }: { organizationId: string }) {
             ))}
           </ul>
           <Pagination page={page} pageSize={GRID_PAGE_SIZE} total={clubs.data.total} noun="clubs" onPageChange={setPage} />
-          <p className="mt-4 text-xs text-grey-2">Club member lists and chats are private to the organization.</p>
         </>
       )}
     </section>
@@ -159,7 +158,6 @@ export function OrgEventsTab({ organizationId }: { organizationId: string }) {
             ))}
           </div>
           <Pagination page={page} pageSize={GRID_PAGE_SIZE} total={events.data.total} noun="events" onPageChange={setPage} />
-          <p className="mt-4 text-xs text-grey-2">Who joined and event chats stay private to the organization. Only totals are shown.</p>
         </>
       )}
     </section>

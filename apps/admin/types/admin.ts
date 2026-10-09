@@ -44,8 +44,6 @@ export interface AdminMe {
   permissions: AdminPermission[];
   avatarUrl: string | null;
   twoFaEnabled: boolean;
-  /** Set only by the local preview server; never sent by the backend. */
-  isPreview?: boolean;
 }
 
 export type LoginResult =

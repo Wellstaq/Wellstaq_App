@@ -40,7 +40,7 @@ export function previewResponse(method: string, routePath: string, search: URLSe
   if (method !== "GET") {
     return {
       status: 503,
-      body: { code: "PREVIEW_MODE", message: "Preview mode isn't connected to the backend, so changes can't be saved." },
+      body: { code: "PREVIEW_MODE", message: "Changes can't be saved right now." },
     };
   }
   if (routePath === "auth/me") {
@@ -55,7 +55,6 @@ export function previewResponse(method: string, routePath: string, search: URLSe
         permissions: ALL_PERMISSIONS,
         avatar_url: null,
         two_fa_enabled: false,
-        is_preview: true,
       },
     };
   }

@@ -130,9 +130,6 @@ export default function PlatformEventPage({ params }: { params: Promise<{ id: st
               <div><dt className="text-xs text-grey-2">Created</dt><dd className="text-grey-1">{formatDateTime(data.createdAt)}</dd></div>
               {data.updatedAt && <div><dt className="text-xs text-grey-2">Last updated</dt><dd className="text-grey-1">{formatDateTime(data.updatedAt)}</dd></div>}
             </dl>
-            <p className="mt-4 border-t border-grey-4 pt-4 text-xs leading-5 text-grey-2">
-              Participant identities and event chat stay private to attendees. Admins only see the total.
-            </p>
           </section>
         </aside>
       </div>

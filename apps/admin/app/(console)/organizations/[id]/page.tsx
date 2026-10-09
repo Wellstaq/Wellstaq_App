@@ -2,7 +2,7 @@
 
 import { Suspense, use, useState, type KeyboardEvent } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { CalendarDays, GitBranch, Layers, Lock, ShieldCheck, ShieldOff, Users, UsersRound } from "lucide-react";
+import { CalendarDays, GitBranch, Layers, ShieldCheck, ShieldOff, Users, UsersRound } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@wellstaq/ui/button";
 import { SelectablePill } from "@wellstaq/ui/selectable-pill";
@@ -125,11 +125,6 @@ function OrganizationDetail({ id }: { id: string }) {
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
         {stats.map((stat) => <StatTile key={stat.title} title={stat.title} value={formatNumber(stat.value)} icon={stat.icon} iconClassName={stat.iconClassName} />)}
       </div>
-
-      <p className="flex items-start gap-2 rounded-[12px] border border-grey-4 bg-white px-4 py-3 text-xs leading-5 text-grey-2">
-        <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-        Wellbeing scores, pulse check-ins, event attendees and messages belong to this organization and its people. They aren&apos;t available in the admin console.
-      </p>
 
       <div role="tablist" aria-label="Organization sections" onKeyDown={onTabKeyDown} className="no-scrollbar flex gap-1 overflow-x-auto border-b border-grey-4 pb-3">
         {TABS.map((item) => (
