@@ -1,7 +1,7 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
 
-const LOGO = "https://res.cloudinary.com/dv7yvatu2/image/upload/f_auto,q_auto,w_320/v1772170704/wellstaq_logo_raxmmg.png";
+const LOGO = "/assets/logo.webp";
 
 /** Split sign-in layout shared with the organization app: brand photo on the left, form on the right. */
 export function AuthCard({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
@@ -18,7 +18,7 @@ export function AuthCard({ title, description, children }: { title: string; desc
 
       <div className="flex min-h-dvh flex-1 flex-col px-6 py-8 sm:px-12">
         <div className="flex items-center gap-2.5">
-          <Image src={LOGO} alt="Wellstaq" width={124} height={34} className="h-[34px] w-auto object-contain" referrerPolicy="no-referrer" priority />
+          <Image src={LOGO} alt="Wellstaq" width={501} height={120} className="h-[34px] w-auto" priority />
           <span className="rounded-[6px] bg-grey-1 px-1.5 py-0.5 text-[11px] font-semibold leading-4 text-white">Admin</span>
         </div>
 

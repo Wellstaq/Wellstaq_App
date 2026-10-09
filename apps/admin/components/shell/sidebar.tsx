@@ -14,7 +14,7 @@ import { can, ROLE_LABELS } from "@/lib/permissions";
 import { formatNumber, fullName } from "@/lib/format";
 import type { AdminPermission } from "@/types/admin";
 
-const LOGO = "https://res.cloudinary.com/dv7yvatu2/image/upload/f_auto,q_auto,w_320/v1772170704/wellstaq_logo_raxmmg.png";
+const LOGO = "/assets/logo.webp";
 
 interface NavItem {
   name: string;
@@ -91,7 +91,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
       <div className={cn("flex h-[88px] shrink-0 items-center px-5", isCollapsed ? "justify-center px-0" : "justify-between")}>
         {!isCollapsed && (
           <Link href="/" onClick={onClose} className="flex items-center gap-2.5 rounded-sm">
-            <Image src={LOGO} alt="Wellstaq" width={118} height={32} className="h-8 w-auto object-contain" referrerPolicy="no-referrer" priority />
+            <Image src={LOGO} alt="Wellstaq" width={501} height={120} className="h-[30px] w-auto" priority />
             <span className="rounded-[6px] bg-grey-1 px-1.5 py-0.5 text-[11px] font-semibold leading-4 text-white">Admin</span>
           </Link>
         )}
