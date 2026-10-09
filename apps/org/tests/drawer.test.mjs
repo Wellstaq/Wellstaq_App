@@ -5,7 +5,7 @@ import { test } from "node:test";
 import * as jsxRuntime from "react/jsx-runtime";
 import ts from "typescript";
 
-const compiled = ts.transpileModule(fs.readFileSync(new URL("../components/ui/drawer.tsx", import.meta.url), "utf8"), {
+const compiled = ts.transpileModule(fs.readFileSync(new URL("../../../packages/ui/src/drawer.tsx", import.meta.url), "utf8"), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, target: ts.ScriptTarget.ES2020 },
 }).outputText;
 

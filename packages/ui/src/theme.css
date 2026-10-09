@@ -1,10 +1,4 @@
-/* Scan only the live UI source. This keeps archived backup copies from being
-   processed during each local development compilation. */
-@import "tailwindcss" source(none);
-@source "../app";
-@source "../components";
-@source "../design-system";
-
+/* Wellstaq design tokens and base styles shared by every web app. */
 @theme {
   --font-sans: var(--font-inter);
   --font-display: var(--font-funnel);
@@ -249,14 +243,4 @@
   .dashboard-card {
     @apply rounded-[12px] border border-grey-4 bg-white p-3;
   }
-}
-
-/* Auth hero: the photo eases in from slightly zoomed-out and settles slowly. */
-@keyframes hero-scale-in {
-  from { transform: scale(1); }
-  to { transform: scale(1.1); }
-}
-.hero-scale-in {
-  animation: hero-scale-in 14s cubic-bezier(0.4, 0, 0.2, 1) both;
-  will-change: transform;
 }

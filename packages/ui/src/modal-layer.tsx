@@ -2,7 +2,7 @@
 
 import { useEffect, useSyncExternalStore, type ComponentProps } from "react";
 import { createPortal } from "react-dom";
-import { cn } from "@/lib/utils";
+import { cn } from "./utils";
 
 const subscribe = () => () => {};
 const clientSnapshot = () => true;

@@ -7,7 +7,7 @@ import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import ts from "typescript";
 
-const source = fs.readFileSync(new URL("../components/ui/modal-layer.tsx", import.meta.url), "utf8");
+const source = fs.readFileSync(new URL("../../../packages/ui/src/modal-layer.tsx", import.meta.url), "utf8");
 const compiled = ts.transpileModule(source, {
   compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, target: ts.ScriptTarget.ES2020 },
 }).outputText;
@@ -23,7 +23,7 @@ function setup({ server = false } = {}) {
     },
     "react/jsx-runtime": jsxRuntime,
     "react-dom": { createPortal: (element, target) => ({ element, target }) },
-    "@/lib/utils": { cn: (...values) => twMerge(clsx(values)) },
+    "./utils": { cn: (...values) => twMerge(clsx(values)) },
   };
   vm.runInNewContext(compiled, {
     module: compiledModule,

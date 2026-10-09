@@ -1,4 +1,7 @@
+import path from 'node:path';
 import type {NextConfig} from 'next';
+
+const monorepoRoot = path.join(__dirname, '../..');
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -24,7 +27,9 @@ const nextConfig: NextConfig = {
     ],
   },
   output: 'standalone',
-  transpilePackages: ['motion'],
+  outputFileTracingRoot: monorepoRoot,
+  turbopack: {root: monorepoRoot},
+  transpilePackages: ['motion', '@wellstaq/ui'],
   async headers() {
     return [
       {
