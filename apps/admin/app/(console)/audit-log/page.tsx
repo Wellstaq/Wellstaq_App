@@ -53,10 +53,10 @@ export default function AuditLogPage() {
     <>
       <PageHeader title="Audit log" description="Every change made in this console: who made it, when, and why. Entries can't be edited or deleted." />
 
-      <section className="rounded-[12px] border border-grey-4 bg-white p-4 sm:p-6" aria-label="Audit log">
+      <section className="rounded-[14px] border border-line bg-white p-4 sm:p-5" aria-label="Audit log">
         <Toolbar>
           <SearchInput value={query} onChange={(value) => { setQuery(value); setPage(1); }} label="Search the audit log" placeholder="Search by admin or record" />
-          <select aria-label="Filter by record type" value={target} onChange={(event) => { setTarget(event.target.value as "all" | AuditTargetType); setPage(1); }} className="h-10 border border-grey-4 bg-white text-sm">
+          <select aria-label="Filter by record type" value={target} onChange={(event) => { setTarget(event.target.value as "all" | AuditTargetType); setPage(1); }} className="h-10 border border-line bg-white text-sm">
             {TARGETS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
           </select>
         </Toolbar>

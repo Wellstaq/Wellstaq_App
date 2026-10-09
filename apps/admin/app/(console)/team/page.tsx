@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { Suspense, useEffect, useState, type FormEvent } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ShieldCheck, Trash2, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@wellstaq/ui/button";
@@ -82,7 +83,7 @@ function InviteDrawer({ isOpen, onClose, onInvited }: { isOpen: boolean; onClose
         <fieldset className="space-y-2">
           <legend className="mb-1 text-sm font-medium text-grey-1">Role</legend>
           {ROLES.map((value) => (
-            <label key={value} className={`flex cursor-pointer items-start gap-3 rounded-[8px] border p-3 ${role === value ? "border-primary-1 bg-primary-5" : "border-grey-4 hover:bg-grey-5"}`}>
+            <label key={value} className={`flex cursor-pointer items-start gap-3 rounded-[8px] border p-3 ${role === value ? "border-primary-1 bg-primary-5" : "border-line hover:bg-grey-5"}`}>
               <input type="radio" name="admin-role" value={value} checked={role === value} onChange={() => setRole(value)} className="mt-0.5 h-4 w-4 accent-[#C45700]" />
               <span>
                 <span className="block text-sm font-medium text-grey-1">{ROLE_LABELS[value]}</span>
@@ -96,11 +97,22 @@ function InviteDrawer({ isOpen, onClose, onInvited }: { isOpen: boolean; onClose
   );
 }
 
-export default function AdminTeamPage() {
+function AdminTeamView() {
   const me = useAdmin();
   const canManage = can(me, "admins.manage");
   const [page, setPage] = useState(1);
-  const [isInviteOpen, setIsInviteOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [isInviteOpen, setIsInviteOpenState] = useState(() => canManage && searchParams.get("invite") === "1");
+  const setIsInviteOpen = (open: boolean) => {
+    setIsInviteOpenState(open);
+    if (!open && searchParams.get("invite")) router.replace(pathname, { scroll: false });
+  };
+  const requested = searchParams.get("invite") === "1";
+  useEffect(() => {
+    if (requested && canManage) setIsInviteOpenState(true);
+  }, [requested, canManage]);
   const [removing, setRemoving] = useState<AdminUser | null>(null);
   const [savingRoleId, setSavingRoleId] = useState<string | null>(null);
 
@@ -133,7 +145,7 @@ export default function AdminTeamPage() {
             value={item.role}
             disabled={savingRoleId === item.id}
             onChange={(event) => void changeRole(item, event.target.value as AdminRole)}
-            className="h-9 border border-grey-4 bg-white text-sm"
+            className="h-9 border border-line bg-white text-sm"
           >
             {ROLES.map((value) => <option key={value} value={value}>{ROLE_LABELS[value]}</option>)}
           </select>
@@ -158,7 +170,7 @@ export default function AdminTeamPage() {
     return (
       <>
         <PageHeader title="Admin team" />
-        <section className="rounded-[12px] border border-grey-4 bg-white">
+        <section className="rounded-[14px] border border-line bg-white">
           <ErrorPanel error={new ApiError("", 403, "FORBIDDEN")} />
         </section>
       </>
@@ -177,7 +189,7 @@ export default function AdminTeamPage() {
         }
       />
 
-      <section className="rounded-[12px] border border-grey-4 bg-white p-4 sm:p-6" aria-label="Admins">
+      <section className="rounded-[14px] border border-line bg-white p-4 sm:p-5" aria-label="Admins">
         {admins.isLoading && !admins.data ? (
           <TableSkeleton columns={5} rows={4} />
         ) : admins.error ? (
@@ -209,5 +221,13 @@ export default function AdminTeamPage() {
         }}
       />
     </>
+  );
+}
+
+export default function AdminTeamPage() {
+  return (
+    <Suspense>
+      <AdminTeamView />
+    </Suspense>
   );
 }

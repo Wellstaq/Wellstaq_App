@@ -27,7 +27,7 @@ export function OrgDepartmentsTab({ organizationId }: { organizationId: string }
   );
 
   return (
-    <section className="rounded-[12px] border border-grey-4 bg-white p-4 sm:p-6" aria-label="Departments">
+    <section className="rounded-[14px] border border-line bg-white p-4 sm:p-5" aria-label="Departments">
       <Toolbar>
         <SearchInput value={query} onChange={(value) => { setQuery(value); setPage(1); }} label="Search departments" placeholder="Search departments" />
       </Toolbar>
@@ -71,7 +71,7 @@ export function OrgClubsTab({ organizationId }: { organizationId: string }) {
   );
 
   return (
-    <section className="rounded-[12px] border border-grey-4 bg-white p-4 sm:p-6" aria-label="Clubs">
+    <section className="rounded-[14px] border border-line bg-white p-4 sm:p-5" aria-label="Clubs">
       <Toolbar>
         <SearchInput value={query} onChange={(value) => { setQuery(value); setPage(1); }} label="Search clubs" placeholder="Search clubs" />
       </Toolbar>
@@ -89,7 +89,7 @@ export function OrgClubsTab({ organizationId }: { organizationId: string }) {
         <>
           <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {clubs.data.items.map((club) => (
-              <li key={club.id} className="flex gap-3 rounded-[12px] border border-grey-4 p-3">
+              <li key={club.id} className="flex gap-3 rounded-[12px] border border-line p-3">
                 <span className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-grey-5 text-grey-3">
                   {club.imageUrl ? <Image src={club.imageUrl} alt="" fill sizes="64px" className="object-cover" referrerPolicy="no-referrer" /> : <UsersRound className="h-6 w-6" aria-hidden="true" />}
                 </span>
@@ -126,7 +126,7 @@ export function OrgEventsTab({ organizationId }: { organizationId: string }) {
   );
 
   return (
-    <section className="rounded-[12px] border border-grey-4 bg-white p-4 sm:p-6" aria-label="Organization events">
+    <section className="rounded-[14px] border border-line bg-white p-4 sm:p-5" aria-label="Organization events">
       <Toolbar>
         <p className="text-sm text-grey-2">{events.data ? plural(events.data.total, "event") : "Events"} created by this organization</p>
         <FilterPills label="Filter by status" options={EVENT_FILTERS} value={status} onChange={(value) => { setStatus(value); setPage(1); }} />

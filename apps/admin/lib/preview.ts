@@ -67,6 +67,7 @@ export function previewResponse(method: string, routePath: string, search: URLSe
         individuals: { total: 0, active: 0, new_this_month: 0 },
         platform_events: { upcoming: 0, total: 0 },
         support: { open: 0 },
+        signup_trend: [],
       },
     };
   }

@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Building2 } from "lucide-react";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Building2, CircleCheck, Hourglass, ShieldOff } from "lucide-react";
+import { MetricCard, MetricGrid } from "@/components/ui/metric-card";
+import { useOverview } from "@/components/providers/overview";
 import { PageHeader } from "@/components/ui/page-header";
 import { FilterPills, SearchInput, Toolbar } from "@/components/ui/toolbar";
 import { DataTable, type Column } from "@/components/ui/data-table";
@@ -53,10 +55,13 @@ const columns: Column<OrganizationSummary>[] = [
   { key: "created", header: "Joined", render: (organization) => formatDate(organization.createdAt), className: "whitespace-nowrap" },
 ];
 
-export default function OrganizationsPage() {
+function OrganizationsView() {
   const router = useRouter();
-  const [query, setQuery] = useState("");
-  const [status, setStatus] = useState<"all" | OrganizationStatus>("all");
+  const searchParams = useSearchParams();
+  const overview = useOverview().data;
+  const initialStatus = STATUS_FILTERS.find((option) => option.value === searchParams.get("status"))?.value ?? "all";
+  const [query, setQuery] = useState(searchParams.get("q") ?? "");
+  const [status, setStatus] = useState<"all" | OrganizationStatus>(initialStatus);
   const [sort, setSort] = useState(SORTS[0].value);
   const [page, setPage] = useState(1);
   const debouncedQuery = useDebouncedValue(query.trim());
@@ -71,12 +76,20 @@ export default function OrganizationsPage() {
   );
 
   const isFiltered = Boolean(debouncedQuery) || status !== "all";
+  const settingUp = overview ? Math.max(0, overview.organizations.total - overview.organizations.active - overview.organizations.suspended) : 0;
 
   return (
     <>
       <PageHeader title="Organizations" description="Every company on Wellstaq, their setup and their people." />
 
-      <section className="rounded-[12px] border border-grey-4 bg-white p-4 sm:p-6" aria-label="Organizations">
+      <MetricGrid columns={4}>
+        <MetricCard icon={Building2} label="Total" value={overview ? formatNumber(overview.organizations.total) : null} footnote={overview && `+${formatNumber(overview.organizations.newThisMonth)} this month`} footnoteTone={overview && overview.organizations.newThisMonth > 0 ? "positive" : "neutral"} />
+        <MetricCard icon={CircleCheck} label="Active" value={overview ? formatNumber(overview.organizations.active) : null} footnote={overview && share(overview.organizations.active, overview.organizations.total)} />
+        <MetricCard icon={Hourglass} label="Setting up" value={overview ? formatNumber(settingUp) : null} footnote={overview && share(settingUp, overview.organizations.total)} />
+        <MetricCard icon={ShieldOff} label="Suspended" value={overview ? formatNumber(overview.organizations.suspended) : null} footnote={overview && share(overview.organizations.suspended, overview.organizations.total)} footnoteTone={overview && overview.organizations.suspended > 0 ? "negative" : "neutral"} />
+      </MetricGrid>
+
+      <section className="rounded-[14px] border border-line bg-white p-4 sm:p-5" aria-label="Organizations">
         <Toolbar>
           <SearchInput
             value={query}
@@ -86,7 +99,7 @@ export default function OrganizationsPage() {
           />
           <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
             <FilterPills label="Filter by status" options={STATUS_FILTERS} value={status} onChange={(value) => { setStatus(value); setPage(1); }} />
-            <select aria-label="Sort organizations" value={sort} onChange={(event) => { setSort(event.target.value); setPage(1); }} className="h-9 border border-grey-4 bg-white text-xs">
+            <select aria-label="Sort organizations" value={sort} onChange={(event) => { setSort(event.target.value); setPage(1); }} className="h-9 border border-line bg-white text-xs">
               {SORTS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
             </select>
           </div>
@@ -116,5 +129,17 @@ export default function OrganizationsPage() {
         )}
       </section>
     </>
+  );
+}
+
+function share(part: number, total: number) {
+  return `${total ? Math.round((part / total) * 100) : 0}% of all organizations`;
+}
+
+export default function OrganizationsPage() {
+  return (
+    <Suspense>
+      <OrganizationsView />
+    </Suspense>
   );
 }

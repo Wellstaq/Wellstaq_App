@@ -54,7 +54,7 @@ export function OrgEmployeesTab({ organizationId, canManage }: { organizationId:
   const isFiltered = Boolean(debouncedQuery) || status !== "all";
 
   return (
-    <section className="rounded-[12px] border border-grey-4 bg-white p-4 sm:p-6" aria-label="Employees">
+    <section className="rounded-[14px] border border-line bg-white p-4 sm:p-5" aria-label="Employees">
       <Toolbar>
         <SearchInput value={query} onChange={(value) => { setQuery(value); setPage(1); }} label="Search employees" placeholder="Search by name or email" />
         <FilterPills label="Filter by status" options={STATUS_FILTERS} value={status} onChange={(value) => { setStatus(value); setPage(1); }} />

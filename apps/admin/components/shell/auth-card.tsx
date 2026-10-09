@@ -3,33 +3,45 @@ import type { ReactNode } from "react";
 
 const LOGO = "https://res.cloudinary.com/dv7yvatu2/image/upload/f_auto,q_auto,w_320/v1772170704/wellstaq_logo_raxmmg.png";
 
+/** Split sign-in layout shared with the organization app: brand photo on the left, form on the right. */
 export function AuthCard({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center bg-grey-5 px-4 py-10">
-      <div className="mb-8 flex flex-col items-center gap-2">
-        <Image src={LOGO} alt="Wellstaq" width={140} height={36} className="object-contain" referrerPolicy="no-referrer" priority />
-        <span className="rounded-[6px] border border-grey-4 bg-white px-2 py-0.5 text-xs font-semibold text-grey-2">Admin console</span>
+    <main className="flex min-h-dvh bg-white">
+      <div className="relative hidden w-[52%] overflow-hidden lg:block">
+        <Image src="/assets/welcome-hero.jpg" alt="" fill priority sizes="52vw" className="hero-scale-in object-cover object-[center_22%]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-grey-1/70 via-grey-1/10 to-transparent" aria-hidden="true" />
+        <div className="absolute inset-x-0 bottom-0 p-10 text-white xl:p-14">
+          <p className="max-w-[440px] font-sans text-[28px] font-semibold leading-9 tracking-[-0.02em]">Run Wellstaq for every organization and every member.</p>
+          <p className="mt-3 max-w-[400px] text-[15px] leading-6 text-white/80">Organizations, people, platform events and support in one place.</p>
+        </div>
       </div>
-      <div className="w-full max-w-[420px] rounded-[12px] border border-grey-4 bg-white p-6 sm:p-8">
-        <h1 className="text-2xl font-bold text-grey-1">{title}</h1>
-        {description && <p className="mt-1 text-sm leading-6 text-grey-2">{description}</p>}
-        <div className="mt-6">{children}</div>
+
+      <div className="flex min-h-dvh flex-1 flex-col px-6 py-8 sm:px-12">
+        <div className="flex items-center gap-2.5">
+          <Image src={LOGO} alt="Wellstaq" width={124} height={34} className="h-[34px] w-auto object-contain" referrerPolicy="no-referrer" priority />
+          <span className="rounded-[6px] bg-grey-1 px-1.5 py-0.5 text-[11px] font-semibold leading-4 text-white">Admin</span>
+        </div>
+
+        <div className="mx-auto flex w-full max-w-[400px] flex-1 flex-col justify-center py-12">
+          <h1 className="font-sans text-[30px] font-semibold leading-9 tracking-[-0.02em] text-grey-1">{title}</h1>
+          {description && <p className="mt-2 text-[15px] leading-6 text-grey-2">{description}</p>}
+          <div className="mt-8">{children}</div>
+        </div>
+
+        <p className="text-center text-xs leading-5 text-grey-3">For authorized Wellstaq staff only. Sign-ins and changes are recorded.</p>
       </div>
-      <p className="mt-6 max-w-[420px] text-center text-xs leading-5 text-grey-2">
-        For authorized Wellstaq staff only. Activity in this console is recorded.
-      </p>
     </main>
   );
 }
 
 export function FormAlert({ tone = "error", children }: { tone?: "error" | "info" | "success"; children: ReactNode }) {
   const styles = {
-    error: "border-error-4 bg-error-5 text-error-1",
-    info: "border-grey-4 bg-grey-5 text-grey-2",
-    success: "border-secondary-3 bg-secondary-4 text-success-1",
+    error: "bg-[#FDECEA] text-error-1",
+    info: "bg-grey-5 text-grey-2 ring-1 ring-inset ring-line",
+    success: "bg-[#EAF7EC] text-[#1C7A2E]",
   }[tone];
   return (
-    <p role={tone === "error" ? "alert" : "status"} className={`mb-5 rounded-[8px] border px-3 py-2 text-sm ${styles}`}>
+    <p role={tone === "error" ? "alert" : "status"} className={`mb-5 rounded-[10px] px-3.5 py-2.5 text-sm ${styles}`}>
       {children}
     </p>
   );

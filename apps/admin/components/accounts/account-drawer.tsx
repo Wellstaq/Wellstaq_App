@@ -59,7 +59,7 @@ export function AccountDrawer({
               </div>
             </div>
 
-            <dl className="grid grid-cols-2 gap-4 rounded-[12px] border border-grey-4 bg-grey-5 p-4">
+            <dl className="grid grid-cols-2 gap-4 rounded-[12px] border border-line bg-grey-5 p-4">
               <div>
                 <dt className="text-xs text-grey-2">Status</dt>
                 <dd className="mt-1"><StatusBadge status={account.status} /></dd>
@@ -92,7 +92,7 @@ export function AccountDrawer({
                 <p className="text-xs leading-5 text-grey-2">Every action is recorded in the audit log with your name.</p>
               </section>
             ) : (
-              <p className="rounded-[8px] border border-grey-4 bg-grey-5 p-3 text-xs leading-5 text-grey-2">Your role can view this account but can&apos;t change it.</p>
+              <p className="rounded-[8px] border border-line bg-grey-5 p-3 text-xs leading-5 text-grey-2">Your role can view this account but can&apos;t change it.</p>
             )}
           </div>
         )}

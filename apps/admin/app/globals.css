@@ -15,4 +15,15 @@
 @theme {
   /* Readable dark orange for text on light orange tints (AA on primary-5 and info-4). */
   --color-warning-text: #9A4500;
+  /* Hairline used by cards, tables and dividers in the console. */
+  --color-line: #ECECEC;
+}
+
+/* Sign-in photo eases in slowly, same as the organization app. */
+@keyframes hero-scale-in {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+.hero-scale-in {
+  animation: hero-scale-in 14s cubic-bezier(0.4, 0, 0.2, 1) both;
 }

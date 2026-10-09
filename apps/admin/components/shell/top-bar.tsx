@@ -1,35 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { ChevronDown, LogOut, Menu } from "lucide-react";
-import { Avatar } from "@/components/ui/avatar";
-import { useAdmin } from "@/components/providers/admin-session";
+import { useState } from "react";
+import { LogOut, Menu } from "lucide-react";
+import { CommandSearch } from "@/components/shell/command-search";
 import { adminApi } from "@/services/admin-api";
-import { fullName } from "@/lib/format";
-import { ROLE_LABELS } from "@/lib/permissions";
+
+const dateFormatter = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
 export function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
-  const admin = useAdmin();
-  const name = fullName(admin);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!isMenuOpen) return;
-    const onPointerDown = (event: PointerEvent) => {
-      if (!menuRef.current?.contains(event.target as Node)) setIsMenuOpen(false);
-    };
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setIsMenuOpen(false);
-    };
-    document.addEventListener("pointerdown", onPointerDown);
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("pointerdown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [isMenuOpen]);
+  const [today] = useState(() => dateFormatter.format(new Date()));
 
   const signOut = async () => {
     setIsSigningOut(true);
@@ -42,47 +22,23 @@ export function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
   };
 
   return (
-    <header className="relative z-30 flex h-[72px] shrink-0 items-center justify-between gap-3 border-b border-grey-4 bg-white px-4 lg:px-5">
-      <div className="flex min-w-0 items-center gap-2">
-        <button type="button" onClick={onMenuClick} aria-label="Open menu" className="rounded-lg p-2 text-grey-2 hover:bg-grey-5 lg:hidden">
-          <Menu className="h-5 w-5" aria-hidden="true" />
-        </button>
+    <header className="relative z-30 flex h-[88px] shrink-0 items-center gap-4 border-b border-line bg-white px-4 lg:px-8">
+      <button type="button" onClick={onMenuClick} aria-label="Open menu" className="flex h-10 w-10 items-center justify-center rounded-[10px] text-grey-2 hover:bg-grey-5 lg:hidden">
+        <Menu className="h-5 w-5" strokeWidth={1.7} aria-hidden="true" />
+      </button>
+      <p className="hidden min-w-0 shrink-0 truncate text-[15px] font-medium text-grey-1 xl:block" suppressHydrationWarning>{today}</p>
+      <div className="flex flex-1 justify-end md:justify-center">
+        <CommandSearch />
       </div>
-
-      <div ref={menuRef} className="relative">
-        <button
-          type="button"
-          onClick={() => setIsMenuOpen((value) => !value)}
-          aria-expanded={isMenuOpen}
-          aria-haspopup="menu"
-          className="flex items-center gap-3 rounded-[10px] px-2 py-1.5 text-left hover:bg-grey-5"
-        >
-          <Avatar name={name} src={admin.avatarUrl} size={36} />
-          <span className="hidden min-w-0 sm:block">
-            <span className="block max-w-[180px] truncate text-sm font-semibold text-grey-1">{name}</span>
-            <span className="block text-xs text-grey-2">{ROLE_LABELS[admin.role] ?? admin.role}</span>
-          </span>
-          <ChevronDown className="h-4 w-4 text-grey-2" aria-hidden="true" />
-        </button>
-        {isMenuOpen && (
-          <div role="menu" className="absolute right-0 top-full mt-2 w-64 overflow-hidden rounded-[10px] border border-grey-4 bg-white py-1 shadow-lg">
-            <div className="border-b border-grey-4 px-4 py-3">
-              <p className="truncate text-sm font-semibold text-grey-1">{name}</p>
-              <p className="truncate text-xs text-grey-2">{admin.email}</p>
-            </div>
-            <button
-              type="button"
-              role="menuitem"
-              onClick={signOut}
-              disabled={isSigningOut}
-              className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm font-medium text-error-1 hover:bg-error-5 disabled:opacity-60"
-            >
-              <LogOut className="h-4 w-4" aria-hidden="true" />
-              {isSigningOut ? "Signing out..." : "Sign out"}
-            </button>
-          </div>
-        )}
-      </div>
+      <button
+        type="button"
+        onClick={signOut}
+        disabled={isSigningOut}
+        className="flex h-10 shrink-0 items-center gap-2 rounded-[10px] px-3 text-[15px] font-medium text-error-1 transition-colors hover:bg-error-5 disabled:opacity-60"
+      >
+        <LogOut className="h-5 w-5" strokeWidth={1.7} aria-hidden="true" />
+        <span className="hidden sm:inline">{isSigningOut ? "Logging out..." : "Log out"}</span>
+      </button>
     </header>
   );
 }

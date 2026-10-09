@@ -98,9 +98,14 @@ Login errors the console reads: `401` wrong credentials, `403` account isn't an 
   "employees": { "total": 0 },
   "individuals": { "total": 0, "active": 0, "new_this_month": 0 },
   "platform_events": { "upcoming": 0, "total": 0 },
-  "support": { "open": 0 }
+  "support": { "open": 0 },
+  "signup_trend": [
+    { "date": "2026-09-10", "organizations": 1, "individuals": 14, "employees": 32 }
+  ]
 }
 ```
+
+`signup_trend` holds one entry per calendar day for the last 30 days (oldest first, days with no sign-ups included as zeros). `employees` counts employees who accepted an invite that day. It powers the overview chart; until it ships, the chart shows an empty state.
 
 ## 6. Organizations
 

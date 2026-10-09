@@ -69,7 +69,7 @@ export default function SupportPage() {
     <>
       <PageHeader title="Support" description="Messages people send from Contact Support in the Wellstaq apps." />
 
-      <section className="rounded-[12px] border border-grey-4 bg-white p-4 sm:p-6" aria-label="Support tickets">
+      <section className="rounded-[14px] border border-line bg-white p-4 sm:p-5" aria-label="Support tickets">
         <Toolbar>
           <p className="text-sm text-grey-2">{tickets.data ? `${tickets.data.total} ${tickets.data.total === 1 ? "ticket" : "tickets"}` : "Tickets"}</p>
           <FilterPills label="Filter by status" options={FILTERS} value={status} onChange={(value) => { setStatus(value); setPage(1); }} />
@@ -104,7 +104,7 @@ export default function SupportPage() {
               <h3 className="break-words font-sans text-lg font-semibold text-grey-1">{selected.subject}</h3>
               <PersonCell name={selected.name} detail={selected.email} />
             </div>
-            <p className="whitespace-pre-line rounded-[12px] border border-grey-4 bg-grey-5 p-4 text-sm leading-6 text-grey-1">{selected.message}</p>
+            <p className="whitespace-pre-line rounded-[12px] border border-line bg-grey-5 p-4 text-sm leading-6 text-grey-1">{selected.message}</p>
             <dl className="space-y-3 text-sm">
               <div>
                 <dt className="text-xs text-grey-2">Organization</dt>
@@ -114,14 +114,14 @@ export default function SupportPage() {
             <div className="space-y-2">
               <Label htmlFor="ticket-status" className="text-sm font-medium text-grey-1">Status</Label>
               {canManage ? (
-                <select id="ticket-status" value={selected.status} disabled={isSaving} onChange={(event) => void changeStatus(selected, event.target.value as TicketStatus)} className="h-11 w-full border border-grey-4 bg-white text-sm">
+                <select id="ticket-status" value={selected.status} disabled={isSaving} onChange={(event) => void changeStatus(selected, event.target.value as TicketStatus)} className="h-11 w-full border border-line bg-white text-sm">
                   {STATUS_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                 </select>
               ) : (
                 <div><StatusBadge status={selected.status} /></div>
               )}
             </div>
-            <a href={`mailto:${selected.email}?subject=${encodeURIComponent(`Re: ${selected.subject}`)}`} className="inline-flex h-10 items-center gap-2 rounded-[12px] border border-grey-4 px-4 text-sm font-medium text-grey-1 hover:bg-grey-5">
+            <a href={`mailto:${selected.email}?subject=${encodeURIComponent(`Re: ${selected.subject}`)}`} className="inline-flex h-10 items-center gap-2 rounded-[12px] border border-line px-4 text-sm font-medium text-grey-1 hover:bg-grey-5">
               <Mail className="h-4 w-4" aria-hidden="true" /> Reply by email
             </a>
           </div>

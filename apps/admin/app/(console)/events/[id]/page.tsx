@@ -35,7 +35,7 @@ export default function PlatformEventPage({ params }: { params: Promise<{ id: st
     return (
       <>
         <BackLink href="/events">Back to events</BackLink>
-        <section className="rounded-[12px] border border-grey-4 bg-white">
+        <section className="rounded-[14px] border border-line bg-white">
           {event.error && <ErrorPanel error={event.error} onRetry={event.reload} />}
         </section>
       </>
@@ -51,7 +51,7 @@ export default function PlatformEventPage({ params }: { params: Promise<{ id: st
       <BackLink href="/events">Back to events</BackLink>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <article className="overflow-hidden rounded-[12px] border border-grey-4 bg-white lg:col-span-2">
+        <article className="overflow-hidden rounded-[14px] border border-line bg-white lg:col-span-2">
           <div className="relative h-[220px] w-full bg-grey-4 sm:h-[300px]">
             {data.imageUrl ? (
               <Image src={data.imageUrl} alt="" fill sizes="(min-width: 1024px) 66vw, 100vw" className="object-cover" referrerPolicy="no-referrer" priority />
@@ -84,7 +84,7 @@ export default function PlatformEventPage({ params }: { params: Promise<{ id: st
               )}
             </div>
 
-            <dl className="grid grid-cols-1 gap-4 rounded-[12px] border border-grey-4 bg-grey-5 p-4 text-sm sm:grid-cols-3">
+            <dl className="grid grid-cols-1 gap-4 rounded-[12px] border border-line bg-grey-5 p-4 text-sm sm:grid-cols-3">
               <div className="flex items-start gap-2">
                 <Calendar className="mt-0.5 h-4 w-4 text-grey-2" aria-hidden="true" />
                 <div><dt className="text-xs text-grey-2">Date</dt><dd className="font-medium text-grey-1">{formatDate(data.startDate)}{data.endDate && data.endDate !== data.startDate ? ` to ${formatDate(data.endDate)}` : ""}</dd></div>
@@ -114,7 +114,7 @@ export default function PlatformEventPage({ params }: { params: Promise<{ id: st
             <p className="text-sm font-medium text-grey-1">{audience?.label ?? "Unknown audience"}</p>
             <p className="mt-1 text-xs leading-5 text-grey-2">{audience?.description}</p>
             {data.audience === "selected_organizations" && data.organizations.length > 0 && (
-              <ul className="mt-4 space-y-1.5 border-t border-grey-4 pt-4">
+              <ul className="mt-4 space-y-1.5 border-t border-line pt-4">
                 {data.organizations.map((organization) => (
                   <li key={organization.id}>
                     <Link href={`/organizations/${organization.id}`} className="text-sm text-grey-1 hover:text-primary-hover hover:underline">{organization.name}</Link>

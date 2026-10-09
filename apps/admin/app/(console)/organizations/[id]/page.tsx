@@ -5,11 +5,10 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { CalendarDays, GitBranch, Layers, ShieldCheck, ShieldOff, Users, UsersRound } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@wellstaq/ui/button";
-import { SelectablePill } from "@wellstaq/ui/selectable-pill";
 import { BackLink } from "@/components/ui/back-link";
 import { Avatar } from "@/components/ui/avatar";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { StatTile } from "@/components/ui/stat-tile";
+import { MetricCard, MetricGrid } from "@/components/ui/metric-card";
 import { ErrorPanel } from "@/components/ui/states";
 import { DetailSkeleton } from "@/components/ui/skeletons";
 import { ActionDialog } from "@/components/ui/action-dialog";
@@ -65,7 +64,7 @@ function OrganizationDetail({ id }: { id: string }) {
     return (
       <>
         <BackLink href="/organizations">Back to organizations</BackLink>
-        <section className="rounded-[12px] border border-grey-4 bg-white">
+        <section className="rounded-[14px] border border-line bg-white">
           {organization.error && <ErrorPanel error={organization.error} onRetry={organization.reload} />}
         </section>
       </>
@@ -75,23 +74,23 @@ function OrganizationDetail({ id }: { id: string }) {
   const data = organization.data;
   const isSuspended = data.status === "suspended";
   const stats = [
-    { title: "Employees", value: data.counts.employees, icon: <Users className="h-5 w-5" />, iconClassName: "bg-primary-5 text-primary-hover" },
-    { title: "Branches", value: data.counts.branches, icon: <GitBranch className="h-5 w-5" />, iconClassName: "bg-secondary-4 text-success-1" },
-    { title: "Departments", value: data.counts.departments, icon: <Layers className="h-5 w-5" />, iconClassName: "bg-info-4 text-warning-text" },
-    { title: "Clubs", value: data.counts.clubs, icon: <UsersRound className="h-5 w-5" />, iconClassName: "bg-grey-5 text-grey-1" },
-    { title: "Events created", value: data.counts.events, icon: <CalendarDays className="h-5 w-5" />, iconClassName: "bg-primary-5 text-primary-hover" },
+    { label: "Employees", value: data.counts.employees, icon: Users, footnote: `In ${data.counts.branches === 1 ? "1 branch" : `${formatNumber(data.counts.branches)} branches`}` },
+    { label: "Branches", value: data.counts.branches, icon: GitBranch, footnote: data.city ?? data.country ?? "Location not set" },
+    { label: "Departments", value: data.counts.departments, icon: Layers, footnote: "Across all branches" },
+    { label: "Clubs", value: data.counts.clubs, icon: UsersRound, footnote: "Run by members" },
+    { label: "Events created", value: data.counts.events, icon: CalendarDays, footnote: "By the organization" },
   ];
 
   return (
     <>
       <BackLink href="/organizations">Back to organizations</BackLink>
 
-      <header className="flex flex-col gap-4 rounded-[12px] border border-grey-4 bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
+      <header className="flex flex-col gap-4 rounded-[14px] border border-line bg-white p-5 sm:p-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-center gap-4">
-          <Avatar name={data.name} src={data.logoUrl} size={56} square />
+          <Avatar name={data.name} src={data.logoUrl} size={64} square />
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="page-title break-words">{data.name}</h1>
+              <h1 className="break-words font-sans text-[24px] font-semibold leading-8 tracking-[-0.02em] text-grey-1">{data.name}</h1>
               <StatusBadge status={data.status} />
             </div>
             <p className="mt-0.5 text-sm text-grey-2">
@@ -115,34 +114,32 @@ function OrganizationDetail({ id }: { id: string }) {
       </header>
 
       {isSuspended && (
-        <div role="status" className="rounded-[12px] border border-error-4 bg-error-5 p-4 text-sm text-error-1">
+        <div role="status" className="rounded-[14px] border border-error-4 bg-error-5 p-4 text-sm text-error-1">
           <p className="font-semibold">Suspended {data.suspendedAt ? `on ${formatDateTime(data.suspendedAt)}` : ""}</p>
           {data.suspensionReason && <p className="mt-1 text-grey-1">Reason: {data.suspensionReason}</p>}
           <p className="mt-1 text-grey-2">No one in this organization can sign in until it is reactivated.</p>
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
-        {stats.map((stat) => <StatTile key={stat.title} title={stat.title} value={formatNumber(stat.value)} icon={stat.icon} iconClassName={stat.iconClassName} />)}
-      </div>
+      <MetricGrid>
+        {stats.map((stat) => <MetricCard key={stat.label} icon={stat.icon} label={stat.label} value={formatNumber(stat.value)} footnote={stat.footnote} />)}
+      </MetricGrid>
 
-      <div role="tablist" aria-label="Organization sections" onKeyDown={onTabKeyDown} className="no-scrollbar flex gap-1 overflow-x-auto border-b border-grey-4 pb-3">
+      <div role="tablist" aria-label="Organization sections" onKeyDown={onTabKeyDown} className="no-scrollbar -mb-2 flex gap-6 overflow-x-auto border-b border-line">
         {TABS.map((item) => (
-          <SelectablePill
+          <button
             key={item.value}
+            type="button"
             role="tab"
             id={`org-tab-${item.value}`}
             aria-controls="org-tab-panel"
             aria-selected={tab === item.value}
-            aria-pressed={undefined}
             tabIndex={tab === item.value ? 0 : -1}
-            selected={tab === item.value}
-            appearance="plain"
             onClick={() => selectTab(item.value)}
-            className="min-h-9 whitespace-nowrap px-3 sm:text-sm"
+            className={`relative h-11 whitespace-nowrap text-[15px] transition-colors ${tab === item.value ? "font-medium text-grey-1 after:absolute after:inset-x-0 after:-bottom-px after:h-[2px] after:rounded-full after:bg-primary-1" : "text-grey-3 hover:text-grey-1"}`}
           >
             {item.label}
-          </SelectablePill>
+          </button>
         ))}
       </div>
 

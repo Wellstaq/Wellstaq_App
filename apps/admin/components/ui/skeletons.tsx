@@ -3,11 +3,11 @@ import { Skeleton } from "@wellstaq/ui/skeleton";
 export function TableSkeleton({ rows = 6, columns = 5 }: { rows?: number; columns?: number }) {
   return (
     <div aria-busy="true" aria-label="Loading" className="flex flex-col">
-      <div className="hidden gap-4 border-b border-grey-4 px-4 py-3 md:grid" style={{ gridTemplateColumns: `2fr repeat(${columns - 1}, 1fr)` }}>
+      <div className="hidden gap-4 border-b border-line px-4 py-3 md:grid" style={{ gridTemplateColumns: `2fr repeat(${columns - 1}, 1fr)` }}>
         {Array.from({ length: columns }).map((_, index) => <Skeleton key={index} className="h-3 w-20" />)}
       </div>
       {Array.from({ length: rows }).map((_, row) => (
-        <div key={row} className="grid grid-cols-1 gap-3 border-b border-grey-4 px-4 py-4 last:border-b-0 md:gap-4">
+        <div key={row} className="grid grid-cols-1 gap-3 border-b border-line px-4 py-4 last:border-b-0 md:gap-4">
           <div className="flex items-center gap-3 md:hidden">
             <Skeleton className="h-9 w-9 rounded-full" />
             <div className="flex-1 space-y-2"><Skeleton className="h-3.5 w-2/5" /><Skeleton className="h-3 w-3/5" /></div>
@@ -19,20 +19,6 @@ export function TableSkeleton({ rows = 6, columns = 5 }: { rows?: number; column
         </div>
       ))}
     </div>
-  );
-}
-
-export function StatTilesSkeleton({ count = 4 }: { count?: number }) {
-  return (
-    <>
-      {Array.from({ length: count }).map((_, index) => (
-        <div key={index} className="dashboard-card" aria-hidden="true">
-          <Skeleton className="mb-4 h-10 w-10 rounded-xl" />
-          <Skeleton className="mb-2 h-3 w-24" />
-          <Skeleton className="h-6 w-14" />
-        </div>
-      ))}
-    </>
   );
 }
 

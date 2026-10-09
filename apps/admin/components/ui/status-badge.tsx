@@ -1,22 +1,22 @@
 import { cn } from "@wellstaq/ui/utils";
 import { humanize } from "@/lib/format";
 
-type Tone = "positive" | "attention" | "brand" | "critical" | "neutral";
+type Tone = "positive" | "attention" | "info" | "critical" | "neutral";
 
 const TONES: Record<Tone, string> = {
-  positive: "border-secondary-3 bg-secondary-4 text-success-1",
-  attention: "border-info-3 bg-info-4 text-warning-text",
-  brand: "border-primary-border bg-primary-5 text-warning-text",
-  critical: "border-error-4 bg-error-5 text-error-1",
-  neutral: "border-grey-4 bg-grey-5 text-grey-2",
+  positive: "bg-[#EAF7EC] text-[#1C7A2E]",
+  attention: "bg-[#FFF3E5] text-warning-text",
+  info: "bg-[#EAF1FB] text-[#2459A6]",
+  critical: "bg-[#FDECEA] text-error-1",
+  neutral: "bg-grey-5 text-grey-2 ring-1 ring-inset ring-line",
 };
 
 const STATUS_TONES: Record<string, Tone> = {
   active: "positive",
   ongoing: "positive",
   resolved: "positive",
-  scheduled: "brand",
-  in_progress: "brand",
+  scheduled: "info",
+  in_progress: "info",
   invited: "attention",
   open: "attention",
   pending_setup: "attention",
@@ -40,7 +40,7 @@ const LABELS: Record<string, string> = {
 export function StatusBadge({ status, className }: { status: string; className?: string }) {
   const tone = STATUS_TONES[status] ?? "neutral";
   return (
-    <span className={cn("inline-flex items-center whitespace-nowrap rounded-[6px] border px-2 py-0.5 text-xs font-medium leading-5", TONES[tone], className)}>
+    <span className={cn("inline-flex items-center whitespace-nowrap rounded-[6px] px-2 py-[3px] text-xs font-semibold leading-4", TONES[tone], className)}>
       {LABELS[status] ?? humanize(status, "Unknown")}
     </span>
   );

@@ -53,7 +53,7 @@ export function EventCard({ title, imageUrl, startDate, time, status, participan
 
   const className = "flex h-[236px] flex-col gap-2 overflow-hidden rounded-lg border border-[#F0F0F0] bg-grey-5 p-2";
   return href ? (
-    <Link href={href} className={`${className} transition-colors hover:border-grey-4 hover:bg-white focus-visible:bg-white`}>
+    <Link href={href} className={`${className} transition-colors hover:border-line hover:bg-white focus-visible:bg-white`}>
       {content}
     </Link>
   ) : (

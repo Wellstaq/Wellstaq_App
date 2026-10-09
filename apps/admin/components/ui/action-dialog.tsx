@@ -78,7 +78,7 @@ export function ActionDialog({ isOpen, onClose, title, description, confirmLabel
             maxLength={500}
             rows={3}
             aria-describedby={`${reasonId}-help`}
-            className="w-full resize-none rounded-[8px] border border-grey-4 bg-white p-3 text-sm text-grey-1 focus:border-primary-1 focus:outline-none focus:ring-2 focus:ring-primary-1/20"
+            className="w-full resize-none rounded-[8px] border border-line bg-white p-3 text-sm text-grey-1 focus:border-primary-1 focus:outline-none focus:ring-2 focus:ring-primary-1/20"
           />
           <p id={`${reasonId}-help`} className="text-xs text-grey-2">
             Saved to the audit log. At least {MIN_REASON_LENGTH} characters.

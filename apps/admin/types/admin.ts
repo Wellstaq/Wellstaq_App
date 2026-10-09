@@ -56,6 +56,15 @@ export interface PlatformOverview {
   individuals: { total: number; active: number; newThisMonth: number };
   platformEvents: { upcoming: number; total: number };
   support: { open: number };
+  /** One entry per day for the last 30 days, oldest first. Optional until the backend ships it. */
+  signupTrend?: SignupTrendPoint[];
+}
+
+export interface SignupTrendPoint {
+  date: string;
+  organizations: number;
+  individuals: number;
+  employees: number;
 }
 
 export type OrganizationStatus = "active" | "suspended" | "pending_setup";

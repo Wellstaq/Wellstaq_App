@@ -6,7 +6,7 @@ import { AlertCircle, RefreshCw } from "lucide-react";
 export default function RouteError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
     <main className="flex min-h-[70vh] items-center justify-center px-6 py-12">
-      <div role="alert" className="w-full max-w-md rounded-[12px] border border-grey-4 bg-white p-8 text-center">
+      <div role="alert" className="w-full max-w-md rounded-[14px] border border-line bg-white p-8 text-center">
         <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-error-5 text-error-1" aria-hidden="true">
           <AlertCircle className="h-6 w-6" />
         </span>
@@ -17,7 +17,7 @@ export default function RouteError({ reset }: { error: Error & { digest?: string
             <RefreshCw className="h-4 w-4" aria-hidden="true" />
             Try again
           </button>
-          <Link href="/" className="inline-flex h-10 items-center justify-center rounded-[12px] border border-grey-4 px-6 text-sm font-medium text-grey-1 hover:bg-grey-5">
+          <Link href="/" className="inline-flex h-10 items-center justify-center rounded-[12px] border border-line px-6 text-sm font-medium text-grey-1 hover:bg-grey-5">
             Go to overview
           </Link>
         </div>

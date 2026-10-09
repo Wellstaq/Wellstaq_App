@@ -32,8 +32,8 @@ export function OrgOverviewTab({ organization }: { organization: OrganizationDet
 
   return (
     <div className="grid grid-cols-1 gap-5 xl:grid-cols-5">
-      <section className="rounded-[12px] border border-grey-4 bg-white p-5 xl:col-span-2" aria-labelledby="org-profile-title">
-        <h2 id="org-profile-title" className="mb-4 font-sans text-base font-semibold text-grey-1">Company profile</h2>
+      <section className="rounded-[14px] border border-line bg-white p-5 xl:col-span-2" aria-labelledby="org-profile-title">
+        <h2 id="org-profile-title" className="mb-4 font-sans text-[17px] font-semibold text-grey-1">Company profile</h2>
         <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Industry" value={humanize(organization.industry)} />
           <Field label="Company size" value={organization.sizeRange ?? "Not set"} />
@@ -49,7 +49,7 @@ export function OrgOverviewTab({ organization }: { organization: OrganizationDet
             />
           </div>
         </dl>
-        <h3 className="mb-3 mt-6 border-t border-grey-4 pt-5 font-sans text-sm font-semibold text-grey-1">Account</h3>
+        <h3 className="mb-3 mt-6 border-t border-line pt-5 font-sans text-sm font-semibold text-grey-1">Account</h3>
         <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Owner" value={organization.owner ? `${organization.owner.name}` : "Not set"} />
           <Field label="Owner email" value={organization.owner?.email ?? "Not set"} />
@@ -59,8 +59,8 @@ export function OrgOverviewTab({ organization }: { organization: OrganizationDet
         </dl>
       </section>
 
-      <section className="rounded-[12px] border border-grey-4 bg-white p-5 xl:col-span-3" aria-labelledby="org-branches-title">
-        <h2 id="org-branches-title" className="mb-4 font-sans text-base font-semibold text-grey-1">Branches</h2>
+      <section className="rounded-[14px] border border-line bg-white p-5 xl:col-span-3" aria-labelledby="org-branches-title">
+        <h2 id="org-branches-title" className="mb-4 font-sans text-[17px] font-semibold text-grey-1">Branches</h2>
         {branches.isLoading && !branches.data ? (
           <TableSkeleton rows={3} columns={4} />
         ) : branches.error ? (

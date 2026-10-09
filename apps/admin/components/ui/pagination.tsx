@@ -36,7 +36,7 @@ export function Pagination({
   const to = Math.min(page * pageSize, total);
 
   return (
-    <nav aria-label={`${noun} pages`} className="mt-4 flex flex-col items-center justify-between gap-3 border-t border-grey-4 pt-4 sm:flex-row">
+    <nav aria-label={`${noun} pages`} className="mt-4 flex flex-col items-center justify-between gap-3 border-t border-line pt-4 sm:flex-row">
       <p className="text-sm text-grey-2">
         Showing {formatNumber(from)}-{formatNumber(to)} of {formatNumber(total)} {noun}
       </p>

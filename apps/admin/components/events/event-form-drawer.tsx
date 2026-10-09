@@ -223,7 +223,7 @@ export function EventFormDrawer({
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor={fieldId("timezone")} className="text-sm font-medium text-grey-1">Time zone</Label>
-            <select id={fieldId("timezone")} value={form.timezone} onChange={(e) => update("timezone", e.target.value)} className="h-12 w-full border border-grey-4 bg-white text-sm">
+            <select id={fieldId("timezone")} value={form.timezone} onChange={(e) => update("timezone", e.target.value)} className="h-12 w-full border border-line bg-white text-sm">
               {zones.map((zone) => <option key={zone} value={zone}>{zone.replace(/_/g, " ")}</option>)}
             </select>
           </div>
@@ -242,7 +242,7 @@ export function EventFormDrawer({
             maxLength={MAX_DESCRIPTION}
             onChange={(e) => update("description", e.target.value)}
             aria-describedby={`${fieldId("description")}-help`}
-            className="min-h-[100px] w-full resize-none rounded-[8px] border border-grey-4 bg-white p-4 text-sm text-grey-1 focus:border-primary-1 focus:outline-none focus:ring-2 focus:ring-primary-1/20"
+            className="min-h-[100px] w-full resize-none rounded-[8px] border border-line bg-white p-4 text-sm text-grey-1 focus:border-primary-1 focus:outline-none focus:ring-2 focus:ring-primary-1/20"
           />
           <p id={`${fieldId("description")}-help`} className="text-right text-xs text-grey-2">{form.description.length}/{MAX_DESCRIPTION}</p>
         </div>
@@ -250,7 +250,7 @@ export function EventFormDrawer({
         <div className="space-y-2">
           <Label htmlFor={fieldId("image")} className="text-sm font-medium text-grey-1">Event image (optional)</Label>
           {imagePreview ? (
-            <div className="relative h-[140px] w-full overflow-hidden rounded-[8px] border border-grey-4 bg-grey-5">
+            <div className="relative h-[140px] w-full overflow-hidden rounded-[8px] border border-line bg-grey-5">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={imagePreview} alt="Event image preview" className="h-full w-full object-cover" />
               {isUploadingImage && (
@@ -263,7 +263,7 @@ export function EventFormDrawer({
               </button>
             </div>
           ) : (
-            <label htmlFor={fieldId("image")} className="flex h-[100px] w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-[8px] border border-dashed border-grey-4 bg-grey-5 text-grey-2 hover:border-primary-1 hover:text-primary-hover focus-within:ring-2 focus-within:ring-primary-1/30">
+            <label htmlFor={fieldId("image")} className="flex h-[100px] w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-[8px] border border-dashed border-line bg-grey-5 text-grey-2 hover:border-primary-1 hover:text-primary-hover focus-within:ring-2 focus-within:ring-primary-1/30">
               <ImagePlus className="h-5 w-5" aria-hidden="true" />
               <span className="text-xs">Upload an image (PNG or JPG, up to 5 MB)</span>
               <input id={fieldId("image")} type="file" accept="image/*" className="sr-only" onChange={(e) => void handleImageSelect(e.currentTarget)} />
@@ -277,7 +277,7 @@ export function EventFormDrawer({
             {AUDIENCE_OPTIONS.map((option) => {
               const selected = form.audience === option.value;
               return (
-                <label key={option.value} className={cn("flex cursor-pointer items-start gap-3 rounded-[8px] border p-3 transition-colors", selected ? "border-primary-1 bg-primary-5" : "border-grey-4 bg-white hover:bg-grey-5")}>
+                <label key={option.value} className={cn("flex cursor-pointer items-start gap-3 rounded-[8px] border p-3 transition-colors", selected ? "border-primary-1 bg-primary-5" : "border-line bg-white hover:bg-grey-5")}>
                   <input type="radio" name="audience" value={option.value} checked={selected} onChange={() => update("audience", option.value)} className="mt-0.5 h-4 w-4 accent-[#C45700]" />
                   <span>
                     <span className="block text-sm font-medium text-grey-1">{option.label}</span>

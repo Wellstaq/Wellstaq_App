@@ -5,49 +5,57 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
-import { Building2, CalendarDays, LayoutGrid, LifeBuoy, PanelLeftClose, PanelLeftOpen, ScrollText, ShieldCheck, UserRound, X } from "lucide-react";
+import { Building2, CalendarDays, Inbox, LayoutDashboard, PanelLeftClose, PanelLeftOpen, ScrollText, ShieldCheck, UserRound, X } from "lucide-react";
 import { cn } from "@wellstaq/ui/utils";
+import { Avatar } from "@/components/ui/avatar";
 import { useAdmin } from "@/components/providers/admin-session";
-import { can } from "@/lib/permissions";
+import { useOverview } from "@/components/providers/overview";
+import { can, ROLE_LABELS } from "@/lib/permissions";
+import { formatNumber, fullName } from "@/lib/format";
 import type { AdminPermission } from "@/types/admin";
 
-const LOGO = "https://res.cloudinary.com/dv7yvatu2/image/upload/v1772170704/wellstaq_logo_raxmmg.png";
+const LOGO = "https://res.cloudinary.com/dv7yvatu2/image/upload/f_auto,q_auto,w_320/v1772170704/wellstaq_logo_raxmmg.png";
 
 interface NavItem {
   name: string;
   href: string;
   icon: LucideIcon;
   permission?: AdminPermission;
+  badge?: "support";
 }
 
-const MAIN_NAV: NavItem[] = [
-  { name: "Overview", href: "/", icon: LayoutGrid },
-  { name: "Organizations", href: "/organizations", icon: Building2, permission: "organizations.read" },
-  { name: "Individuals", href: "/individuals", icon: UserRound, permission: "individuals.read" },
-  { name: "Events", href: "/events", icon: CalendarDays, permission: "events.read" },
-  { name: "Support", href: "/support", icon: LifeBuoy, permission: "support.read" },
+const GROUPS: { title?: string; items: NavItem[] }[] = [
+  { items: [{ name: "Overview", href: "/", icon: LayoutDashboard }] },
+  {
+    title: "Customers",
+    items: [
+      { name: "Organizations", href: "/organizations", icon: Building2, permission: "organizations.read" },
+      { name: "Individual users", href: "/individuals", icon: UserRound, permission: "individuals.read" },
+    ],
+  },
+  { title: "Engagement", items: [{ name: "Platform events", href: "/events", icon: CalendarDays, permission: "events.read" }] },
+  { title: "Help desk", items: [{ name: "Support inbox", href: "/support", icon: Inbox, permission: "support.read", badge: "support" }] },
 ];
 
-const ADMIN_NAV: NavItem[] = [
+const FOOTER_ITEMS: NavItem[] = [
   { name: "Admin team", href: "/team", icon: ShieldCheck, permission: "admins.manage" },
   { name: "Audit log", href: "/audit-log", icon: ScrollText, permission: "audit.read" },
 ];
 
-function ActivePageStroke() {
-  return <span aria-hidden="true" className="absolute right-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full bg-secondary-1" />;
-}
-
 export function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
   const admin = useAdmin();
+  const overview = useOverview();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const name = fullName(admin);
 
   const visible = (items: NavItem[]) => items.filter((item) => !item.permission || can(admin, item.permission));
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
-  const adminItems = visible(ADMIN_NAV);
+  const badgeValue = (badge?: NavItem["badge"]) => (badge === "support" ? overview.data?.support.open : undefined);
 
   const renderItem = (item: NavItem) => {
     const active = isActive(item.href);
+    const badge = badgeValue(item.badge);
     return (
       <Link
         key={item.href}
@@ -57,49 +65,72 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         aria-label={isCollapsed ? item.name : undefined}
         title={isCollapsed ? item.name : undefined}
         className={cn(
-          "relative flex items-center gap-3 rounded-md px-3 py-2 transition-colors",
-          isCollapsed && "justify-center",
-          active ? "bg-primary-5 font-bold text-primary-hover" : "font-medium text-grey-2 hover:bg-grey-5",
+          "relative flex h-11 items-center gap-3 rounded-[8px] px-3 text-[15px] transition-colors",
+          isCollapsed && "justify-center px-0",
+          active ? "bg-primary-5 font-medium text-primary-hover" : "text-grey-2 hover:bg-grey-5 hover:text-grey-1",
         )}
       >
-        <item.icon size={18} strokeWidth={2} className="shrink-0" aria-hidden="true" />
-        {!isCollapsed && <span className="whitespace-nowrap text-sm">{item.name}</span>}
-        {active && <ActivePageStroke />}
+        {active && <span aria-hidden="true" className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-primary-1" />}
+        <item.icon className="h-[19px] w-[19px] shrink-0" strokeWidth={1.6} aria-hidden="true" />
+        {!isCollapsed && <span className="flex-1 truncate">{item.name}</span>}
+        {!isCollapsed && badge !== undefined && (
+          <span className={cn("text-[13px] font-semibold tabular-nums", badge > 0 ? "text-primary-hover" : "text-grey-3")}>
+            {formatNumber(badge)}
+            <span className="sr-only"> open</span>
+          </span>
+        )}
       </Link>
     );
   };
 
+  const groups = GROUPS.map((group) => ({ ...group, items: visible(group.items) })).filter((group) => group.items.length);
+  const footerItems = visible(FOOTER_ITEMS);
+
   return (
-    <nav aria-label="Admin" className={cn("flex h-dvh shrink-0 flex-col border-r border-grey-4 bg-white transition-[width] duration-300", isCollapsed ? "w-16" : "w-[227px]")}>
-      <div className={cn("flex items-center px-3 pt-8", isCollapsed ? "justify-center" : "justify-between")}>
+    <nav aria-label="Admin" className={cn("flex h-dvh shrink-0 flex-col border-r border-line bg-white transition-[width] duration-300", isCollapsed ? "w-[76px]" : "w-[264px]")}>
+      <div className={cn("flex h-[88px] shrink-0 items-center px-5", isCollapsed ? "justify-center px-0" : "justify-between")}>
         {!isCollapsed && (
-          <Link href="/" onClick={onClose} className="flex flex-col gap-1.5 rounded-sm">
-            <Image src={LOGO} alt="Wellstaq" width={100} height={28} className="object-contain" referrerPolicy="no-referrer" priority />
-            <span className="w-fit rounded-[6px] border border-grey-4 bg-grey-5 px-1.5 py-0.5 text-[11px] font-semibold leading-4 text-grey-2">Admin console</span>
+          <Link href="/" onClick={onClose} className="flex items-center gap-2.5 rounded-sm">
+            <Image src={LOGO} alt="Wellstaq" width={118} height={32} className="h-8 w-auto object-contain" referrerPolicy="no-referrer" priority />
+            <span className="rounded-[6px] bg-grey-1 px-1.5 py-0.5 text-[11px] font-semibold leading-4 text-white">Admin</span>
           </Link>
         )}
         <button
           type="button"
           onClick={() => setIsCollapsed((value) => !value)}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="hidden shrink-0 rounded-md border border-grey-4 bg-white p-1 text-grey-2 hover:text-grey-1 lg:flex"
+          className="hidden h-8 w-8 items-center justify-center rounded-[8px] border border-line text-grey-2 transition-colors hover:bg-grey-5 hover:text-grey-1 lg:flex"
         >
-          {isCollapsed ? <PanelLeftOpen size={14} strokeWidth={2} /> : <PanelLeftClose size={14} strokeWidth={2} />}
+          {isCollapsed ? <PanelLeftOpen className="h-4 w-4" strokeWidth={1.7} /> : <PanelLeftClose className="h-4 w-4" strokeWidth={1.7} />}
         </button>
-        <button type="button" onClick={onClose} aria-label="Close menu" className="shrink-0 rounded-md border border-grey-4 bg-white p-1 text-grey-2 hover:text-grey-1 lg:hidden">
-          <X size={14} strokeWidth={2} />
+        <button type="button" onClick={onClose} aria-label="Close menu" className="flex h-8 w-8 items-center justify-center rounded-[8px] border border-line text-grey-2 hover:text-grey-1 lg:hidden">
+          <X className="h-4 w-4" strokeWidth={1.7} />
         </button>
       </div>
 
-      <div className="no-scrollbar flex flex-1 flex-col overflow-y-auto overflow-x-hidden pb-6 pl-3 pr-5 pt-6">
-        <div className="space-y-1">{visible(MAIN_NAV).map(renderItem)}</div>
+      <div className="no-scrollbar flex flex-1 flex-col overflow-y-auto overflow-x-hidden px-4 pb-4">
+        <div className="space-y-5">
+          {groups.map((group, index) => (
+            <div key={group.title ?? index}>
+              {group.title && !isCollapsed && <p className="mb-1.5 px-3 text-[13px] font-medium text-grey-1">{group.title}</p>}
+              {group.title && isCollapsed && <div className="mx-3 mb-2 border-t border-line" aria-hidden="true" />}
+              <div className="space-y-0.5">{group.items.map(renderItem)}</div>
+            </div>
+          ))}
+        </div>
 
-        {adminItems.length > 0 && (
-          <div className="mt-auto border-t border-grey-4 pt-3">
-            {!isCollapsed && <p className="mb-2 px-3 text-xs font-semibold text-grey-3">Access and compliance</p>}
-            <div className="space-y-1">{adminItems.map(renderItem)}</div>
+        <div className="mt-auto pt-6">
+          {footerItems.length > 0 && <div className="space-y-0.5 border-t border-line pt-4">{footerItems.map(renderItem)}</div>}
+          <div className={cn("mt-4 flex items-center gap-3 rounded-[12px] bg-grey-5 p-3", isCollapsed && "justify-center bg-transparent p-0")}>
+            <Avatar name={name} src={admin.avatarUrl} size={40} />
+            {!isCollapsed && (
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-grey-1">{name}</p>
+                <p className="truncate text-[13px] font-medium text-primary-hover">{ROLE_LABELS[admin.role] ?? admin.role}</p>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </nav>
   );

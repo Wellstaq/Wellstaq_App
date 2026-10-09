@@ -14,7 +14,7 @@ export function SearchInput({ value, onChange, label, placeholder }: { value: st
         aria-label={label}
         placeholder={placeholder}
         autoComplete="off"
-        className="h-10 w-full rounded-[8px] border border-grey-4 bg-white pl-9 pr-9 text-sm text-grey-1 placeholder:text-grey-3 focus:border-primary-1 focus:outline-none focus:ring-2 focus:ring-primary-1/20 [&::-webkit-search-cancel-button]:hidden"
+        className="h-10 w-full rounded-[8px] border border-line bg-white pl-9 pr-9 text-sm text-grey-1 placeholder:text-grey-3 focus:border-primary-1 focus:outline-none focus:ring-2 focus:ring-primary-1/20 [&::-webkit-search-cancel-button]:hidden"
       />
       {value && (
         <button type="button" aria-label="Clear search" onClick={() => onChange("")} className="absolute right-2 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded text-grey-3 hover:bg-grey-5 hover:text-grey-1">

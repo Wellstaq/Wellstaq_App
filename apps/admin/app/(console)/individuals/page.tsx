@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { UserRound } from "lucide-react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { BadgeCheck, UserPlus, UserRound } from "lucide-react";
+import { MetricCard, MetricGrid } from "@/components/ui/metric-card";
+import { useOverview } from "@/components/providers/overview";
 import { PageHeader } from "@/components/ui/page-header";
 import { FilterPills, SearchInput, Toolbar } from "@/components/ui/toolbar";
 import { DataTable, type Column } from "@/components/ui/data-table";
@@ -14,7 +17,7 @@ import { AccountDrawer } from "@/components/accounts/account-drawer";
 import { useAdmin } from "@/components/providers/admin-session";
 import { adminApi } from "@/services/admin-api";
 import { can } from "@/lib/permissions";
-import { formatDate, formatDateTime, fullName } from "@/lib/format";
+import { formatDate, formatDateTime, formatNumber, fullName } from "@/lib/format";
 import { useDebouncedValue, useResource } from "@/lib/use-resource";
 import type { Individual, IndividualStatus, SignupMethod } from "@/types/admin";
 
@@ -38,11 +41,13 @@ const columns: Column<Individual>[] = [
   { key: "lastLogin", header: "Last sign-in", render: (person) => formatDateTime(person.lastLoginAt), className: "whitespace-nowrap", hideOnMobile: true },
 ];
 
-export default function IndividualsPage() {
+function IndividualsView() {
   const admin = useAdmin();
   const canManage = can(admin, "individuals.manage");
-  const [query, setQuery] = useState("");
-  const [status, setStatus] = useState<"all" | IndividualStatus>("all");
+  const searchParams = useSearchParams();
+  const overview = useOverview().data;
+  const [query, setQuery] = useState(searchParams.get("q") ?? "");
+  const [status, setStatus] = useState<"all" | IndividualStatus>(STATUS_FILTERS.find((option) => option.value === searchParams.get("status"))?.value ?? "all");
   const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const debouncedQuery = useDebouncedValue(query.trim());
@@ -63,7 +68,13 @@ export default function IndividualsPage() {
     <>
       <PageHeader title="Individual users" description="People who use Wellstaq on their own, without an organization." />
 
-      <section className="rounded-[12px] border border-grey-4 bg-white p-4 sm:p-6" aria-label="Individual users">
+      <MetricGrid columns={3}>
+        <MetricCard icon={UserRound} label="Total" value={overview ? formatNumber(overview.individuals.total) : null} footnote="Signed up without an organization" />
+        <MetricCard icon={BadgeCheck} label="Active" value={overview ? formatNumber(overview.individuals.active) : null} footnote={overview && `${overview.individuals.total ? Math.round((overview.individuals.active / overview.individuals.total) * 100) : 0}% of individual users`} />
+        <MetricCard icon={UserPlus} label="New this month" value={overview ? formatNumber(overview.individuals.newThisMonth) : null} footnote="Since the 1st of the month" footnoteTone={overview && overview.individuals.newThisMonth > 0 ? "positive" : "neutral"} />
+      </MetricGrid>
+
+      <section className="rounded-[14px] border border-line bg-white p-4 sm:p-5" aria-label="Individual users">
         <Toolbar>
           <SearchInput value={query} onChange={(value) => { setQuery(value); setPage(1); }} label="Search individual users" placeholder="Search by name or email" />
           <FilterPills label="Filter by status" options={STATUS_FILTERS} value={status} onChange={(value) => { setStatus(value); setPage(1); }} />
@@ -111,5 +122,13 @@ export default function IndividualsPage() {
         }
       />
     </>
+  );
+}
+
+export default function IndividualsPage() {
+  return (
+    <Suspense>
+      <IndividualsView />
+    </Suspense>
   );
 }

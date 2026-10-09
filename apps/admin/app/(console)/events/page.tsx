@@ -1,8 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { CalendarDays, Plus } from "lucide-react";
+import { Suspense, useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { CalendarCheck2, CalendarClock, CalendarDays, Plus } from "lucide-react";
+import { MetricCard, MetricGrid } from "@/components/ui/metric-card";
+import { useOverview } from "@/components/providers/overview";
+import { formatNumber } from "@/lib/format";
 import { Button } from "@wellstaq/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { FilterPills, SearchInput, Toolbar } from "@/components/ui/toolbar";
@@ -29,7 +32,7 @@ const STATUS_FILTERS: { value: "all" | EventStatus; label: string }[] = [
   { value: "cancelled", label: "Canceled" },
 ];
 
-export default function PlatformEventsPage() {
+function PlatformEventsView() {
   const admin = useAdmin();
   const router = useRouter();
   const canManage = can(admin, "events.manage");
@@ -38,7 +41,18 @@ export default function PlatformEventsPage() {
   const [status, setStatus] = useState<"all" | EventStatus>("all");
   const [audience, setAudience] = useState<"all" | EventAudience>("all");
   const [page, setPage] = useState(1);
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const overview = useOverview().data;
+  const [isCreateOpen, setIsCreateOpenState] = useState(() => canManage && searchParams.get("create") === "1");
+  const setIsCreateOpen = (open: boolean) => {
+    setIsCreateOpenState(open);
+    if (!open && searchParams.get("create")) router.replace(pathname, { scroll: false });
+  };
+  const requested = searchParams.get("create") === "1";
+  useEffect(() => {
+    if (requested && canManage) setIsCreateOpenState(true);
+  }, [requested, canManage]);
   const debouncedQuery = useDebouncedValue(query.trim());
 
   const events = useResource(
@@ -84,7 +98,13 @@ export default function PlatformEventsPage() {
         }
       />
 
-      <section className="rounded-[12px] border border-grey-4 bg-white p-4 sm:p-6" aria-label="Platform events">
+      <MetricGrid columns={3}>
+        <MetricCard icon={CalendarClock} label="Upcoming" value={overview ? formatNumber(overview.platformEvents.upcoming) : null} footnote="Scheduled and visible to their audience" />
+        <MetricCard icon={CalendarDays} label="Created in total" value={overview ? formatNumber(overview.platformEvents.total) : null} footnote="Including past and canceled events" />
+        <MetricCard icon={CalendarCheck2} label="Past or canceled" value={overview ? formatNumber(Math.max(0, overview.platformEvents.total - overview.platformEvents.upcoming)) : null} footnote="No longer shown as upcoming" />
+      </MetricGrid>
+
+      <section className="rounded-[14px] border border-line bg-white p-4 sm:p-5" aria-label="Platform events">
         <Toolbar>
           <SearchInput value={query} onChange={resetPage(setQuery)} label="Search events" placeholder="Search events" />
           <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
@@ -93,7 +113,7 @@ export default function PlatformEventsPage() {
               aria-label="Filter by audience"
               value={audience}
               onChange={(event) => resetPage(setAudience)(event.target.value as "all" | EventAudience)}
-              className="h-9 border border-grey-4 bg-white text-xs"
+              className="h-9 border border-line bg-white text-xs"
             >
               <option value="all">All audiences</option>
               {AUDIENCE_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
@@ -145,5 +165,13 @@ export default function PlatformEventsPage() {
 
       <EventFormDrawer isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} onSaved={(created) => router.push(`/events/${created.id}`)} />
     </>
+  );
+}
+
+export default function PlatformEventsPage() {
+  return (
+    <Suspense>
+      <PlatformEventsView />
+    </Suspense>
   );
 }
