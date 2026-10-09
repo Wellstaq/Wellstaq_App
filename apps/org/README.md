@@ -87,10 +87,12 @@ The application implements several industrial-standard responsive patterns:
 ## 🔧 Development
 
 ### Getting Started
-1. Install dependencies: `npm ci`
-2. Copy `.env.example` to `.env.local`; `NEXT_PUBLIC_DATA_SOURCE` must remain `api`.
-3. Run the quality gate: `npm run check`
-4. Run the dev server: `npm run dev`
+This app lives in `apps/org` of the Wellstaq monorepo (see the root `README.md`). Shared UI primitives and design tokens come from `packages/ui`.
+
+1. Install dependencies from the repository root: `npm ci`
+2. Copy `apps/org/.env.example` to `apps/org/.env.local`; `NEXT_PUBLIC_DATA_SOURCE` must remain `api`.
+3. Run the quality gate: `npm run check:org` (from the root) or `npm run check` (from `apps/org`)
+4. Run the dev server: `npm run dev:org` (from the root) or `npm run dev` (from `apps/org`)
 5. Open [http://localhost:3000](http://localhost:3000)
 
 ### Fast local workflow

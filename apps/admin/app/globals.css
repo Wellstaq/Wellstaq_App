@@ -1,0 +1,18 @@
+@import "tailwindcss" source(none);
+@import "@wellstaq/ui/theme.css";
+@source "../app";
+@source "../components";
+@source "../../../packages/ui/src";
+
+/* Customizable selects render their label in a button box; keep it vertically centered. */
+@supports (appearance: base-select) {
+  select:not([multiple]) {
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+@theme {
+  /* Readable dark orange for text on light orange tints (AA on primary-5 and info-4). */
+  --color-warning-text: #9A4500;
+}
