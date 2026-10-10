@@ -2534,6 +2534,14 @@
     grid-template-columns: 1fr;
     padding-bottom: 64px;
   }
+  .picture-center {
+    height: fit-content;
+    align-self: start;
+  }
+  .picture-center .pc-photo {
+    height: 280px;
+    aspect-ratio: auto;
+  }
   .ind-features {
     width: calc(100% - 28px);
     margin-top: 72px;
