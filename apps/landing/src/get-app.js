@@ -36,7 +36,7 @@ export function getAppSection({ appUrl, audience = "business" }) {
       </div>
       <div class="get-app-phones" data-reveal style="--d:120ms">
         <div class="get-app-phone back"><img src="/assets/individual/figma-checkin-phone.jpg" alt="" width="467" height="900" loading="eager" decoding="async"></div>
-        <div class="get-app-phone front"><img src="/assets/individual/figma-home-phone.jpg" alt="Wellstaq app home screen with a daily check-in and upcoming event" width="467" height="900" loading="lazy" decoding="async"></div>
+        <div class="get-app-phone front"><img src="/assets/individual/figma-home-phone.jpg" alt="Wellstaq app home screen with a daily check-in and upcoming event" width="467" height="900" loading="eager" decoding="async"></div>
       </div>
     </div>
   </section>`;

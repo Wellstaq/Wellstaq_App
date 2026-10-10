@@ -216,15 +216,21 @@ a.store-badge:focus-visible {
     padding: 0 20px;
     border-radius: 0;
   }
+  .wellstaq-individual .get-app-panel {
+    min-height: 0;
+  }
   .get-app-copy {
     padding: 56px 0 32px;
+  }
+  .wellstaq-individual .get-app-copy {
+    padding-bottom: 56px;
   }
   .get-app h2,
   main section.get-app h2 {
     font-size: clamp(32px, 9vw, 40px);
   }
   .wellstaq-individual main section.get-app h2 {
-    font-size: 28px;
+    font-size: 24px;
   }
   .get-app-copy > p {
     font-size: 16px;
@@ -244,6 +250,9 @@ a.store-badge:focus-visible {
   }
   .get-app-phones {
     height: 360px;
+  }
+  .wellstaq-individual .get-app-phones {
+    display: none;
   }
   .get-app-phone {
     width: 230px;

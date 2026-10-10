@@ -998,6 +998,11 @@
   flex: none;
   clip-path: inset(0.8% 3% 0 round 48px 48px 0 0);
 }
+@media (min-width: 1101px) {
+  .feature-panel.product-panel .feature-product-shot img {
+    margin-top: 60px;
+  }
+}
 .feature-panel.tone-peach {
   background: radial-gradient(
     90% 90% at 20% 10%,
@@ -2042,6 +2047,9 @@
   width: 76px;
   height: auto;
 }
+.oneapp-mark {
+  display: none;
+}
 .motion .oneapp-panel .oneapp-grid li {
   opacity: 0;
   transform: scale(0.85);
@@ -2486,10 +2494,10 @@
     font-size: 16px;
   }
   .individual-page h2 {
-    font-size: 28px;
+    font-size: 24px;
   }
   .individual-page .final-copy h2 {
-    font-size: 28px;
+    font-size: 24px;
   }
   .ind-picture {
     margin-top: 64px;
@@ -2513,12 +2521,15 @@
     gap: 72px;
   }
   .feature-panel {
-    padding: 28px 14px;
+    padding: 12px 14px;
     border-radius: 28px;
   }
   .feature-panel.product-panel {
-    height: 470px;
+    height: 400px;
     padding: 0;
+  }
+  #community .feature-product-shot img {
+    margin-top: 40px;
   }
   .mock {
     padding: 16px;
@@ -2526,6 +2537,9 @@
   }
   .mock-spaces {
     padding: 0;
+  }
+  .map {
+    height: 220px;
   }
   .feature-copy > p {
     font-size: 16px;
@@ -2539,6 +2553,9 @@
   .ind-oneapp .ind-head {
     padding-inline: 0;
   }
+  .ind-people .ind-head {
+    padding-inline: 0;
+  }
   .support-box {
     border-radius: 24px;
   }
@@ -2547,7 +2564,7 @@
     font-size: 14px;
   }
   .support-copy {
-    padding: 28px 20px;
+    padding: 12px;
   }
   .support-copy h3 {
     font-size: 26px;
@@ -2562,7 +2579,7 @@
     display: none;
   }
   .oneapp-panel {
-    padding: 36px 12px;
+    padding: 12px;
     border-radius: 28px;
   }
   .oneapp-grid {
@@ -2589,6 +2606,15 @@
   .oneapp-logo .tile {
     width: 80px;
     height: 80px;
+  }
+  .oneapp-logo img {
+    display: none;
+  }
+  .oneapp-mark {
+    display: block;
+    width: 40px;
+    height: 40px;
+    background: url("/assets/optimized/logo.webp") left center / 166px 40px no-repeat;
   }
   .people-track {
     padding-inline: 8vw;

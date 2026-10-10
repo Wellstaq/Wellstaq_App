@@ -371,7 +371,7 @@ function oneApp(icon) {
         <h2 id="oneapp-title">Everything a good workplace gives you.<br>${accent("In one app.")}</h2>
       </div>
       <div class="oneapp-panel" data-reveal>
-        <ul class="oneapp-grid">${tiles.slice(0, 7).map(tile).join("")}<li class="oneapp-logo"><span class="tile"><img src="/assets/optimized/logo.webp" alt="Wellstaq" width="100" height="24"></span></li>${tiles
+        <ul class="oneapp-grid">${tiles.slice(0, 7).map(tile).join("")}<li class="oneapp-logo" aria-label="Wellstaq"><span class="tile"><img src="/assets/optimized/logo.webp" alt="" width="100" height="24"><span class="oneapp-mark" aria-hidden="true"></span></span></li>${tiles
           .slice(7)
           .map((t, i) => tile(t, i + 7))
           .join("")}</ul>

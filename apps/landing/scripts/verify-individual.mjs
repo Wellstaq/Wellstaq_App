@@ -113,8 +113,9 @@ try {
       await page.keyboard.press("Escape");
       assert.equal(await page.locator("#main").evaluate((e) => e.inert), false);
     }
-    for (const item of await page.locator("[data-reveal]").all())
-      await item.scrollIntoViewIfNeeded();
+    for (const item of await page.locator("[data-reveal]").all()) {
+      if (await item.isVisible()) await item.scrollIntoViewIfNeeded();
+    }
     await page.evaluate(() =>
       scrollTo({ top: document.body.scrollHeight, behavior: "instant" }),
     );
