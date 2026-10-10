@@ -274,6 +274,16 @@ a.store-badge:focus-visible {
   }
 }
 @media (max-width: 760px) {
+  .wellstaq-individual .get-app-web {
+    justify-content: center;
+    align-items: center;
+    row-gap: 20px;
+    width: 100%;
+  }
+  .wellstaq-individual .get-app-web small {
+    width: 100%;
+    text-align: center;
+  }
   .get-app {
     margin: 88px 0 0;
   }
@@ -287,6 +297,9 @@ a.store-badge:focus-visible {
   .get-app h2,
   main section.get-app h2 {
     font-size: clamp(32px, 9vw, 40px);
+  }
+  .wellstaq-individual main section.get-app h2 {
+    font-size: 28px;
   }
   .get-app-copy > p {
     font-size: 16px;
