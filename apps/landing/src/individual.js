@@ -78,7 +78,6 @@ function hero(icon) {
         <div class="ind-board-head" aria-hidden="true">
           ${face("/assets/photos/chioma-800.webp", 48, 22, 2.4)}
           <div><strong>Ada Okafor</strong><small>Freelance designer · Lagos</small></div>
-          <span class="ind-board-chip">${icon("nearby")}Near you this week</span>
         </div>
         <div class="ind-board-grid" aria-hidden="true">
           ${cards.map((c, i) => `<div class="ind-slot slot-${c.slot}" data-fly="${i}">${c.html}</div>`).join("")}
@@ -394,7 +393,7 @@ function oneApp(icon) {
     ["video", "Video sessions"],
   ];
   const tile = ([glyph, label], i) =>
-    `<li style="--d:${i * 40}ms"><span class="tile">${icon(glyph)}</span><small>${label}</small></li>`;
+    `<li${label === "Workshops" ? ' class="oneapp-workshops"' : ""} style="--d:${i * 40}ms"><span class="tile">${icon(glyph)}</span><small>${label}</small></li>`;
   return `<section class="ind-oneapp" aria-labelledby="oneapp-title">
     <div class="frame">
       <div class="ind-head center" data-reveal>
