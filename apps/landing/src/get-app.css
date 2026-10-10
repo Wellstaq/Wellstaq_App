@@ -1,0 +1,329 @@
+/* "Get the app" banner: a dark panel with a warm glow, store badges,
+   a web-app text link and two phones rising from the bottom edge. */
+.get-app {
+  margin: 120px 24px 0;
+}
+.get-app-panel {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 48px;
+  min-height: 560px;
+  padding: 0 max(48px, calc((100% - 1200px) / 2));
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+  background: #181f21;
+  color: #fff;
+  isolation: isolate;
+}
+.get-app-glow {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(40% 70% at 78% 105%, #ea6a0599, #ea6a0500 70%),
+    radial-gradient(34% 60% at 96% 30%, #37b04766, #37b04700 70%),
+    radial-gradient(30% 50% at 8% 0%, #ffc93c26, #ffc93c00 70%);
+}
+.get-app-glow::after {
+  /* faint dot grid */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(#ffffff14 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: linear-gradient(90deg, #000, #0000 60%);
+  -webkit-mask-image: linear-gradient(90deg, #000, #0000 60%);
+}
+.get-app-copy {
+  padding: 80px 0;
+}
+.get-app-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 10px;
+  border-radius: 999px;
+  background: #ffffff12;
+  border: 1px solid #ffffff24;
+  font-size: 14px;
+  font-weight: 600;
+}
+.get-app-chip .icon {
+  width: 18px;
+  height: 18px;
+  color: #ffc93c;
+}
+.get-app h2,
+main section.get-app h2 {
+  margin-top: 20px;
+  color: #fff;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: clamp(36px, 4.4vw, 60px);
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+}
+.get-app h2 span {
+  background: linear-gradient(95deg, #ff8a2a, #ffc93c 45%, #6fd27c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.get-app-copy > p {
+  max-width: 440px;
+  margin-top: 16px;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #c3c9cc;
+}
+.store-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+.store-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 190px;
+  min-height: 60px;
+  padding: 10px 22px 10px 18px;
+  border-radius: 16px;
+  background: #000;
+  border: 1px solid #ffffff33;
+  color: #fff;
+  text-decoration: none;
+  transition:
+    transform var(--duration-fast) var(--ease),
+    border-color var(--duration-fast),
+    background var(--duration-fast);
+}
+.store-badge span {
+  display: grid;
+  line-height: 1.1;
+  text-align: left;
+}
+.store-badge small {
+  font-size: 11px;
+  font-weight: 500;
+  color: #d5d9db;
+}
+.store-badge b {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+a.store-badge:hover {
+  transform: translateY(-2px);
+  border-color: #ffffff80;
+}
+a.store-badge:focus-visible {
+  outline: 3px solid #ffc93c;
+  outline-offset: 3px;
+}
+.store-badge.soon {
+  opacity: 0.72;
+  cursor: default;
+}
+.store-badge.soon small {
+  color: #ffc93c;
+}
+.get-app-web {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin-top: 28px;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.get-app-web span {
+  text-decoration: underline;
+  text-decoration-color: #ea6a05;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+  transition:
+    text-decoration-color var(--duration-fast),
+    color var(--duration-fast);
+}
+.get-app-web small {
+  font-size: 14px;
+  font-weight: 500;
+  color: #a5adb0;
+}
+.get-app-web small {
+  order: 3;
+}
+.get-app-web .icon {
+  align-self: center;
+  width: 18px;
+  height: 18px;
+  color: #ff9a4d;
+}
+.get-app-web:hover span {
+  color: #ffc93c;
+  text-decoration-color: #ffc93c;
+}
+.get-app-web:hover .icon {
+  transform: translateX(4px);
+}
+.get-app-web:focus-visible {
+  outline: 3px solid #ffc93c;
+  outline-offset: 6px;
+  border-radius: 6px;
+}
+
+/* Two phones rising from the bottom edge */
+.get-app-phones {
+  position: relative;
+  align-self: end;
+  height: 500px;
+}
+.get-app-phone {
+  position: absolute;
+  bottom: 0;
+  width: 300px;
+}
+.get-app-phone .app-phone {
+  width: 100%;
+  height: 100%;
+  box-shadow:
+    0 0 0 1.5px #4a4b4f,
+    0 40px 80px -20px #000;
+}
+.get-app-phone.front {
+  left: 50%;
+  height: 470px;
+  overflow: hidden;
+  transform: translateX(-30%);
+  z-index: 2;
+}
+.get-app-phone.back {
+  left: 50%;
+  height: 400px;
+  overflow: hidden;
+  transform: translateX(-100%) rotate(-6deg);
+  transform-origin: bottom right;
+  opacity: 0.9;
+}
+.get-app-float {
+  position: absolute;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: #ffffffeb;
+  color: var(--ink);
+  font-size: 13px;
+  box-shadow: 0 18px 30px -16px #000;
+  backdrop-filter: blur(8px);
+}
+.get-app-float .icon {
+  width: 18px;
+  height: 18px;
+  color: var(--action);
+}
+.get-app-float.f-b .icon {
+  color: var(--green);
+}
+.get-app-float.f-a {
+  top: 70px;
+  right: 2%;
+  transform: rotate(4deg);
+}
+.get-app-float.f-b {
+  bottom: 48px;
+  left: 0;
+  transform: rotate(-4deg);
+}
+
+@media (max-width: 1100px) {
+  .get-app-panel {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 0 40px;
+  }
+  .get-app-copy {
+    padding: 64px 0 40px;
+  }
+  .get-app-phones {
+    height: 420px;
+  }
+  .get-app-phone.front {
+    height: 400px;
+  }
+  .get-app-phone.back {
+    height: 330px;
+  }
+}
+@media (max-width: 760px) {
+  .get-app {
+    margin: 88px 0 0;
+  }
+  .get-app-panel {
+    padding: 0 20px;
+    border-radius: 0;
+  }
+  .get-app-copy {
+    padding: 56px 0 32px;
+  }
+  .get-app h2,
+  main section.get-app h2 {
+    font-size: clamp(32px, 9vw, 40px);
+  }
+  .get-app-copy > p {
+    font-size: 16px;
+  }
+  .store-badges {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .store-badge {
+    min-width: 0;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .store-badge b {
+    font-size: 16px;
+  }
+  .get-app-phones {
+    height: 360px;
+  }
+  .get-app-phone {
+    width: 230px;
+  }
+  .get-app-phone.front {
+    height: 340px;
+    transform: translateX(-50%);
+  }
+  .get-app-phone.back {
+    height: 290px;
+  }
+  .get-app-float.f-b,
+  .get-app-phone.back {
+    display: none;
+  }
+  .get-app-web small {
+    flex-basis: 100%;
+  }
+  .get-app-float.f-a {
+    top: 40px;
+    right: 0;
+  }
+}
+@media (max-width: 360px) {
+  .store-badges {
+    grid-template-columns: 1fr;
+  }
+}
+.get-app-phone .ap-screen {
+  min-height: 100%;
+}

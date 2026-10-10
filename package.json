@@ -8,8 +8,10 @@
   "scripts": {
     "dev:org": "npm run dev --workspace @wellstaq/org",
     "dev:admin": "npm run dev --workspace @wellstaq/admin",
+    "dev:landing": "npm run dev --workspace @wellstaq/landing",
     "build:org": "npm run build --workspace @wellstaq/org",
     "build:admin": "npm run build --workspace @wellstaq/admin",
+    "build:landing": "npm run build --workspace @wellstaq/landing",
     "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",

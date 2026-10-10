@@ -1,0 +1,161 @@
+@import "./reward-store.css";
+
+/* Homepage engagement and rewards section. */
+.rewards-hero {
+  --rewards-grid-bottom: 120px;
+  margin: 24px 24px 0;
+  border-radius: var(--radius-panel);
+  background: var(--paper);
+}
+.rewards-hero-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 64px;
+  align-items: center;
+  padding-top: var(--section-space);
+  padding-bottom: var(--rewards-grid-bottom);
+}
+.rewards-hero-copy h2 {
+  font-size: clamp(38px, 4vw, 56px);
+  line-height: 1.08;
+}
+.rewards-hero-copy h2 > span {
+  display: block;
+  color: var(--brand-ink);
+}
+.rewards-hero-copy > p:not(.eyebrow) {
+  margin-top: var(--heading-gap);
+  font-size: 18px;
+  line-height: 1.7;
+  max-width: 540px;
+}
+.rewards-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+.reward-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  margin-top: 56px;
+}
+.reward-step {
+  padding: 32px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--paper);
+}
+.reward-step-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+.reward-step-number {
+  font-family: var(--display);
+  font-size: 40px;
+  letter-spacing: -0.05em;
+  color: #5f6d5d;
+}
+.reward-step-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: #e7eee3;
+  color: #47654d;
+}
+.reward-step h3 {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 1.2;
+  color: var(--ink);
+  letter-spacing: -0.025em;
+}
+.reward-step p {
+  margin-top: var(--heading-gap);
+  font-size: 16px;
+  line-height: 1.7;
+}
+@media (max-width: 1100px) {
+  .rewards-hero { --rewards-grid-bottom: 96px; }
+  .rewards-hero-grid {
+    gap: 32px;
+  }
+  .rewards-hero-copy > p:not(.eyebrow) {
+    font-size: 16px;
+  }
+  .reward-steps {
+    gap: 20px;
+  }
+  .reward-step {
+    padding: 24px;
+  }
+  .reward-step h3 {
+    font-size: 25px;
+  }
+}
+@media (max-width: 800px) {
+  .rewards-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .rewards-hero-copy {
+    max-width: 620px;
+  }
+  .rewards-hero-copy h2 {
+    font-size: clamp(38px, 6.5vw, 48px);
+  }
+  .reward-steps {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-top: 40px;
+  }
+  .reward-step {
+    padding: 28px;
+  }
+  .reward-step-top {
+    margin-bottom: 16px;
+  }
+}
+@media (max-width: 600px) {
+  .rewards-hero { --rewards-grid-bottom: 64px; }
+  .rewards-hero {
+    margin-inline: 8px;
+  }
+  .rewards-hero-grid {
+    gap: 36px;
+  }
+  .rewards-hero-copy h2 {
+    font-size: clamp(38px, 9.8vw, 52px);
+  }
+  .rewards-actions {
+    gap: 10px;
+    margin-top: 28px;
+  }
+  .rewards-actions .button {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+  .reward-step {
+    padding: 24px;
+  }
+  .reward-step-number {
+    font-size: 34px;
+  }
+  .reward-step h3 {
+    font-size: 25px;
+  }
+  .reward-step p {
+    font-size: 14px;
+  }
+}
+
+.rewards-steps-frame {
+  padding-bottom: var(--section-space);
+}
+
