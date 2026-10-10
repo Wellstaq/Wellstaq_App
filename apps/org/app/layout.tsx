@@ -1,5 +1,6 @@
 import type {Metadata} from 'next';
 import { Inter, Funnel_Display } from 'next/font/google';
+import '@fontsource-variable/bricolage-grotesque/wght.css';
 import './globals.css'; // Global styles
 import { Toaster } from 'sonner';
 import { ApiErrorNotifier } from '@/components/providers/api-error-notifier';

@@ -23,10 +23,11 @@ import { AnimatePresence } from "motion/react";
 import { DrawerLayer } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-type ManagementTab = "role" | "department" | "branch" | "audit";
+type ManagementTab = "role" | "department" | "branch";
 const REVOKE_ROLE_OPTION = "__revoke_role__";
 const SUPER_ADMIN_ROLE = "super_admin";
 const BRANCH_MANAGER_ROLE = "branch_manager";
+const memberNameCollator = new Intl.Collator(undefined, { sensitivity: "base", numeric: true });
 
 type MemberRole = { id: string | null; name: string | null };
 
@@ -87,7 +88,6 @@ export default function TeamsPage() {
   const [memberChanges, setMemberChanges] = useState({ roleId: "", departmentId: "", branchId: "", branchDepartmentId: "" });
   const [pendingChange, setPendingChange] = useState<"role" | "revoke_role" | "department" | "branch" | null>(null);
   const [isUpdatingMember, setIsUpdatingMember] = useState(false);
-  const [accountAction, setAccountAction] = useState<"suspend" | "delete" | null>(null);
   const canInvite = currentUser ? hasPermission(currentUser.permissions, "member.invite", scope.type === "branch" ? scope.branchId : undefined) : false;
   const permissionBranchId = scope.type === "branch" ? scope.branchId : undefined;
   const canAssignRole = currentUser ? hasPermission(currentUser.permissions, "member.role.assign", permissionBranchId) : false;
@@ -98,7 +98,6 @@ export default function TeamsPage() {
     ...(canAssignRole || canRevokeRole ? [{ value: "role" as const, label: "Role" }] : []),
     ...(canAssignDepartment ? [{ value: "department" as const, label: "Department" }] : []),
     ...(canAssignBranch ? [{ value: "branch" as const, label: "Branch" }] : []),
-    { value: "audit", label: "Audit log" },
   ];
   const activeManagementTab = managementTabs.find((tab) => tab.value === managementTab)?.value ?? managementTabs[0]?.value;
   const isRevokingRole = memberChanges.roleId === REVOKE_ROLE_OPTION;
@@ -118,7 +117,6 @@ export default function TeamsPage() {
   useEffect(() => {
     setSelectedMember(null);
     setPendingChange(null);
-    setAccountAction(null);
     setManageRoles([]);
     setManageDepartments([]);
     setMemberChanges({ roleId: "", departmentId: "", branchId: "", branchDepartmentId: "" });
@@ -178,6 +176,14 @@ export default function TeamsPage() {
     const name = `${member.firstName ?? ""} ${member.lastName ?? ""}`.trim();
     const department = member.departmentId ? departmentNames.get(member.departmentId) ?? "" : "";
     return name.toLowerCase().includes(query) || (member.email ?? "").toLowerCase().includes(query) || department.toLowerCase().includes(query);
+  }).sort((left, right) => {
+    if (left.id === currentUser?.userId) return -1;
+    if (right.id === currentUser?.userId) return 1;
+    const leftName = `${left.firstName ?? ""} ${left.lastName ?? ""}`.trim() || left.email;
+    const rightName = `${right.firstName ?? ""} ${right.lastName ?? ""}`.trim() || right.email;
+    return memberNameCollator.compare(leftName, rightName)
+      || memberNameCollator.compare(left.email, right.email)
+      || left.id.localeCompare(right.id);
   });
   const activeMembers = scopedMembers.filter((member) => member.status?.toLowerCase() === "active").length;
   const inviteDepartments = departments.filter((department) => department.branchId === invite.branchId);
@@ -378,17 +384,16 @@ export default function TeamsPage() {
         )}
       </section>
 
-      <AnimatePresence>{selectedMember && <DrawerLayer onClose={() => { if (!isUpdatingMember && !pendingChange && !accountAction) closeMemberManagement(); }} label="Team member details" inert={pendingChange !== null || accountAction !== null || undefined}>
+      <AnimatePresence>{selectedMember && <DrawerLayer onClose={() => { if (!isUpdatingMember && !pendingChange) closeMemberManagement(); }} label="Team member details" inert={pendingChange !== null || undefined}>
         <div
           ref={managementDialogRef}
           tabIndex={-1}
           aria-labelledby="manage-team-title"
-          aria-describedby="manage-team-description"
           aria-busy={isUpdatingMember}
           className="flex h-full w-full flex-col overflow-hidden bg-white"
           onMouseDown={(event) => event.stopPropagation()}
           onKeyDown={(event) => {
-            if (pendingChange || accountAction) return;
+            if (pendingChange) return;
             if (event.key === "Escape" && !isUpdatingMember) {
               event.stopPropagation();
               closeMemberManagement();
@@ -421,7 +426,7 @@ export default function TeamsPage() {
                   <p className="mt-1 break-all text-xs text-grey-2">{selectedMember.email}</p>
                 </div>
               </div>
-              <p id="manage-team-description" className="mt-4 text-sm text-grey-2">Member details and access in {scopeBranchId ? branchNames.get(scopeBranchId) ?? "this branch" : "the organization"}.</p>
+              <button type="button" disabled={isUpdatingMember} onClick={() => toast.info("Only a platform administrator can suspend this account. Contact one to request suspension.")} className="mt-4 min-h-9 rounded-lg border border-grey-3 px-4 text-sm font-medium text-grey-1 hover:border-grey-1 hover:bg-grey-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-1 disabled:opacity-50">Suspend</button>
             </div>
             <button type="button" aria-label="Close team management" disabled={isUpdatingMember} onClick={closeMemberManagement} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] text-grey-2 hover:bg-grey-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-1 disabled:opacity-40">
               <X className="h-5 w-5" />
@@ -449,18 +454,12 @@ export default function TeamsPage() {
             }}
           >
             {managementTabs.map((tab) => (
-              <SelectablePill key={tab.value} role="tab" id={`manage-team-tab-${tab.value}`} aria-controls="manage-team-panel" aria-selected={activeManagementTab === tab.value} aria-pressed={undefined} tabIndex={activeManagementTab === tab.value ? 0 : -1} selected={activeManagementTab === tab.value} appearance="plain" disabled={isUpdatingMember} onClick={() => setManagementTab(tab.value)} className="min-h-10 flex-1 px-2 sm:px-4 sm:text-sm">
+              <SelectablePill key={tab.value} role="tab" id={`manage-team-tab-${tab.value}`} aria-controls="manage-team-panel" aria-selected={activeManagementTab === tab.value} aria-pressed={undefined} tabIndex={activeManagementTab === tab.value ? 0 : -1} selected={activeManagementTab === tab.value} appearance="plain" disabled={isUpdatingMember} onClick={() => setManagementTab(tab.value)} className="min-h-10 flex-1 px-2 py-0.5 sm:px-4 sm:text-sm">
                 {tab.label}
               </SelectablePill>
             ))}
           </div>
           <div id="manage-team-panel" className="px-6 pb-6" role="tabpanel" aria-labelledby={`manage-team-tab-${activeManagementTab}`}>
-            {activeManagementTab === "audit" && <div className="rounded-xl border border-grey-4 p-5">
-              <Activity className="mb-3 h-5 w-5 text-grey-2" aria-hidden="true" />
-              <h3 className="font-semibold text-grey-1">Audit history unavailable</h3>
-              <p className="mt-2 text-sm leading-relaxed text-grey-2">Member audit records aren&apos;t available from the service yet. Changes, timestamps, and who made them will appear here once audit history is connected.</p>
-              <p className="mt-3 text-xs text-grey-2">This does not mean this member has no activity.</p>
-            </div>}
             {activeManagementTab === "role" && (
               <>
                 <p className="mb-4 text-sm text-grey-2">Choose a new {scope.type === "branch" ? "branch" : "organization"} role for this team member. The other scope remains unchanged.</p>
@@ -551,19 +550,10 @@ export default function TeamsPage() {
               </>
             )}
           </div>
-          <section className="mx-6 mb-6 border-t border-grey-4 pt-5" aria-labelledby="member-account-actions">
-            <h3 id="member-account-actions" className="text-sm font-semibold text-grey-1">Member access</h3>
-            <p className="mt-2 text-xs leading-relaxed text-grey-2">Suspension and deletion are not available from the service yet. No account changes can be made here.</p>
-            <div className="mt-4 flex flex-wrap gap-3">
-              <button type="button" disabled={isUpdatingMember} onClick={() => setAccountAction("suspend")} className="min-h-10 rounded-lg border border-grey-4 px-4 text-sm font-medium text-grey-2 hover:bg-grey-5">Suspend member…</button>
-              <button type="button" disabled={isUpdatingMember} onClick={() => setAccountAction("delete")} className="min-h-10 rounded-lg border border-error-4 px-4 text-sm font-medium text-error-1 hover:bg-error-5">Delete member…</button>
-            </div>
-          </section>
           </ScrollArea>
         </div>
       </DrawerLayer>}</AnimatePresence>
 
-      <ConfirmModal isOpen={accountAction !== null} onClose={() => setAccountAction(null)} onConfirm={() => {}} title={accountAction === "suspend" ? "Suspend this member?" : "Delete this member?"} description={`This action is currently unavailable because the service does not provide member ${accountAction === "suspend" ? "suspension" : "deletion"}. No changes have been made. Confirmation will be required when this action is available.`} confirmText={accountAction === "suspend" ? "Confirm suspension" : "Confirm deletion"} cancelText="Close" confirmDisabled isDestructive />
 
       <ConfirmModal isOpen={pendingChange !== null} onClose={() => setPendingChange(null)} onConfirm={() => void confirmMemberChange()} title={pendingChange === "role" ? "Change user role?" : pendingChange === "revoke_role" ? "Revoke user role?" : pendingChange === "department" ? "Move user to another department?" : "Move user to another branch?"} description={pendingChange === "role" ? "This will replace the user's current role and its role-based access." : pendingChange === "revoke_role" ? "The current role will be removed and the user will return to the zero-permission Member role." : pendingChange === "department" ? "This will replace the user's current department assignment." : "This will change both the user's home branch and department."} confirmText={isUpdatingMember ? "Updating..." : "Confirm change"} isDestructive={pendingChange === "revoke_role"} />
 

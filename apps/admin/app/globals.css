@@ -19,11 +19,34 @@
   --color-line: #ECECEC;
 }
 
-/* Sign-in photo eases in slowly, same as the organization app. */
-@keyframes hero-scale-in {
-  from { transform: scale(1); }
-  to { transform: scale(1.08); }
+/* Auth portraits zoom while visible and crossfade every nine seconds. */
+@keyframes auth-photo-first {
+  0% { opacity: 1; transform: scale(1); }
+  44% { opacity: 1; transform: scale(1.07); }
+  50% { opacity: 0; transform: scale(1.08); }
+  51%, 94% { opacity: 0; transform: scale(1); }
+  100% { opacity: 1; transform: scale(1); }
 }
-.hero-scale-in {
-  animation: hero-scale-in 14s cubic-bezier(0.4, 0, 0.2, 1) both;
+
+@keyframes auth-photo-second {
+  0%, 44% { opacity: 0; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1); }
+  94% { opacity: 1; transform: scale(1.07); }
+  100% { opacity: 0; transform: scale(1.08); }
+}
+
+.auth-photo-first, .auth-photo-second {
+  animation-duration: 18s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  will-change: opacity, transform;
+}
+
+.auth-photo-first { animation-name: auth-photo-first; }
+.auth-photo-second { animation-name: auth-photo-second; }
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-photo-first, .auth-photo-second { animation: none; }
+  .auth-photo-first { opacity: 1; }
+  .auth-photo-second { opacity: 0; }
 }
