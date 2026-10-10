@@ -13,6 +13,7 @@ import { getAppSection } from "./get-app.js";
 import "./get-app.css";
 
 const APP_URL = "https://appwellstaq6.vercel.app/";
+const EMPLOYEE_APP_URL = "https://wellstaqemployee.vercel.app/";
 const DEMO_URL = "/contact?interest=demo#contact-form";
 const PRICING_URL = "/contact?interest=pricing#contact-form";
 const path = location.pathname;
@@ -95,8 +96,8 @@ const SECTION_PHOTOS = new Set(["why", "app", "insights", "connect", "scale"]);
 /* Real photos, served at the available source widths. */
 const realPhoto = (slot, alt, sizes) => {
   if (SECTION_PHOTOS.has(slot)) {
-    const version = slot === "why" ? "v3" : "v2";
-    return `<img src="/assets/photos/${slot}-${version}-1536.webp" srcset="/assets/photos/${slot}-${version}-800.webp 800w, /assets/photos/${slot}-${version}-1536.webp 1536w" sizes="${sizes}" alt="${alt}" loading="lazy" decoding="async" width="1536" height="1024">`;
+    const version = slot === "why" ? "v4" : "v2";
+    return `<img src="/assets/photos/${slot}-${version}-1536.webp" srcset="/assets/photos/${slot}-${version}-800.webp 800w, /assets/photos/${slot}-${version}-1536.webp 1536w" sizes="${sizes}" alt="${alt}" loading="lazy" decoding="async" width="1536" height="${slot === "why" ? 1536 : 1024}">`;
   }
   const native = NATIVE_WIDTH[slot] || 3840;
   const srcset = PHOTO_WIDTHS.filter(
@@ -242,7 +243,7 @@ function why() {
       "Weekly check-ins, participation and streaks show HR what's working, without ever exposing an individual.",
     ],
   ];
-  return `<section class="section light why" id="why-wellstaq"><div class="frame"><div class="section-head" data-reveal>${eyebrow("Why Wellstaq")}<h2>What Good Is A Wellbeing Benefit Nobody Uses?</h2><p>Wellstaq is designed for daily use. It blends lifestyle, productivity and community so people keep coming back, and HR gets measurable impact without compromising trust.</p></div><div class="why-grid"><div class="why-visual" data-reveal>${realPhoto("why", "A happy Nigerian team enjoying a wellbeing break together", "(max-width: 1060px) 100vw, 560px")}<div class="why-blocks" aria-hidden="true"><i></i><i></i><i></i></div><div class="why-badge"><span>${icon("activity")}</span><div><strong data-count="12" data-suffix="-day streak">12-day streak</strong><small>Daily check-ins, kept up</small></div></div></div><div class="why-rows">${rows.map(([title, text], i) => `<article class="why-row" data-reveal style="--d:${i * 90}ms"><h3>${title}</h3><p>${text}</p></article>`).join("")}</div></div></div></section>`;
+  return `<section class="section light why" id="why-wellstaq"><div class="frame"><div class="section-head" data-reveal>${eyebrow("Why Wellstaq")}<h2>What Good Is A Wellbeing Benefit Nobody Uses?</h2><p>Wellstaq is designed for daily use. It blends lifestyle, productivity and community so people keep coming back, and HR gets measurable impact without compromising trust.</p></div><div class="why-grid"><div class="why-visual" data-reveal>${realPhoto("why", "Nigerian coworkers stretching together during a workplace wellbeing break", "(max-width: 1060px) 100vw, 560px")}<div class="why-blocks" aria-hidden="true"><i></i><i></i><i></i></div><div class="why-badge"><span>${icon("activity")}</span><div><strong data-count="12" data-suffix="-day streak">12-day streak</strong><small>Daily check-ins, kept up</small></div></div></div><div class="why-rows">${rows.map(([title, text], i) => `<article class="why-row" data-reveal style="--d:${i * 90}ms"><h3>${title}</h3><p>${text}</p></article>`).join("")}</div></div></div></section>`;
 }
 
 function stats() {
@@ -733,7 +734,7 @@ document.querySelector("#app").innerHTML = `${header()}<main id="main">${
             }) +
             stories() +
             privacy() +
-            getAppSection({ icon, appUrl: APP_URL }) +
+            getAppSection({ icon, appUrl: EMPLOYEE_APP_URL }) +
             faq()
 }${isContact || isHome ? cta() : ""}</main>${footer()}`;
 

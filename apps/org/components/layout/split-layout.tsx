@@ -11,16 +11,16 @@ const BLUR_LAYERS = [
   { blur: 16, from: 86, to: 100 },
 ];
 
-export function SplitLayout({ children, lockContentScroll = false }: { children: React.ReactNode; lockContentScroll?: boolean }) {
+export function SplitLayout({ children, lockContentScroll = false, fixedViewport = false }: { children: React.ReactNode; lockContentScroll?: boolean; fixedViewport?: boolean }) {
   return (
-    <div className="flex h-dvh w-full overflow-hidden bg-white">
-      {/* Left Pane - Static hero (same photo as the employee app's welcome screen) */}
-      <div className="hidden xl:flex xl:w-[60%] relative overflow-hidden items-center justify-center">
+    <div className={`flex h-dvh w-full overflow-hidden bg-white ${fixedViewport ? "fixed inset-x-0 top-0" : ""}`}>
+      {/* Left Pane - Wide portrait with room around the subject */}
+      <div className="relative hidden overflow-hidden xl:flex xl:w-[60%]">
         <Image
-          src="/assets/welcome-hero.jpg"
+          src="/assets/welcome-hero-wide.webp"
           alt="Wellness and Community"
           fill
-          className="hero-scale-in object-cover object-[center_22%]"
+          className="object-cover object-center"
           priority
           sizes="60vw"
         />

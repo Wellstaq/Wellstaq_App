@@ -31,7 +31,7 @@ export function getAppSection({ icon, appUrl, audience = "business" }) {
           ${badge(APP_STORE_URL, apple, "Download on the", "App Store")}
           ${badge(PLAY_STORE_URL, play, "Get it on", "Google Play")}
         </div>
-        <a class="get-app-web" href="${appUrl}" target="_blank" rel="noopener"><span>Get the app</span>${icon("arrow")}<small>No App Store or Play Store needed</small></a>
+        <a class="get-app-web" href="${appUrl}" target="_blank" rel="noopener"><span>Get the app</span>${audience === "individual" ? "" : icon("arrow")}<small>No App Store or Play Store needed</small></a>
       </div>
       <div class="get-app-phones" data-reveal style="--d:120ms">
         <div class="get-app-phone back">${checkinPhone()}</div>

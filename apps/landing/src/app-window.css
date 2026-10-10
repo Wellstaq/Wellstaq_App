@@ -941,7 +941,7 @@
 }
 @media (max-width: 760px) {
   .ai-run .ai-window {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     height: auto;
     min-height: 0;
   }
@@ -949,12 +949,19 @@
     display: none;
   }
   .ai-panel .ai-body {
-    min-height: 300px;
+    min-height: 0;
+    overflow: visible;
+    padding: 12px 14px 8px;
+  }
+  .ai-panel .bubble {
+    max-width: 90%;
   }
 }
 
-.ai-run .ai-window {
-  grid-template-columns: 44% 56%;
+@media (min-width: 761px) {
+  .ai-run .ai-window {
+    grid-template-columns: 44% 56%;
+  }
 }
 .ai-dash-side {
   flex-basis: 100px;
