@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
-import { Building2, CalendarDays, Inbox, LayoutDashboard, PanelLeftClose, PanelLeftOpen, ScrollText, ShieldCheck, UserRound, X } from "lucide-react";
+import { Building2, CalendarDays, Inbox, LayoutDashboard, PanelLeftClose, PanelLeftOpen, ScrollText, ShieldCheck, UserRound, UserSearch, X } from "lucide-react";
 import { cn } from "@wellstaq/ui/utils";
 import { Avatar } from "@/components/ui/avatar";
 import { useAdmin } from "@/components/providers/admin-session";
@@ -30,6 +30,7 @@ const GROUPS: { title?: string; items: NavItem[] }[] = [
     title: "Customers",
     items: [
       { name: "Organizations", href: "/organizations", icon: Building2, permission: "organizations.read" },
+      { name: "Find a user", href: "/users", icon: UserSearch, permission: "organizations.read" },
       { name: "Individual users", href: "/individuals", icon: UserRound, permission: "individuals.read" },
     ],
   },

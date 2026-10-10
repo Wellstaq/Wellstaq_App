@@ -23,6 +23,7 @@ import type {
   SupportTicketList,
   TicketStatus,
   UploadUrlResponse,
+  UserSearchResult,
 } from "@/types/admin";
 
 // Every path below is relative to the backend's /app-admin namespace.
@@ -68,6 +69,8 @@ export const adminApi = {
 
   /** Account actions shared by organization employees and individual users. */
   users: {
+    search: (params: ListParams, { signal }: Signal = {}) =>
+      request<Paginated<UserSearchResult>>(`/users/search${toQueryString({ ...params })}`, { signal }),
     suspend: (userId: string, reason: string) => request<void>(`/users/${id(userId)}/suspend`, { method: "POST", body: { reason } }),
     reactivate: (userId: string) => request<void>(`/users/${id(userId)}/reactivate`, { method: "POST" }),
     sendPasswordReset: (userId: string) => request<void>(`/users/${id(userId)}/password-reset`, { method: "POST" }),

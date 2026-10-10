@@ -124,6 +124,19 @@ export interface OrganizationMember {
   joinedAt: string | null;
 }
 
+/** A cross-organization match from GET /app-admin/users/search. */
+export interface UserSearchResult {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  email: string;
+  avatarUrl: string | null;
+  status: AccountStatus;
+  organizationId: string;
+  organizationName: string | null;
+  joinedAt: string | null;
+}
+
 export interface OrganizationBranch {
   id: string;
   name: string;
