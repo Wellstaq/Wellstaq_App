@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
-import { Building2, CalendarDays, CornerDownLeft, Inbox, LayoutDashboard, ScrollText, Search, ShieldCheck, UserRound } from "lucide-react";
+import { Building2, CalendarDays, CornerDownLeft, Inbox, LayoutDashboard, ScrollText, Search, ShieldCheck, UserRound, UserSearch } from "lucide-react";
 import { ModalLayer } from "@wellstaq/ui/modal-layer";
 import { cn } from "@wellstaq/ui/utils";
 import { useAdmin } from "@/components/providers/admin-session";
@@ -21,6 +21,7 @@ interface Command {
 const PAGES: (Omit<Command, "id"> & { permission?: AdminPermission })[] = [
   { label: "Overview", hint: "Page", icon: LayoutDashboard, href: "/" },
   { label: "Organizations", hint: "Page", icon: Building2, href: "/organizations", permission: "organizations.read" },
+  { label: "Find a user", hint: "Page", icon: UserSearch, href: "/users", permission: "organizations.read" },
   { label: "Individual users", hint: "Page", icon: UserRound, href: "/individuals", permission: "individuals.read" },
   { label: "Platform events", hint: "Page", icon: CalendarDays, href: "/events", permission: "events.read" },
   { label: "Create a platform event", hint: "Action", icon: CalendarDays, href: "/events?create=1", permission: "events.manage" },
@@ -62,6 +63,7 @@ export function CommandSearch() {
     if (!term) return pages;
     const searches: Command[] = [];
     if (can(admin, "organizations.read")) searches.push({ id: "search-orgs", label: `Search organizations for "${term}"`, hint: "Search", icon: Building2, href: `/organizations?q=${encodeURIComponent(term)}` });
+    if (can(admin, "organizations.read")) searches.push({ id: "search-users", label: `Find a user named "${term}"`, hint: "Search", icon: UserSearch, href: `/users?q=${encodeURIComponent(term)}` });
     if (can(admin, "individuals.read")) searches.push({ id: "search-people", label: `Search individual users for "${term}"`, hint: "Search", icon: UserRound, href: `/individuals?q=${encodeURIComponent(term)}` });
     return [...searches, ...pages];
   }, [admin, query]);
