@@ -90,7 +90,7 @@ import type {
 } from "@/types/api";
 import { request, type RequestOptions, ApiError } from "@/services/http";
 import { backendPath } from "@/services/config";
-import { getAuthTokens, clearAuthTokens } from "@/services/auth-token";
+import { clearCachedCurrentUser } from "@/services/auth-token";
 
 
 async function fromApi<T>(path: string, options?: RequestOptions) {
@@ -181,15 +181,14 @@ export const api = {
         { method: "POST", body: { twoFaChallengeToken, code }, suppressErrorNotification: true },
       ),
     me: () => fromApi<CurrentUserResponse>("/auth/me"),
+    // The BFF proxy reads the refresh cookie itself and always clears
+    // session cookies regardless of the upstream call's outcome — see
+    // the "auth/logout" special case in app/api/backend/[...path]/route.ts.
     logout: async () => {
-      const tokens = getAuthTokens();
       try {
-        await fromApi(
-          "/auth/logout",
-          { method: "POST", body: { refresh_token: tokens?.refreshToken ?? "" } },
-        );
+        await fromApi("/auth/logout", { method: "POST" });
       } finally {
-        clearAuthTokens();
+        clearCachedCurrentUser();
       }
     },
   },

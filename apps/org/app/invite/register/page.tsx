@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/services/api";
-import { setAuthTokens } from "@/services/auth-token";
+import { cacheCurrentUser } from "@/services/auth-token";
 import { getUserErrorMessage } from "@/lib/errors";
 
 const dimensions = ["mood", "energy", "stress", "work_life_balance"] as const;
@@ -101,8 +101,11 @@ function InviteRegistrationContent() {
       if (response.requiresApp || response.role.toLowerCase() === "member") {
         setRequiresApp(true); setStep("success"); return;
       }
-      if (!response.accessToken || !response.refreshToken || !response.tokenType) throw new Error("Your account is ready. Sign in to continue.");
-      setAuthTokens({ accessToken: response.accessToken, refreshToken: response.refreshToken, tokenType: response.tokenType });
+      // Tokens (if issued) already landed as httpOnly cookies via the BFF
+      // proxy — confirm the session actually took before navigating, the
+      // same way the login page does.
+      const me = await api.auth.me();
+      cacheCurrentUser(me);
       router.replace("/dashboard");
     } catch (reason) { setError(getUserErrorMessage(reason, "We couldn't complete registration. Try again.")); }
     finally { setLoading(false); }
