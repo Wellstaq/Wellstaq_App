@@ -110,7 +110,7 @@ function LoginForm() {
               className="text-center text-lg tracking-[0.3em]"
             />
           </div>
-          <Button type="submit" className={`w-full ${primaryButton}`} disabled={code.length < 6 || isPending}>
+          <Button type="submit" size="lg" className={`w-full ${primaryButton}`} disabled={code.length < 6 || isPending}>
             {isPending ? "Verifying..." : "Verify and sign in"}
           </Button>
           <button
@@ -132,7 +132,7 @@ function LoginForm() {
   const canSubmit = EMAIL_PATTERN.test(email.trim()) && password.length > 0 && !isPending;
 
   return (
-    <AuthCard title="Sign in" description="Use your Wellstaq staff account.">
+    <AuthCard title="Sign in" description="Enter your credential below to sign into your admin account">
       {reason && REASONS[reason] && !error && <FormAlert tone="info">{REASONS[reason]}</FormAlert>}
       {error && <FormAlert>{error}</FormAlert>}
       <form onSubmit={submitCredentials} className="flex flex-col gap-5">
@@ -180,7 +180,7 @@ function LoginForm() {
             </button>
           </div>
         </div>
-        <Button type="submit" className={`mt-1 w-full ${primaryButton}`} disabled={!canSubmit}>
+        <Button type="submit" size="lg" className={`mt-1 w-full ${primaryButton}`} disabled={!canSubmit}>
           {isPending ? "Signing in..." : "Sign in"}
         </Button>
       </form>

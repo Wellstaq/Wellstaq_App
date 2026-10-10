@@ -1,5 +1,4 @@
 /* "Get the app" banner, shared by the Business and Individual pages. */
-import { checkinPhone, homePhone } from "./app-phone.js";
 
 /* Store listings. While a URL is empty its badge shows "Coming soon" and is not a link. */
 const APP_STORE_URL = "";
@@ -15,7 +14,7 @@ const badge = (url, glyph, small, big) => {
     : `<span class="store-badge soon" aria-disabled="true">${inner}</span>`;
 };
 
-export function getAppSection({ icon, appUrl, audience = "business" }) {
+export function getAppSection({ appUrl, audience = "business" }) {
   const lead =
     audience === "individual"
       ? "Events, spaces, people and support, right in your pocket."
@@ -30,13 +29,14 @@ export function getAppSection({ icon, appUrl, audience = "business" }) {
           ${badge(APP_STORE_URL, apple, "Download on the", "App Store")}
           ${badge(PLAY_STORE_URL, play, "Get it on", "Google Play")}
         </div>
-        <a class="get-app-web" href="${appUrl}" target="_blank" rel="noopener"><span>Get the app</span>${audience === "individual" ? "" : icon("arrow")}<small>No App Store or Play Store needed</small></a>
+        <div class="get-app-actions">
+          <a class="get-app-web" href="${appUrl}" target="_blank" rel="noopener">Get the app</a>
+          <small>No App Store or Play Store needed</small>
+        </div>
       </div>
       <div class="get-app-phones" data-reveal style="--d:120ms">
-        <div class="get-app-phone back">${audience === "individual" ? '<img src="/assets/individual/figma-checkin-phone.jpg" alt="" width="467" height="900" loading="eager" decoding="async">' : checkinPhone()}</div>
-        <div class="get-app-phone front">${audience === "individual" ? '<img src="/assets/individual/figma-home-phone.jpg" alt="Wellstaq app home screen with a daily check-in and upcoming event" width="467" height="900" loading="lazy" decoding="async">' : homePhone()}</div>
-        <span class="get-app-float f-a">${icon("activity")}<b>5-day streak</b></span>
-        <span class="get-app-float f-b">${icon("check")}<b>Works in your browser</b></span>
+        <div class="get-app-phone back"><img src="/assets/individual/figma-checkin-phone.jpg" alt="" width="467" height="900" loading="eager" decoding="async"></div>
+        <div class="get-app-phone front"><img src="/assets/individual/figma-home-phone.jpg" alt="Wellstaq app home screen with a daily check-in and upcoming event" width="467" height="900" loading="lazy" decoding="async"></div>
       </div>
     </div>
   </section>`;

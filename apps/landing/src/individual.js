@@ -327,7 +327,7 @@ function support(icon) {
         <h2 id="support-title">Someone to talk to. ${accent("Always.")}</h2>
         <p>Start with the AI coach. Talk to a therapist when you need more.</p>
       </div>
-      <div class="support-box" data-reveal>
+      <div class="support-run"><div class="support-box" data-reveal>
         <div class="support-tabs" role="tablist" aria-label="Support options">${tabs.map((t, i) => `<button role="tab" type="button" id="stab-${t.id}" aria-controls="spanel-${t.id}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}"><span>${t.label}</span><i aria-hidden="true"></i></button>`).join("")}</div>
         ${tabs
           .map(
@@ -340,7 +340,7 @@ function support(icon) {
         </div>`,
           )
           .join("")}
-      </div>
+      </div></div>
     </div>
   </section>`;
 }
@@ -640,16 +640,22 @@ export function initIndividual({ reducedMotion }) {
     );
   }
 
-  /* Support tabs: keyboard tabs that advance on their own until someone takes over. */
+  /* Support tabs follow scroll on large screens and auto-advance elsewhere. */
   const box = $(".support-box");
   if (box) {
+    const run = $(".support-run");
     const tabs = $$('[role="tab"]', box);
     const panels = $$('[role="tabpanel"]', box);
     let current = 0;
     let auto = !calm();
     let timer = 0;
     let visible = false;
+    let pinned = false;
+    let scrollFrame = 0;
     const DURATION = 6000;
+    const pinMedia = window.matchMedia(
+      "(min-width: 900px) and (min-height: 720px) and (prefers-reduced-motion: no-preference)",
+    );
     const select = (i, focus = false) => {
       current = (i + tabs.length) % tabs.length;
       tabs.forEach((t, n) => {
@@ -664,7 +670,7 @@ export function initIndividual({ reducedMotion }) {
     };
     const schedule = () => {
       clearTimeout(timer);
-      if (!auto || !visible || calm()) return;
+      if (!auto || !visible || calm() || pinned) return;
       const t = tabs[current];
       void t.offsetWidth;
       t.classList.add("running");
@@ -675,10 +681,38 @@ export function initIndividual({ reducedMotion }) {
       clearTimeout(timer);
       tabs.forEach((t) => t.classList.remove("running"));
     };
+    const scrollIndex = () => {
+      scrollFrame = 0;
+      if (!pinned) return;
+      const top = parseFloat(getComputedStyle(box).top) || 0;
+      const distance = run.offsetHeight - box.offsetHeight;
+      const progress = Math.max(0, Math.min(1, (top - run.getBoundingClientRect().top) / distance));
+      const index = Math.min(tabs.length - 1, Math.floor(progress * tabs.length));
+      if (index !== current) select(index);
+    };
+    const updatePin = () => {
+      const shouldPin = pinMedia.matches && box.offsetHeight + 112 < innerHeight;
+      pinned = shouldPin;
+      run.style.setProperty("--support-box-height", `${box.offsetHeight}px`);
+      run.classList.toggle("pin-ready", shouldPin);
+      if (shouldPin) {
+        clearTimeout(timer);
+        tabs.forEach((t) => t.classList.remove("running"));
+        scrollIndex();
+      } else schedule();
+    };
+    const jumpTo = (index) => {
+      if (!pinned) return;
+      const top = parseFloat(getComputedStyle(box).top) || 0;
+      const start = scrollY + run.getBoundingClientRect().top - top;
+      const distance = run.offsetHeight - box.offsetHeight;
+      scrollTo({ top: start + (index + 0.5) * distance / tabs.length, behavior: "instant" });
+    };
     tabs.forEach((t, i) => {
       t.addEventListener("click", () => {
         stop();
         select(i);
+        jumpTo(i);
       });
       t.addEventListener("keydown", (e) => {
         const keys = {
@@ -690,7 +724,9 @@ export function initIndividual({ reducedMotion }) {
         if (!(e.key in keys)) return;
         e.preventDefault();
         stop();
-        select(current + keys[e.key], true);
+        const next = (current + keys[e.key] + tabs.length) % tabs.length;
+        select(next, true);
+        jumpTo(next);
       });
     });
     box.addEventListener("focusin", stop);
@@ -712,6 +748,12 @@ export function initIndividual({ reducedMotion }) {
         { threshold: 0.35 },
       ).observe(box);
     }
+    window.addEventListener("scroll", () => {
+      if (pinned && !scrollFrame) scrollFrame = requestAnimationFrame(scrollIndex);
+    }, { passive: true });
+    window.addEventListener("resize", updatePin);
+    pinMedia.addEventListener("change", updatePin);
+    updatePin();
   }
 
   /* People carousel: native scrolling with arrows and a centred highlight. */

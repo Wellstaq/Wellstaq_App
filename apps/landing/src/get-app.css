@@ -112,61 +112,42 @@ a.store-badge:focus-visible {
 .store-badge.soon small {
   color: #ffc93c;
 }
+.get-app-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: max-content;
+  margin-top: 28px;
+  margin-left: 60px;
+}
 .get-app-web {
   display: inline-flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 12px;
-  margin-top: 28px;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 10px 26px;
+  border: 1px solid #ffffffb3;
+  border-radius: 999px;
   color: #fff;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 600;
   text-decoration: none;
+  transition: background var(--duration-fast), border-color var(--duration-fast);
 }
-.get-app-web span {
-  text-decoration: underline;
-  text-decoration-color: #ea6a05;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 6px;
-  transition:
-    text-decoration-color var(--duration-fast),
-    color var(--duration-fast);
+.get-app-web:hover {
+  background: #ffffff1a;
+  border-color: #fff;
 }
-.get-app-web small {
+.get-app-actions small {
+  color: #a5adb0;
   font-size: 14px;
   font-weight: 500;
-  color: #a5adb0;
-}
-.get-app-web small {
-  order: 3;
-}
-.get-app-web .icon {
-  align-self: center;
-  width: 18px;
-  height: 18px;
-  color: #ff9a4d;
-}
-.get-app-web:hover span {
-  color: #ffc93c;
-  text-decoration-color: #ffc93c;
-}
-.get-app-web:hover .icon {
-  transform: translateX(4px);
+  text-align: center;
 }
 .get-app-web:focus-visible {
   outline: 3px solid #ffc93c;
-  outline-offset: 6px;
-  border-radius: 6px;
-}
-.wellstaq-individual .get-app-web {
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  text-align: center;
-}
-.wellstaq-individual .get-app-web small {
-  flex-basis: auto;
+  outline-offset: 4px;
 }
 
 /* Two phones rising from the bottom edge */
@@ -180,14 +161,7 @@ a.store-badge:focus-visible {
   bottom: 0;
   width: 300px;
 }
-.get-app-phone .app-phone {
-  width: 100%;
-  height: 100%;
-  box-shadow:
-    0 0 0 1.5px #4a4b4f,
-    0 40px 80px -20px #000;
-}
-.wellstaq-individual .get-app-phone img {
+.get-app-phone img {
   position: absolute;
   top: 0;
   left: 0;
@@ -211,39 +185,6 @@ a.store-badge:focus-visible {
   transform-origin: bottom right;
   opacity: 0.9;
 }
-.get-app-float {
-  position: absolute;
-  z-index: 3;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 14px;
-  background: #ffffffeb;
-  color: var(--ink);
-  font-size: 13px;
-  box-shadow: 0 18px 30px -16px #000;
-  backdrop-filter: blur(8px);
-}
-.get-app-float .icon {
-  width: 18px;
-  height: 18px;
-  color: var(--action);
-}
-.get-app-float.f-b .icon {
-  color: var(--green);
-}
-.get-app-float.f-a {
-  top: 70px;
-  right: 2%;
-  transform: rotate(4deg);
-}
-.get-app-float.f-b {
-  bottom: 48px;
-  left: 0;
-  transform: rotate(-4deg);
-}
-
 @media (max-width: 1100px) {
   .get-app-panel {
     grid-template-columns: 1fr;
@@ -264,15 +205,9 @@ a.store-badge:focus-visible {
   }
 }
 @media (max-width: 760px) {
-  .wellstaq-individual .get-app-web {
-    justify-content: center;
-    align-items: center;
-    row-gap: 20px;
+  .get-app-actions {
     width: 100%;
-  }
-  .wellstaq-individual .get-app-web small {
-    width: 100%;
-    text-align: center;
+    margin-left: 0;
   }
   .get-app {
     margin: 88px 0 0;
@@ -320,23 +255,12 @@ a.store-badge:focus-visible {
   .get-app-phone.back {
     height: 290px;
   }
-  .get-app-float.f-b,
   .get-app-phone.back {
     display: none;
-  }
-  .get-app-web small {
-    flex-basis: 100%;
-  }
-  .get-app-float.f-a {
-    top: 40px;
-    right: 0;
   }
 }
 @media (max-width: 360px) {
   .store-badges {
     grid-template-columns: 1fr;
   }
-}
-.get-app-phone .ap-screen {
-  min-height: 100%;
 }

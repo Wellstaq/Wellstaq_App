@@ -1620,6 +1620,18 @@
   margin-top: 140px;
   scroll-margin-top: 90px;
 }
+.support-run {
+  position: relative;
+}
+@media (min-width: 900px) and (min-height: 720px) and (prefers-reduced-motion: no-preference) {
+  .support-run.pin-ready {
+    height: calc(var(--support-box-height) + 900px);
+  }
+  .support-run.pin-ready .support-box {
+    position: sticky;
+    top: clamp(88px, calc((100vh - 580px) / 2), 150px);
+  }
+}
 .support-box {
   border: 1px solid #e3e3dd;
   border-radius: 32px;
