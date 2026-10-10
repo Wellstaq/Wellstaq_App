@@ -866,9 +866,7 @@ summary:focus-visible .icon,
 .assistant > .frame {
   width: 100%;
   max-width: none;
-  padding: var(--section-space) max(48px, calc((100% - 1200px) / 2));
-  border-radius: var(--radius-panel);
-  background: var(--night);
+  padding: 0;
 }
 .assistant .section-head {
   max-width: 780px;
@@ -1436,12 +1434,24 @@ summary:focus-visible .icon,
     padding-bottom: 80px;
   }
   .ai-run.pin-ready {
-    height: 200vh;
+    height: 160vh;
   }
   .story-run.pin-ready {
     height: 220vh;
   }
-  .ai-run.pin-ready .sticky-stage,
+  .ai-run.pin-ready .sticky-stage {
+    position: sticky;
+    top: 100px;
+    padding-top: var(--ai-pin-top);
+    padding-bottom: var(--ai-pin-bottom);
+  }
+  .ai-run.pin-ready .section-head {
+    margin-bottom: var(--ai-pin-gap);
+  }
+  .ai-run .ai-list button {
+    min-height: 100px;
+    padding-block: 16px;
+  }
   .story-run.pin-ready .sticky-stage {
     position: sticky;
     top: 100px;
@@ -2807,9 +2817,14 @@ main section:not(.hero):not(.contact-hero):not(.legal-hero):not([class^="ind-"])
 /* ws-AI: whole section pins as one fixed-height stage */
 .ai-run {
   margin-top: 0;
+  --ai-pin-top: 40px;
+  --ai-pin-bottom: 40px;
+  --ai-pin-gap: 24px;
 }
 .ai-run .sticky-stage {
-  padding-top: 40px;
+  padding: 60px max(48px, calc((100% - 1200px) / 2)) 120px;
+  border-radius: var(--radius-panel);
+  background: var(--night);
 }
 .ai-run .section-head {
   margin-bottom: 48px;
@@ -2819,6 +2834,11 @@ main section:not(.hero):not(.contact-hero):not(.legal-hero):not([class^="ind-"])
 }
 .ai-run .ai-body {
   min-height: 250px;
+}
+@media (max-width: 760px) {
+  .ai-run .sticky-stage {
+    padding: 40px 24px 64px;
+  }
 }
 
 /* Keep partner logos centered in wrapped rows on mobile. */

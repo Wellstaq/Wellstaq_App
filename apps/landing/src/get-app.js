@@ -24,7 +24,6 @@ export function getAppSection({ icon, appUrl, audience = "business" }) {
     <div class="get-app-panel">
       <div class="get-app-glow" aria-hidden="true"></div>
       <div class="get-app-copy" data-reveal>
-        <span class="get-app-chip">${icon("phone")}Get the app now</span>
         <h2 id="get-app-title">Wellstaq, <span>in your pocket.</span></h2>
         <p>${lead}</p>
         <div class="store-badges">

@@ -862,11 +862,22 @@ const updateStickyFit = () => {
   stickyRuns.forEach((run) => {
     const stage = $(".sticky-stage", run);
     const extra = run.classList.contains("suite-run") ? 80 : 0;
-    const height =
-      stage.scrollHeight + (run.classList.contains("pin-ready") ? 0 : extra);
+    const height = run.classList.contains("ai-run")
+      ? (() => {
+          const styles = getComputedStyle(run);
+          const pinSize = (name) => parseFloat(styles.getPropertyValue(name)) || 0;
+          const head = $(".section-head", stage);
+          const grid = $(".ai-grid", stage);
+          return (
+            pinSize("--ai-pin-top") + head.offsetHeight +
+            pinSize("--ai-pin-gap") + grid.offsetHeight +
+            pinSize("--ai-pin-bottom")
+          );
+        })()
+      : stage.scrollHeight + (run.classList.contains("pin-ready") ? 0 : extra);
     run.classList.toggle(
       "pin-ready",
-      stickyTabsMedia.matches && height <= innerHeight - 116,
+      stickyTabsMedia.matches && height <= innerHeight - (run.classList.contains("ai-run") ? 112 : 116),
     );
   });
 };

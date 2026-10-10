@@ -121,7 +121,9 @@ export function fitWindows(root = document) {
     const avail = win.parentElement ? win.parentElement.clientWidth : w;
     const pad = parseFloat(getComputedStyle(win.parentElement).paddingLeft) || 0;
     const target = Math.max(200, avail - pad - (win.classList.contains("aw-events") ? pad : 0));
-    const scale = Math.min(1, target / w);
+    const scale = win.classList.contains("aw-pulse")
+      ? avail / w
+      : Math.min(1, target / w);
     win.style.setProperty("--aw-scale", scale.toFixed(4));
     win.style.height = `${Math.round(h * scale)}px`;
   };

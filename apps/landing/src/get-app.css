@@ -39,25 +39,9 @@
 .get-app-copy {
   padding: 80px 0;
 }
-.get-app-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px 6px 10px;
-  border-radius: 999px;
-  background: #ffffff12;
-  border: 1px solid #ffffff24;
-  font-size: 14px;
-  font-weight: 600;
-}
-.get-app-chip .icon {
-  width: 18px;
-  height: 18px;
-  color: #ffc93c;
-}
 .get-app h2,
 main section.get-app h2 {
-  margin-top: 20px;
+  margin-top: 0;
   color: #fff;
   font-family: var(--display);
   font-weight: 500;
@@ -66,10 +50,7 @@ main section.get-app h2 {
   letter-spacing: -0.04em;
 }
 .get-app h2 span {
-  background: linear-gradient(95deg, #ff8a2a, #ffc93c 45%, #6fd27c);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: inherit;
 }
 .get-app-copy > p {
   max-width: 440px;
