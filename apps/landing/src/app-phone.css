@@ -1,0 +1,239 @@
+/* Phone screens built in code (see app-phone.js). Sharp at every density. */
+.app-phone {
+  --ap-ink: #1c1d1f;
+  --ap-muted: #666b70;
+  width: min(100%, 360px);
+  margin-inline: auto;
+  border: 10px solid #1c1c1e;
+  border-bottom: 0;
+  border-radius: 48px 48px 0 0;
+  background: #faf8f4;
+  box-shadow: 0 0 0 1.5px #4a4b4f;
+  overflow: hidden;
+  color: var(--ap-ink);
+  font-family: Inter, system-ui, sans-serif;
+  position: relative;
+}
+.ap-screen {
+  padding: 0 16px 22px;
+  background: linear-gradient(180deg, #faf9f6 0%, #fbf5ec 100%);
+}
+.ap-status {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 50px;
+  margin-inline: -16px;
+  padding: 6px 26px 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.ap-island {
+  position: absolute;
+  left: 50%;
+  top: 11px;
+  width: 104px;
+  height: 30px;
+  transform: translateX(-50%);
+  border-radius: 20px;
+  background: #0c0c0d;
+}
+.ap-sys {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ap-sys svg {
+  fill: currentColor;
+}
+.ap-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+.ap-chip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 18px 4px 4px;
+  border: 1px solid #ece8df;
+  border-radius: 999px;
+  background: #ffffffb0;
+}
+.ap-avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #f6c4a0;
+  border-radius: 50%;
+  background: #fff;
+  color: #b04f00;
+  font-size: 12px;
+  font-weight: 600;
+}
+.ap-points {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ap-muted);
+  font-size: 15px;
+}
+.ap-points svg {
+  color: #d9650a;
+}
+.ap-bell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #fff;
+}
+.ap-bell i {
+  position: absolute;
+  top: 3px;
+  right: 1px;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #c45700;
+  color: #fff;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 600;
+}
+.ap-hello {
+  margin: 26px 0 4px;
+  color: var(--ap-muted);
+  font-size: 14px;
+}
+.ap-title {
+  margin: 0;
+  max-width: 260px;
+  font-size: 26px;
+  font-weight: 450;
+  line-height: 1.18;
+  letter-spacing: -0.03em;
+}
+.ap-streak {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 30px;
+}
+.ap-streak b {
+  font-size: 44px;
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.ap-streak span:not(.ap-bolt) {
+  color: var(--ap-muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+.ap-bolt {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-left: auto;
+  border-radius: 50%;
+  background: #fff;
+  color: #ea6a05;
+}
+
+/* Check-in screen */
+.ap-checkin .ap-screen {
+  background: #f8f5ee;
+}
+.ap-card {
+  position: relative;
+  margin-top: 6px;
+  padding: 26px 22px 0;
+  border-radius: 22px;
+  background:
+    radial-gradient(70% 80% at 100% 100%, #fbe3cb 0%, #fbe3cb00 70%),
+    #fff;
+  overflow: hidden;
+}
+.ap-orb {
+  position: absolute;
+  right: 26px;
+  top: 30px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #f9d6b4 0%, #f3dcc3 55%, #dfe7cd 100%);
+}
+.ap-eyebrow {
+  margin: 12px 0 8px;
+  color: #9a4f1c;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+.ap-q {
+  margin: 0 0 26px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+.ap-start {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-inline: -22px;
+  padding: 17px 22px;
+  border-top: 1px solid #ece7de;
+  color: #33363a;
+  font-size: 15px;
+}
+.ap-tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+.ap-tile {
+  padding: 16px 16px 40px;
+  border-radius: 18px;
+  background: #fff;
+}
+.ap-tile b {
+  display: block;
+  margin-top: 14px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.ap-ico {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+}
+.ap-ico-green {
+  background: #e3f3e6;
+  color: #2f8a45;
+}
+.ap-ico-blue {
+  background: #e6e9fb;
+  color: #4a58b8;
+}
+@media (max-width: 600px) {
+  .app-phone {
+    border-width: 8px;
+    border-radius: 40px 40px 0 0;
+  }
+  .ap-title {
+    font-size: 23px;
+  }
+}

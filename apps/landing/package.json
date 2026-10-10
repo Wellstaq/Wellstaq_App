@@ -1,0 +1,25 @@
+{
+  "name": "@wellstaq/landing",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "icons:sync": "node scripts/sync-iconsax.mjs",
+    "verify": "node scripts/verify.mjs",
+    "verify:redesign": "node scripts/verify-redesign.mjs",
+    "verify:business": "node scripts/verify-business.mjs",
+    "verify:individual": "node scripts/verify-individual.mjs",
+    "verify:a11y": "node scripts/verify-a11y.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "axe-core": "^4.13.0",
+    "iconsax": "^0.1.1",
+    "prettier": "^3.9.6",
+    "sharp": "^0.35.4",
+    "vite": "^7.1.0"
+  }
+}
