@@ -978,6 +978,26 @@
   border-radius: 40px;
   overflow: hidden;
 }
+.feature-panel.product-panel {
+  height: 520px;
+  padding: 0;
+  align-items: start;
+}
+.feature-product-shot {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.feature-product-shot img {
+  display: block;
+  width: min(390px, 100%);
+  height: auto;
+  flex: none;
+  clip-path: inset(0.8% 3% 0 round 48px 48px 0 0);
+}
 .feature-panel.tone-peach {
   background: radial-gradient(
     90% 90% at 20% 10%,
@@ -1615,6 +1635,7 @@
   position: relative;
   min-height: 60px;
   border: 0;
+  border-radius: 0;
   background: #fff;
   font:
     600 15px/1 Inter,
@@ -2482,6 +2503,10 @@
   .feature-panel {
     padding: 28px 14px;
     border-radius: 28px;
+  }
+  .feature-panel.product-panel {
+    height: 470px;
+    padding: 0;
   }
   .mock {
     padding: 16px;

@@ -33,8 +33,8 @@ export function getAppSection({ icon, appUrl, audience = "business" }) {
         <a class="get-app-web" href="${appUrl}" target="_blank" rel="noopener"><span>Get the app</span>${audience === "individual" ? "" : icon("arrow")}<small>No App Store or Play Store needed</small></a>
       </div>
       <div class="get-app-phones" data-reveal style="--d:120ms">
-        <div class="get-app-phone back">${checkinPhone()}</div>
-        <div class="get-app-phone front">${homePhone()}</div>
+        <div class="get-app-phone back">${audience === "individual" ? '<img src="/assets/individual/figma-checkin-phone.jpg" alt="" width="467" height="900" loading="eager" decoding="async">' : checkinPhone()}</div>
+        <div class="get-app-phone front">${audience === "individual" ? '<img src="/assets/individual/figma-home-phone.jpg" alt="Wellstaq app home screen with a daily check-in and upcoming event" width="467" height="900" loading="lazy" decoding="async">' : homePhone()}</div>
         <span class="get-app-float f-a">${icon("activity")}<b>5-day streak</b></span>
         <span class="get-app-float f-b">${icon("check")}<b>Works in your browser</b></span>
       </div>

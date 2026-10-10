@@ -130,26 +130,7 @@ function bigPicture(icon) {
 
 /* ---------- Four features on soft gradient panels ---------- */
 function eventsMock(icon) {
-  const filters = [
-    ["all", "All"],
-    ["health", "Health"],
-    ["money", "Money"],
-    ["growth", "Growth"],
-    ["social", "Social"],
-  ];
-  const list = [
-    ["health", "SAT", "14", "Wellness check & yoga", "Ikeja · 10:00"],
-    ["money", "TUE", "17", "Money moves for freelancers", "Online · 18:00"],
-    ["growth", "THU", "19", "Public speaking workshop", "Yaba · 17:30"],
-    ["social", "FRI", "20", "Remote workers' games night", "Lekki · 19:00"],
-    ["social", "SUN", "22", "Team-building hike", "Lekki · 07:00"],
-    ["health", "MON", "23", "Desk stretch session", "Online · 12:30"],
-  ];
-  return `<div class="mock mock-events">
-    <div class="mock-top"><strong>Events near you</strong><span class="live">This week</span></div>
-    <div class="mock-filters" role="group" aria-label="Filter sample events">${filters.map(([id, label], i) => `<button type="button" data-filter="${id}" aria-pressed="${i === 0}">${label}</button>`).join("")}</div>
-    <ul class="event-list">${list.map(([tone, d, n, title, meta]) => `<li data-tone="${tone}"><div class="ev-date tone-${tone}"><small>${d}</small><b>${n}</b></div><div><strong>${title}</strong><small>${meta}</small></div><span class="ev-rsvp" aria-hidden="true">RSVP</span></li>`).join("")}</ul>
-  </div>`;
+  return `<div class="feature-product-shot">${img("/assets/individual/figma-events-phone.jpg", "Wellstaq Events screen showing upcoming activities", 467, 900)}</div>`;
 }
 
 function spacesMock(icon) {
@@ -183,17 +164,7 @@ function spacesMock(icon) {
 }
 
 function communityMock(icon) {
-  const msgs = [
-    ["T", "#ea6a05", "Tunde", "Anyone co-working in Lekki tomorrow?", ""],
-    ["Z", "#37b047", "Zainab", "Yes! Brew & Work has the best Wi-Fi", ""],
-    ["", "", "You", "Count me in. 10am?", "me"],
-    ["K", "#5c5c63", "Kelechi", "Same. Then the games night on Friday?", ""],
-  ];
-  return `<div class="mock mock-chat">
-    <div class="mock-top"><div class="chat-room"><span class="chat-room-icon">${icon("community")}</span><div><strong>Lagos remote crew</strong><small><i></i>12 online</small></div></div><span class="live">Group</span></div>
-    <div class="chat-body">${msgs.map(([init, color, name, text, me], i) => `<div class="msg ${me}" style="--d:${300 + i * 500}ms">${me ? "" : `<i class="av" style="--c:${color}">${init}</i>`}<div><small>${name}</small><p>${text}</p></div></div>`).join("")}<div class="msg is-typing" style="--d:${300 + msgs.length * 500}ms"><i class="av" style="--c:#ffc93c">B</i><p><span></span><span></span><span></span></p></div></div>
-    <div class="chat-input"><span>Say hello…</span><i>${icon("send")}</i></div>
-  </div>`;
+  return `<div class="feature-product-shot">${img("/assets/individual/figma-spaces-phone.jpg", "Wellstaq Spaces screen showing the community feed", 467, 900)}</div>`;
 }
 
 function wellbeingMock(icon) {
@@ -270,7 +241,7 @@ function features(icon) {
   return `<section class="ind-features" aria-label="What you get">${rows
     .map(
       (r, i) => `<div class="feature-row${i % 2 ? " flip" : ""}" id="${r.id}">
-        <div class="feature-panel tone-${r.tone}" data-reveal>${r.mock}</div>
+        <div class="feature-panel tone-${r.tone}${r.id === "events" || r.id === "community" ? " product-panel" : ""}" data-reveal>${r.mock}</div>
         <div class="feature-copy" data-reveal style="--d:90ms">
           ${chip(icon, r.chip[0], r.chip[1], `tone-${r.tone}`)}
           <h2>${r.title}</h2>
@@ -636,21 +607,6 @@ export function initIndividual({ reducedMotion }) {
   else window.addEventListener("load", measure, { once: true });
   measure();
 
-  /* Events: sample filters */
-  const eventsMockEl = $(".mock-events");
-  if (eventsMockEl) {
-    const buttons = $$("[data-filter]", eventsMockEl);
-    buttons.forEach((b) =>
-      b.addEventListener("click", () => {
-        buttons.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
-        const f = b.dataset.filter;
-        $$(".event-list li", eventsMockEl).forEach((li) => {
-          li.hidden = f !== "all" && li.dataset.tone !== f;
-        });
-      }),
-    );
-  }
-
   /* Spaces: map pins switch the card */
   const spacesEl = $(".mock-spaces");
   if (spacesEl) {
@@ -682,25 +638,6 @@ export function initIndividual({ reducedMotion }) {
         $(".mood-reply", moodEl).textContent = replies[+b.dataset.mood];
       }),
     );
-  }
-
-  /* Community chat plays once when it comes into view. */
-  const chat = $(".mock-chat");
-  if (chat) {
-    if (calm() || !("IntersectionObserver" in window))
-      chat.classList.add("play");
-    else {
-      const io = new IntersectionObserver(
-        (entries) => {
-          if (entries.some((e) => e.isIntersecting)) {
-            chat.classList.add("play");
-            io.disconnect();
-          }
-        },
-        { threshold: 0.4 },
-      );
-      io.observe(chat);
-    }
   }
 
   /* Support tabs: keyboard tabs that advance on their own until someone takes over. */

@@ -187,6 +187,15 @@ a.store-badge:focus-visible {
     0 0 0 1.5px #4a4b4f,
     0 40px 80px -20px #000;
 }
+.wellstaq-individual .get-app-phone img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: auto;
+  clip-path: inset(0.8% 3% 0 round 44px 44px 0 0);
+}
 .get-app-phone.front {
   left: 50%;
   height: 470px;
