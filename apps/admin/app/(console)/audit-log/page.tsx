@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ScrollText } from "lucide-react";
+import { Input } from "@wellstaq/ui/input";
 import { PageHeader } from "@/components/ui/page-header";
 import { SearchInput, Toolbar } from "@/components/ui/toolbar";
 import { DataTable, type Column } from "@/components/ui/data-table";
@@ -36,18 +37,28 @@ const columns: Column<AuditEntry>[] = [
 export default function AuditLogPage() {
   const [query, setQuery] = useState("");
   const [target, setTarget] = useState<"all" | AuditTargetType>("all");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [page, setPage] = useState(1);
   const debouncedQuery = useDebouncedValue(query.trim());
 
   const entries = useResource(
     (signal) =>
       adminApi.auditLog.list(
-        { q: debouncedQuery || undefined, targetType: target === "all" ? undefined : target, offset: (page - 1) * PAGE_SIZE, limit: PAGE_SIZE },
+        {
+          q: debouncedQuery || undefined,
+          targetType: target === "all" ? undefined : target,
+          startDate: startDate || undefined,
+          endDate: endDate || undefined,
+          offset: (page - 1) * PAGE_SIZE,
+          limit: PAGE_SIZE,
+        },
         { signal },
       ),
-    [debouncedQuery, target, page],
+    [debouncedQuery, target, startDate, endDate, page],
   );
-  const isFiltered = Boolean(debouncedQuery) || target !== "all";
+  const isFiltered = Boolean(debouncedQuery) || target !== "all" || Boolean(startDate) || Boolean(endDate);
+  const clearFilters = () => { setQuery(""); setTarget("all"); setStartDate(""); setEndDate(""); setPage(1); };
 
   return (
     <>
@@ -56,9 +67,14 @@ export default function AuditLogPage() {
       <section className="rounded-[14px] border border-line bg-white p-4 sm:p-5" aria-label="Audit log">
         <Toolbar>
           <SearchInput value={query} onChange={(value) => { setQuery(value); setPage(1); }} label="Search the audit log" placeholder="Search by admin or record" />
-          <select aria-label="Filter by record type" value={target} onChange={(event) => { setTarget(event.target.value as "all" | AuditTargetType); setPage(1); }} className="h-10 border border-line bg-white text-sm">
-            {TARGETS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-          </select>
+          <div className="flex flex-wrap items-center gap-2">
+            <select aria-label="Filter by record type" value={target} onChange={(event) => { setTarget(event.target.value as "all" | AuditTargetType); setPage(1); }} className="h-10 border border-line bg-white text-sm">
+              {TARGETS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+            </select>
+            <Input aria-label="From date" type="date" value={startDate} max={endDate || undefined} onChange={(event) => { setStartDate(event.target.value); setPage(1); }} className="h-10 w-[150px] py-0 text-sm" />
+            <span className="text-sm text-grey-3">to</span>
+            <Input aria-label="To date" type="date" value={endDate} min={startDate || undefined} onChange={(event) => { setEndDate(event.target.value); setPage(1); }} className="h-10 w-[150px] py-0 text-sm" />
+          </div>
         </Toolbar>
 
         {entries.isLoading && !entries.data ? (
@@ -67,7 +83,7 @@ export default function AuditLogPage() {
           <ErrorPanel error={entries.error} onRetry={entries.reload} />
         ) : !entries.data?.items.length ? (
           isFiltered ? (
-            <NoResults onClear={() => { setQuery(""); setTarget("all"); setPage(1); }} />
+            <NoResults onClear={clearFilters} />
           ) : (
             <EmptyState icon={ScrollText} title="No activity yet" description="Suspensions, event changes and admin changes are recorded here as they happen." />
           )
