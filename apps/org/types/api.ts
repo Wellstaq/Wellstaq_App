@@ -236,6 +236,8 @@ export interface ActivitySummaryResponse {
 }
 export type ChallengeStatus = "upcoming" | "active" | "completed" | "cancelled" | "archived";
 
+export type ChallengeTrackingMethod = "automatic" | "self_reported" | "evidence_based" | "platform_recorded";
+
 export interface WellbeingChallenge {
   id: string;
   name: string;
@@ -258,6 +260,10 @@ export interface ChallengeItem {
   metricType: string;
   targetType: string;
   targetValue: string;
+  trackingMethod: ChallengeTrackingMethod;
+  activityLabel: string | null;
+  evidenceRequired: boolean;
+  requiresApproval: boolean;
   createdBy: string;
   createdAt: string;
   participantCount: number;
@@ -281,6 +287,7 @@ export interface ChallengeParticipant {
   firstName: string;
   lastName: string;
   rank: number;
+  score: number | null;
   completedAt: string | null;
   joinedAt: string;
 }
@@ -303,6 +310,10 @@ export interface CreateChallengePayload {
   metricType: string;
   targetType: string;
   targetValue: number;
+  trackingMethod: ChallengeTrackingMethod;
+  activityLabel?: string;
+  evidenceRequired?: boolean;
+  requiresApproval?: boolean;
 }
 
 export interface UpdateChallengePayload {
@@ -315,6 +326,69 @@ export interface UpdateChallengePayload {
   targetType?: string;
   targetValue?: number;
   status?: string;
+  trackingMethod?: ChallengeTrackingMethod;
+  activityLabel?: string;
+  evidenceRequired?: boolean;
+  requiresApproval?: boolean;
+}
+
+export interface ChallengeSubmission {
+  id: string;
+  userId: string;
+  firstName: string;
+  lastName: string;
+  entryDate: string;
+  photoUrl: string | null;
+  note: string | null;
+  reviewStatus: "pending" | "approved" | "rejected";
+  rejectionReason: string | null;
+}
+
+export interface ChallengeSubmissionListResponse {
+  items: ChallengeSubmission[];
+  total: number;
+  offset: number;
+  limit: number;
+}
+
+export interface ChallengeSubmissionReviewPayload {
+  action: "approve" | "reject";
+  reason?: string;
+}
+
+export interface ChallengeSubmissionReviewResponse {
+  id: string;
+  challengeId: string;
+  userId: string;
+  entryDate: string;
+  photoUrl: string | null;
+  note: string | null;
+  reviewStatus: "pending" | "approved" | "rejected";
+  rejectionReason: string | null;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+}
+
+export interface ChallengeLeaderboardEntry {
+  rank: number;
+  userId: string;
+  firstName: string;
+  lastName: string;
+  score: number | null;
+  completedAt: string | null;
+  currentValue: number;
+  percentComplete: number;
+}
+
+export interface ChallengeLeaderboardResponse {
+  items: ChallengeLeaderboardEntry[];
+  total: number;
+  offset: number;
+  limit: number;
+}
+
+export interface UpdateParticipantScorePayload {
+  score: number;
 }
 
 export interface JoinChallengeResponse {
@@ -332,6 +406,8 @@ export interface ChallengeStatsResponse {
   totalParticipantsTrend: TrendData | null;
   completionRate: number;
   completionRateTrend: TrendData | null;
+  completedChallenges: number;
+  upcomingChallenges: number;
 }
 
 export type ChallengeStatsPeriod = "week" | "month" | "six_months" | "custom";

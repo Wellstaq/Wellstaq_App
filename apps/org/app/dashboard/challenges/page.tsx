@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Search, Plus, Trophy, Users, Calendar, CheckCircle2, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { Search, Plus, Trophy, Users, Calendar, CheckCircle2, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, CalendarClock, BadgeCheck } from "lucide-react";
 import { api } from "@/services/api";
 import { useDashboardData } from "@/components/providers/dashboard-data-provider";
 import { useDashboardScope } from "@/lib/scope";
@@ -47,6 +47,13 @@ function daysLeft(endDate: string): number {
   return Math.max(0, Math.ceil(diff / 86_400_000));
 }
 
+const TRACKING_METHOD_LABELS: Record<string, string> = {
+  automatic: "Automatic",
+  self_reported: "Self-reported",
+  evidence_based: "Evidence-based",
+  platform_recorded: "Platform recorded",
+};
+
 function TrendLabel({ trend }: { trend: TrendData | null }) {
   if (!trend) return <span className="text-xs font-medium text-grey-3">No trend data yet</span>;
   const isUp = trend.changePct >= 0;
@@ -79,6 +86,8 @@ export default function ChallengesPage() {
     activeChallenges: 0, activeChallengesTrend: null as TrendData | null,
     totalParticipants: 0, totalParticipantsTrend: null as TrendData | null,
     completionRate: 0, completionRateTrend: null as TrendData | null,
+    completedChallenges: 0,
+    upcomingChallenges: 0,
   });
 
   const canCreate = currentUser ? hasPermission(currentUser.permissions, "challenge.create") : false;
@@ -187,6 +196,8 @@ export default function ChallengesPage() {
           activeChallenges: 0, activeChallengesTrend: null,
           totalParticipants: 0, totalParticipantsTrend: null,
           completionRate: 0, completionRateTrend: null,
+          completedChallenges: 0,
+          upcomingChallenges: 0,
         });
       }
     }
@@ -250,7 +261,7 @@ export default function ChallengesPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-[12px] mb-0">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-[12px] mb-0">
         <div className="bg-white p-[14px] rounded-[12px] border border-grey-4">
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-orange-50 text-orange-600">
@@ -280,6 +291,24 @@ export default function ChallengesPage() {
           </div>
           <div className="text-sm font-medium text-grey-2 mb-1">Completion Rate</div>
           <div className="text-xl font-bold text-grey-1">{stats.completionRate}%</div>
+        </div>
+        <div className="bg-white p-[14px] rounded-[12px] border border-grey-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-purple-50 text-purple-600">
+              <BadgeCheck className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="text-sm font-medium text-grey-2 mb-1">Completed Challenges</div>
+          <div className="text-xl font-bold text-grey-1">{stats.completedChallenges}</div>
+        </div>
+        <div className="bg-white p-[14px] rounded-[12px] border border-grey-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-amber-50 text-amber-600">
+              <CalendarClock className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="text-sm font-medium text-grey-2 mb-1">Upcoming Challenges</div>
+          <div className="text-xl font-bold text-grey-1">{stats.upcomingChallenges}</div>
         </div>
       </div>
 
@@ -340,6 +369,10 @@ export default function ChallengesPage() {
             {filteredChallenges.map((challenge) => {
               const categoryLabel = challenge.wellbeingChallengeId ? wellbeingNames[challenge.wellbeingChallengeId] : null;
               const progress = challenge.completionRate ?? 0;
+              const audienceLabel = challenge.branchId
+                ? branches.find((b) => b.id === challenge.branchId)?.name ?? "Branch"
+                : "Organization-wide";
+              const trackingMethodLabel = TRACKING_METHOD_LABELS[challenge.trackingMethod] ?? challenge.trackingMethod;
 
               return (
                 <Link
@@ -369,6 +402,10 @@ export default function ChallengesPage() {
                     <div className="flex flex-col gap-1">
                       <h3 className="font-medium text-[#4D4D4D] text-[14px] leading-[20px] line-clamp-1">{challenge.name}</h3>
                       <p className="text-[12px] leading-[16px] text-[#999999] line-clamp-2">{challenge.description}</p>
+                      <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-grey-5 text-grey-2">{audienceLabel}</span>
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-grey-5 text-grey-2">{trackingMethodLabel}</span>
+                      </div>
                     </div>
 
                     <div className="flex flex-col gap-2 mt-auto">

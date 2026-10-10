@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { api } from "@/services/api";
 import { useDashboardData } from "@/components/providers/dashboard-data-provider";
-import type { ChallengeItem } from "@/types/api";
+import type { ChallengeItem, ChallengeTrackingMethod } from "@/types/api";
 
 export function EditChallengeModal({
   isOpen,
@@ -28,7 +28,14 @@ export function EditChallengeModal({
   const [startDate, setStartDate] = useState(challenge.startDate);
   const [endDate, setEndDate] = useState(challenge.endDate);
   const [targetValue, setTargetValue] = useState(challenge.targetValue);
+  const [trackingMethod, setTrackingMethod] = useState<ChallengeTrackingMethod>(challenge.trackingMethod);
+  const [activityLabel, setActivityLabel] = useState(challenge.activityLabel ?? "");
+  const [evidenceRequired, setEvidenceRequired] = useState(challenge.evidenceRequired);
+  const [requiresApproval, setRequiresApproval] = useState(challenge.requiresApproval);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const showActivityLabel = trackingMethod === "self_reported" || trackingMethod === "evidence_based";
+  const isEvidenceBased = trackingMethod === "evidence_based";
 
   useEffect(() => {
     if (!isOpen) return;
@@ -37,6 +44,10 @@ export function EditChallengeModal({
     setStartDate(challenge.startDate);
     setEndDate(challenge.endDate);
     setTargetValue(challenge.targetValue);
+    setTrackingMethod(challenge.trackingMethod);
+    setActivityLabel(challenge.activityLabel ?? "");
+    setEvidenceRequired(challenge.evidenceRequired);
+    setRequiresApproval(challenge.requiresApproval);
   }, [isOpen, challenge]);
 
 
@@ -71,6 +82,10 @@ export function EditChallengeModal({
         startDate,
         endDate,
         targetValue: Number(targetValue),
+        trackingMethod,
+        activityLabel: showActivityLabel ? activityLabel.trim() || undefined : undefined,
+        evidenceRequired: isEvidenceBased ? evidenceRequired : undefined,
+        requiresApproval: isEvidenceBased ? requiresApproval : undefined,
       });
       toast.success("Challenge updated");
       onUpdated(updated);
@@ -128,6 +143,46 @@ export function EditChallengeModal({
           <Label htmlFor="editTarget">Target Value</Label>
           <Input id="editTarget" type="number" min="0" step="any" value={targetValue} onChange={(e) => setTargetValue(e.target.value)} required />
         </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="editTrackingMethod">How progress is tracked</Label>
+          <select
+            id="editTrackingMethod"
+            value={trackingMethod}
+            onChange={(e) => setTrackingMethod(e.target.value as ChallengeTrackingMethod)}
+            className="w-full h-[44px] rounded-[8px] border border-grey-4 bg-white px-3 text-sm"
+          >
+            <option value="automatic">Automatic — phone or wearable health data</option>
+            <option value="self_reported">Self-reported — mark the activity complete</option>
+            <option value="evidence_based">Evidence-based — photo and optional notes</option>
+            <option value="platform_recorded">Platform recorded — event, club or in-app activity</option>
+          </select>
+        </div>
+
+        {showActivityLabel && (
+          <div className="space-y-2">
+            <Label htmlFor="editActivityLabel">Activity</Label>
+            <Input
+              id="editActivityLabel"
+              placeholder="e.g. Prepare a healthy meal containing vegetables"
+              value={activityLabel}
+              onChange={(e) => setActivityLabel(e.target.value)}
+            />
+          </div>
+        )}
+
+        {isEvidenceBased && (
+          <div className="grid grid-cols-2 gap-4">
+            <label className="flex items-center gap-2 rounded-[8px] border border-grey-4 bg-white px-3 h-[44px] text-sm cursor-pointer">
+              <input type="checkbox" checked={evidenceRequired} onChange={(e) => setEvidenceRequired(e.target.checked)} />
+              Evidence required
+            </label>
+            <label className="flex items-center gap-2 rounded-[8px] border border-grey-4 bg-white px-3 h-[44px] text-sm cursor-pointer">
+              <input type="checkbox" checked={requiresApproval} onChange={(e) => setRequiresApproval(e.target.checked)} />
+              Requires admin approval
+            </label>
+          </div>
+        )}
       </form>
     </Modal>
   );
