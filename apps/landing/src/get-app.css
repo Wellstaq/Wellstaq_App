@@ -177,6 +177,16 @@ a.store-badge:focus-visible {
   outline-offset: 6px;
   border-radius: 6px;
 }
+.wellstaq-individual .get-app-web {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+.wellstaq-individual .get-app-web small {
+  flex-basis: auto;
+}
 
 /* Two phones rising from the bottom edge */
 .get-app-phones {

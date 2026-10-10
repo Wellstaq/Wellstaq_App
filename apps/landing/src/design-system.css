@@ -815,7 +815,7 @@ summary:focus-visible .icon,
   border: 0;
   margin-top: 64px;
   gap: 28px;
-  align-items: start;
+  align-items: stretch;
 }
 .exp-card,
 .exp-card:nth-child(2n) {
@@ -823,12 +823,8 @@ summary:focus-visible .icon,
   padding: 40px 40px 0;
   border-radius: 28px;
   background: #fff;
-}
-.exp-card:nth-child(2) {
-  margin-top: 64px;
-}
-.exp-card:nth-child(3) {
-  margin-top: -64px;
+  display: flex;
+  flex-direction: column;
 }
 .exp-card:hover {
   background: #fff;
@@ -843,6 +839,7 @@ summary:focus-visible .icon,
   line-height: 1.7;
   max-width: 480px;
   min-height: 0;
+  margin-bottom: 32px;
 }
 .exp-card > .eyebrow {
   min-height: 0;
@@ -850,7 +847,7 @@ summary:focus-visible .icon,
   gap: 0;
 }
 .exp-photo {
-  margin: 32px -40px 0;
+  margin: auto -40px 0;
   aspect-ratio: 16 / 10;
   background: var(--green-soft);
 }
@@ -2192,6 +2189,7 @@ summary:focus-visible .icon,
   .exp-card p {
     min-height: 0;
     font-size: 15px;
+    margin-bottom: 0;
   }
   .exp-photo {
     margin: 28px -24px 0;
@@ -2823,13 +2821,12 @@ main section:not(.hero):not(.contact-hero):not(.legal-hero):not([class^="ind-"])
   min-height: 250px;
 }
 
-/* Partner logos stack in one column on mobile */
+/* Keep partner logos centered in wrapped rows on mobile. */
 @media (max-width: 760px) {
   .marquee-track {
-    grid-template-columns: 1fr;
-    justify-items: start;
-    place-items: start;
-    gap: 28px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    place-items: center;
+    gap: 20px 10px;
   }
   .partner-logo {
     transform: none;
@@ -2947,4 +2944,52 @@ main section:not(.hero):not(.contact-hero):not(.legal-hero):not([class^="ind-"])
 main > section.individual-soon:not(.hero) {
   margin-top: 8px !important;
   padding-top: 24px;
+}
+
+/* Business landing: compact mobile cards without changing the desktop grid. */
+@media (max-width: 760px) {
+  main #platform .loop-col,
+  main #platform .pillar {
+    padding: 12px !important;
+  }
+  main #platform .pillar {
+    grid-template-columns: 28px minmax(0, 1fr);
+    column-gap: 12px;
+    row-gap: 6px;
+    align-items: start;
+  }
+  main #platform .pillar-icon {
+    margin: 0;
+    align-self: start;
+  }
+  main #platform .pillar h3 {
+    margin: 0;
+  }
+  main .why-row {
+    padding: 12px 0;
+  }
+  main .stats-grid .stat:last-child {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  main #solutions .suite-panel {
+    background: transparent;
+  }
+  main #solutions .suite-copy h3 {
+    font-size: clamp(24px, 6.6vw, 30px);
+  }
+  main #experience .exp-card {
+    padding: 12px !important;
+  }
+  main #experience .exp-photo {
+    order: -1;
+    margin: -12px -12px 20px;
+  }
+}
+
+@media (max-width: 400px) {
+  .hero h1 {
+    font-size: 32px;
+  }
 }

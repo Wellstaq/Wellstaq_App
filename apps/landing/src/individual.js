@@ -20,7 +20,7 @@ function waitlistForm(icon, id, variant = "") {
     <label class="visually-hidden" for="${id}-email">Your email address</label>
     <div class="waitlist-field">
       <input id="${id}-email" name="email" type="email" autocomplete="email" placeholder="you@email.com" required>
-      <button class="waitlist-submit" type="submit"><span>Join the waitlist</span>${icon("arrow")}</button>
+      <button class="waitlist-submit" type="submit">Join the waitlist</button>
     </div>
     <a class="waitlist-email-link" hidden>Open email draft${icon("arrow")}</a>
     <p class="waitlist-status" role="status" aria-live="polite"></p>
@@ -51,7 +51,7 @@ function feedCards(icon) {
     },
     {
       slot: "space",
-      html: `<div class="fc fc-photo fc-space">${img("/assets/individual/gym-800.webp", "", 800, 533)}<div class="fc-space-card"><span>${icon("gym")}</span><div><strong>FitHub Studio</strong><small>Gym · 0.8 km</small></div></div></div>`,
+      html: `<div class="fc fc-photo fc-space">${img("/assets/individual/gym-buddies-nigeria.webp", "", 800, 800)}<div class="fc-space-card"><span>${icon("gym")}</span><div><strong>FitHub Studio</strong><small>Gym · 0.8 km</small></div></div></div>`,
     },
     {
       slot: "chat",
@@ -65,7 +65,7 @@ function hero(icon) {
   return `<section class="ind-hero" aria-labelledby="ind-title">
     <div class="ind-hero-glow" aria-hidden="true"></div>
     <div class="ind-hero-copy">
-      <a class="ind-pill" href="#waitlist"><b>New</b>Wellstaq for individuals${icon("arrow")}</a>
+      <span class="ind-pill">Wellstaq for individuals</span>
       <h1 id="ind-title">Workplace perks,<br>${accent("without the workplace.")}</h1>
       <p class="ind-lead">Events, spaces, people and support for freelancers and remote workers. No company needed.</p>
       ${waitlistForm(icon, "waitlist-hero")}
@@ -497,7 +497,7 @@ function finalCta(icon) {
   /* Small thumbnails, loaded eagerly: the outer ones sit off-screen sideways. */
   const arc = Array.from(
     { length: 11 },
-    (_, i) => `/assets/individual/arc-${String(i + 1).padStart(2, "0")}.webp`,
+    (_, i) => `/assets/individual/arc-nigeria-${String(i + 1).padStart(2, "0")}.webp`,
   );
   const mid = (arc.length - 1) / 2;
   return `<section class="ind-final" id="waitlist" aria-labelledby="final-title">
