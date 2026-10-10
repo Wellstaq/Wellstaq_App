@@ -29,9 +29,9 @@ export function OrganizationPicker({ value, onChange, invalid }: { value: Picked
       {value.length > 0 && (
         <ul className="flex flex-wrap gap-2" aria-label="Selected organizations">
           {value.map((organization) => (
-            <li key={organization.id} className="inline-flex items-center gap-1 rounded-[8px] border border-primary-border bg-primary-5 py-1 pl-2.5 pr-1 text-xs font-medium text-warning-text">
+            <li key={organization.id} className="inline-flex h-10 items-center gap-1 rounded-[8px] border border-primary-border bg-primary-5 pl-2.5 pr-1 text-xs font-medium text-warning-text">
               {organization.name}
-              <button type="button" onClick={() => toggle(organization)} aria-label={`Remove ${organization.name}`} className="flex h-5 w-5 items-center justify-center rounded hover:bg-primary-mid">
+              <button type="button" onClick={() => toggle(organization)} aria-label={`Remove ${organization.name}`} className="flex h-10 w-8 items-center justify-center rounded hover:bg-primary-mid">
                 <X className="h-3 w-3" aria-hidden="true" />
               </button>
             </li>
@@ -60,7 +60,7 @@ export function OrganizationPicker({ value, onChange, invalid }: { value: Picked
           ) : results.error ? (
             <p className="px-3 py-3 text-sm text-error-1">
               {results.error.message}{" "}
-              <button type="button" onClick={results.reload} className="font-medium underline">Try again</button>
+              <button type="button" onClick={results.reload} className="inline-flex h-10 items-center font-medium underline">Try again</button>
             </p>
           ) : !results.data?.items.length ? (
             <p className="px-3 py-3 text-sm text-grey-2">{debouncedQuery ? "No active organizations match that search." : "No active organizations yet."}</p>
@@ -70,7 +70,7 @@ export function OrganizationPicker({ value, onChange, invalid }: { value: Picked
                 const selected = selectedIds.has(organization.id);
                 return (
                   <li key={organization.id} role="option" aria-selected={selected}>
-                    <button type="button" onClick={() => toggle({ id: organization.id, name: organization.name })} className="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left hover:bg-grey-5">
+                    <button type="button" onClick={() => toggle({ id: organization.id, name: organization.name })} className="flex h-10 w-full items-center justify-between gap-3 px-3 text-left hover:bg-grey-5">
                       <span className="min-w-0">
                         <span className="block truncate text-sm font-medium text-grey-1">{organization.name}</span>
                         <span className="block text-xs text-grey-2">{plural(organization.employeeCount, "employee")}</span>

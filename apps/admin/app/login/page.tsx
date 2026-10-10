@@ -4,8 +4,8 @@ import { Suspense, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
-import { Button } from "@wellstaq/ui/button";
-import { Input } from "@wellstaq/ui/input";
+import { Button } from "@/components/ui/controls";
+import { Input } from "@/components/ui/controls";
 import { Label } from "@wellstaq/ui/label";
 import { AuthCard, FormAlert } from "@/components/shell/auth-card";
 import { primaryButton } from "@/components/ui/button-styles";
@@ -31,7 +31,6 @@ function signInError(error: unknown): string {
 
 const REASONS: Record<string, string> = {
   expired: "Your session ended. Sign in again to continue.",
-  signed_out: "You've signed out.",
 };
 
 function LoginForm() {
@@ -120,7 +119,7 @@ function LoginForm() {
               setCode("");
               setError(null);
             }}
-            className="text-sm font-medium text-grey-2 hover:text-grey-1"
+            className="h-10 text-sm font-medium text-grey-2 hover:text-grey-1"
           >
             Use a different account
           </button>
@@ -174,7 +173,7 @@ function LoginForm() {
               onClick={() => setShowPassword((value) => !value)}
               aria-label={showPassword ? "Hide password" : "Show password"}
               aria-pressed={showPassword}
-              className="absolute right-3 top-1/2 -translate-y-1/2 rounded text-grey-3 hover:text-grey-1"
+              className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded text-grey-3 hover:text-grey-1"
             >
               {showPassword ? <EyeOff className="h-5 w-5" aria-hidden="true" /> : <Eye className="h-5 w-5" aria-hidden="true" />}
             </button>

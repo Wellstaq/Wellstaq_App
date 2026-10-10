@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { ImagePlus, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import { Modal } from "@wellstaq/ui/modal";
-import { Button } from "@wellstaq/ui/button";
-import { Input } from "@wellstaq/ui/input";
+import { Button } from "@/components/ui/controls";
+import { Input } from "@/components/ui/controls";
 import { Label } from "@wellstaq/ui/label";
 import { cn } from "@wellstaq/ui/utils";
 import { primaryButton, secondaryButton } from "@/components/ui/button-styles";
@@ -223,7 +223,7 @@ export function EventFormDrawer({
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor={fieldId("timezone")} className="text-sm font-medium text-grey-1">Time zone</Label>
-            <select id={fieldId("timezone")} value={form.timezone} onChange={(e) => update("timezone", e.target.value)} className="h-12 w-full border border-line bg-white text-sm">
+            <select id={fieldId("timezone")} value={form.timezone} onChange={(e) => update("timezone", e.target.value)} className="h-10 w-full border border-line bg-white text-sm">
               {zones.map((zone) => <option key={zone} value={zone}>{zone.replace(/_/g, " ")}</option>)}
             </select>
           </div>
@@ -232,6 +232,20 @@ export function EventFormDrawer({
             <Input id={fieldId("endDate")} type="date" value={form.endDate} min={form.startDate || undefined} onChange={(e) => update("endDate", e.target.value)} aria-invalid={Boolean(showError("endDate")) || undefined} aria-describedby={describedBy("endDate")} />
             <ErrorText name="endDate" />
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor={fieldId("location")} className="text-sm font-medium text-grey-1">Location</Label>
+              <Input id={fieldId("location")} placeholder="e.g. Lagos or online" disabled aria-describedby={fieldId("event-options-help")} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor={fieldId("maxParticipants")} className="text-sm font-medium text-grey-1">Maximum participants</Label>
+              <Input id={fieldId("maxParticipants")} type="number" min={1} placeholder="Unlimited" disabled aria-describedby={fieldId("event-options-help")} />
+            </div>
+          </div>
+          <p id={fieldId("event-options-help")} className="text-xs leading-5 text-grey-2">Location and participant limits will be available when the platform event service supports them.</p>
         </div>
 
         <div className="space-y-2">
@@ -258,7 +272,7 @@ export function EventFormDrawer({
                   <Loader2 className="h-6 w-6 animate-spin text-white motion-reduce:animate-none" aria-hidden="true" />
                 </div>
               )}
-              <button type="button" onClick={() => { setImagePreview(null); setImageUrl(null); }} aria-label="Remove image" className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-grey-1 hover:bg-white">
+              <button type="button" onClick={() => { setImagePreview(null); setImageUrl(null); }} aria-label="Remove image" className="absolute right-2 top-2 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-grey-1 hover:bg-white">
                 <X className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>

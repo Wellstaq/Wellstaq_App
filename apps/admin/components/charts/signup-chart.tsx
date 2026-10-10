@@ -46,7 +46,7 @@ export function SignupChart({ points }: { points: SignupTrendPoint[] | undefined
     <div className="flex h-full flex-col gap-4 px-5 pb-5">
       <div role="group" aria-label="Choose what to plot" className="-mt-1 flex flex-wrap gap-1">
         {SERIES.map((item) => (
-          <SelectablePill key={item.key} appearance="plain" selected={series === item.key} onClick={() => setSeries(item.key)} className="px-2.5 py-1 text-[13px]">
+          <SelectablePill key={item.key} appearance="plain" selected={series === item.key} onClick={() => setSeries(item.key)} className="h-10 px-2.5 text-[13px]">
             {item.label}
           </SelectablePill>
         ))}

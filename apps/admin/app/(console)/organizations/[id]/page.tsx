@@ -4,7 +4,7 @@ import { Suspense, use, useState, type KeyboardEvent } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { CalendarDays, GitBranch, Layers, ShieldCheck, ShieldOff, Users, UsersRound } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@wellstaq/ui/button";
+import { Button } from "@/components/ui/controls";
 import { BackLink } from "@/components/ui/back-link";
 import { Avatar } from "@/components/ui/avatar";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -136,7 +136,7 @@ function OrganizationDetail({ id }: { id: string }) {
             aria-selected={tab === item.value}
             tabIndex={tab === item.value ? 0 : -1}
             onClick={() => selectTab(item.value)}
-            className={`relative h-11 whitespace-nowrap text-[15px] transition-colors ${tab === item.value ? "font-medium text-grey-1 after:absolute after:inset-x-0 after:-bottom-px after:h-[2px] after:rounded-full after:bg-primary-1" : "text-grey-3 hover:text-grey-1"}`}
+            className={`relative h-10 whitespace-nowrap text-[15px] transition-colors ${tab === item.value ? "font-medium text-grey-1 after:absolute after:inset-x-0 after:-bottom-px after:h-[2px] after:rounded-full after:bg-primary-1" : "text-grey-3 hover:text-grey-1"}`}
           >
             {item.label}
           </button>

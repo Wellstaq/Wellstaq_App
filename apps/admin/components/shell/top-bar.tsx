@@ -22,7 +22,7 @@ export function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
   };
 
   return (
-    <header className="relative z-30 flex h-[88px] shrink-0 items-center gap-4 border-b border-line bg-white px-4 lg:px-8">
+    <header className="sticky top-0 z-30 flex h-[60px] shrink-0 items-center gap-4 border-b border-line bg-white px-4 lg:px-5">
       <button type="button" onClick={onMenuClick} aria-label="Open menu" className="flex h-10 w-10 items-center justify-center rounded-[10px] text-grey-2 hover:bg-grey-5 lg:hidden">
         <Menu className="h-5 w-5" strokeWidth={1.7} aria-hidden="true" />
       </button>

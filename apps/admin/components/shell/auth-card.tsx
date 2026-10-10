@@ -6,17 +6,12 @@ const LOGO = "/assets/logo.webp";
 /** Split sign-in layout shared with the organization app: brand photo on the left, form on the right. */
 export function AuthCard({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
   return (
-    <main className="flex min-h-dvh bg-white">
-      <div className="relative hidden w-[52%] overflow-hidden lg:block">
-        <Image src="/assets/welcome-hero.jpg" alt="" fill priority sizes="52vw" className="hero-scale-in object-cover object-[center_22%]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-grey-1/70 via-grey-1/10 to-transparent" aria-hidden="true" />
-        <div className="absolute inset-x-0 top-0 p-10 text-center text-white xl:p-14">
-          <p className="mx-auto max-w-[440px] font-sans text-[28px] font-semibold leading-9 tracking-[-0.02em]">Run Wellstaq for every organization and every member.</p>
-          <p className="mx-auto mt-3 max-w-[400px] text-[15px] leading-6 text-white/80">Organizations, people, platform events and support in one place.</p>
-        </div>
+    <main className="flex min-h-dvh bg-white lg:h-dvh lg:gap-2 lg:p-2">
+      <div className="relative hidden w-[50%] overflow-hidden rounded-xl lg:block">
+        <Image src="/assets/admin-login-portrait.webp" alt="" fill priority sizes="50vw" className="object-cover object-top" />
       </div>
 
-      <div className="flex min-h-dvh flex-1 flex-col px-6 py-8 sm:px-12">
+      <div className="flex min-h-dvh flex-1 flex-col px-6 py-8 sm:px-12 lg:min-h-0">
         <div className="flex items-center justify-center">
           <Image src={LOGO} alt="Wellstaq" width={501} height={120} className="h-[34px] w-auto" priority />
         </div>
@@ -27,7 +22,6 @@ export function AuthCard({ title, description, children }: { title: string; desc
           <div className="mt-8">{children}</div>
         </div>
 
-        <p className="text-center text-xs leading-5 text-grey-3">For authorized Wellstaq staff only. Sign-ins and changes are recorded.</p>
       </div>
     </main>
   );
