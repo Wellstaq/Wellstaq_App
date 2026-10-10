@@ -20,6 +20,12 @@ import type {
   UpdateChallengePayload,
   WellbeingChallengeListResponse,
   ChallengeStatsResponse,
+  ChallengeSubmissionListResponse,
+  ChallengeSubmissionReviewPayload,
+  ChallengeSubmissionReviewResponse,
+  ChallengeLeaderboardResponse,
+  UpdateParticipantScorePayload,
+  ChallengeParticipant,
   LivePulseResponse,
   WellbeingSurveyCadence,
   WellbeingSurveyConfigResponse,
@@ -346,6 +352,10 @@ export const api = {
           metric_type: payload.metricType,
           target_type: payload.targetType,
           target_value: payload.targetValue,
+          tracking_method: payload.trackingMethod,
+          activity_label: payload.activityLabel,
+          evidence_required: payload.evidenceRequired,
+          requires_approval: payload.requiresApproval,
         },
       }),
 
@@ -362,6 +372,10 @@ export const api = {
           target_type: payload.targetType,
           target_value: payload.targetValue,
           status: payload.status,
+          tracking_method: payload.trackingMethod,
+          activity_label: payload.activityLabel,
+          evidence_required: payload.evidenceRequired,
+          requires_approval: payload.requiresApproval,
         },
       }),
 
@@ -386,6 +400,61 @@ export const api = {
     getChallengeParticipants: (orgId: string, challengeId: string) =>
       fromApi<ChallengeParticipantListResponse>(
         `/organizations/${orgId}/challenges/${challengeId}/participants?limit=50`,
+      ),
+
+    getChallengeSubmissions: (
+      orgId: string,
+      challengeId: string,
+      params: { status?: "pending" | "approved" | "rejected"; offset?: number; limit?: number } = {},
+    ) => {
+      const query = new URLSearchParams();
+      query.set("offset", String(params.offset ?? 0));
+      query.set("limit", String(params.limit ?? 50));
+      if (params.status) query.set("status", params.status);
+      return fromApi<ChallengeSubmissionListResponse>(
+        `/organizations/${orgId}/challenges/${challengeId}/submissions?${query.toString()}`,
+      );
+    },
+
+    reviewChallengeSubmission: (
+      orgId: string,
+      challengeId: string,
+      entryId: string,
+      payload: ChallengeSubmissionReviewPayload,
+    ) =>
+      fromApi<ChallengeSubmissionReviewResponse>(
+        `/organizations/${orgId}/challenges/${challengeId}/submissions/${entryId}/review`,
+        {
+          method: "POST",
+          body: { action: payload.action, reason: payload.reason },
+        },
+      ),
+
+    getChallengeLeaderboard: (
+      orgId: string,
+      challengeId: string,
+      params: { offset?: number; limit?: number } = {},
+    ) => {
+      const query = new URLSearchParams();
+      query.set("offset", String(params.offset ?? 0));
+      query.set("limit", String(params.limit ?? 50));
+      return fromApi<ChallengeLeaderboardResponse>(
+        `/organizations/${orgId}/challenges/${challengeId}/leaderboard?${query.toString()}`,
+      );
+    },
+
+    updateChallengeParticipantScore: (
+      orgId: string,
+      challengeId: string,
+      userId: string,
+      payload: UpdateParticipantScorePayload,
+    ) =>
+      fromApi<ChallengeParticipant>(
+        `/organizations/${orgId}/challenges/${challengeId}/participants/${userId}/score`,
+        {
+          method: "PATCH",
+          body: { score: payload.score },
+        },
       ),
     getChallengeStats: (
       orgId: string,

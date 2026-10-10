@@ -14,11 +14,11 @@ import { ApiError } from "@/services/http";
 import { useDashboardData } from "@/components/providers/dashboard-data-provider";
 import { useDashboardScope } from "@/lib/scope";
 import { getCreatableBranches } from "@/lib/permissions";
-import type { WellbeingChallenge } from "@/types/api";
+import type { ChallengeTrackingMethod, WellbeingChallenge } from "@/types/api";
 
 const TARGET_TYPES = ["cumulative", "daily_minimum"];
 const METRIC_TYPES = ["steps", "calories", "distance_km", "minutes_active", "workouts"];
-type TrackingMethod = "automatic" | "completion" | "evidence" | "platform";
+type TrackingMethod = ChallengeTrackingMethod;
 
 export function CreateChallengeModal({
   isOpen,
@@ -38,6 +38,9 @@ export function CreateChallengeModal({
   const [endDate, setEndDate] = useState("");
   const [metricType, setMetricType] = useState(METRIC_TYPES[0]);
   const [trackingMethod, setTrackingMethod] = useState<TrackingMethod>("automatic");
+  const [activityLabel, setActivityLabel] = useState("");
+  const [evidenceRequired, setEvidenceRequired] = useState(false);
+  const [requiresApproval, setRequiresApproval] = useState(false);
   const [targetType, setTargetType] = useState(TARGET_TYPES[0]);
   const [targetValue, setTargetValue] = useState("");
   const [selectedBranchId, setSelectedBranchId] = useState<string>("");
@@ -68,6 +71,9 @@ export function CreateChallengeModal({
     setEndDate("");
     setMetricType("");
     setTrackingMethod("automatic");
+    setActivityLabel("");
+    setEvidenceRequired(false);
+    setRequiresApproval(false);
     setTargetType(TARGET_TYPES[0]);
     setTargetValue("");
     setSelectedBranchId("");
@@ -136,6 +142,9 @@ export function CreateChallengeModal({
     return null;
   };
 
+  const showActivityLabel = trackingMethod === "self_reported" || trackingMethod === "evidence_based";
+  const isEvidenceBased = trackingMethod === "evidence_based";
+
   const branchIdToSend =
     scope.type === "branch" ? scope.branchId : selectedBranchId || undefined;
 
@@ -180,12 +189,13 @@ export function CreateChallengeModal({
         imageUrl: uploadedImageUrl ?? undefined,
         startDate,
         endDate,
-        // The current API stores the method in the durable metric label. This
-        // keeps the employee flow truthful until the richer submission model
-        // (evidence/review records) is introduced server-side.
-        metricType: trackingMethod === "automatic" ? metricType.trim() : trackingMethod,
+        metricType: metricType.trim(),
         targetType,
         targetValue: Number(targetValue),
+        trackingMethod,
+        activityLabel: showActivityLabel ? activityLabel.trim() || undefined : undefined,
+        evidenceRequired: trackingMethod === "evidence_based" ? evidenceRequired : undefined,
+        requiresApproval: trackingMethod === "evidence_based" ? requiresApproval : undefined,
       });
       toast.success("Challenge created");
       reset();
@@ -315,12 +325,46 @@ export function CreateChallengeModal({
           <Label htmlFor="trackingMethod">How progress is tracked</Label>
           <select id="trackingMethod" value={trackingMethod} onChange={(e) => { setTrackingMethod(e.target.value as TrackingMethod); clearErrors(); }} className="w-full h-[44px] rounded-[8px] border border-grey-4 bg-white px-3 text-sm">
             <option value="automatic">Automatic — phone or wearable health data</option>
-            <option value="completion">Self-reported — mark the activity complete</option>
-            <option value="evidence">Evidence-based — photo and optional notes</option>
-            <option value="platform">Platform recorded — event, club or in-app activity</option>
+            <option value="self_reported">Self-reported — mark the activity complete</option>
+            <option value="evidence_based">Evidence-based — photo and optional notes</option>
+            <option value="platform_recorded">Platform recorded — event, club or in-app activity</option>
           </select>
           <p className="text-xs text-grey-3">Automatic metrics cannot be typed by participants; they must arrive from a connected device.</p>
         </div>
+
+        {showActivityLabel && (
+          <div className="space-y-2">
+            <Label htmlFor="activityLabel">Activity</Label>
+            <Input
+              id="activityLabel"
+              placeholder="e.g. Prepare a healthy meal containing vegetables"
+              value={activityLabel}
+              onChange={(e) => { setActivityLabel(e.target.value); clearErrors(); }}
+            />
+            <FieldError errors={fieldErrors} field="activity_label" />
+          </div>
+        )}
+
+        {isEvidenceBased && (
+          <div className="grid grid-cols-2 gap-4">
+            <label className="flex items-center gap-2 rounded-[8px] border border-grey-4 bg-white px-3 h-[44px] text-sm cursor-pointer">
+              <input
+                type="checkbox"
+                checked={evidenceRequired}
+                onChange={(e) => { setEvidenceRequired(e.target.checked); clearErrors(); }}
+              />
+              Evidence required
+            </label>
+            <label className="flex items-center gap-2 rounded-[8px] border border-grey-4 bg-white px-3 h-[44px] text-sm cursor-pointer">
+              <input
+                type="checkbox"
+                checked={requiresApproval}
+                onChange={(e) => { setRequiresApproval(e.target.checked); clearErrors(); }}
+              />
+              Requires admin approval
+            </label>
+          </div>
+        )}
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
@@ -331,7 +375,6 @@ export function CreateChallengeModal({
               onChange={(e) => { setMetricType(e.target.value); clearErrors(); }}
               className="w-full h-[44px] rounded-[8px] border border-grey-4 bg-white px-3 text-sm"
             >
-              disabled={trackingMethod !== "automatic"}
               {METRIC_TYPES.map((m) => (
                 <option key={m} value={m}>{m.replace(/_/g, " ")}</option>
               ))}

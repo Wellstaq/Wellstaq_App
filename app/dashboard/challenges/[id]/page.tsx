@@ -10,9 +10,21 @@ import { api } from "@/services/api";
 import { useDashboardData } from "@/components/providers/dashboard-data-provider";
 import { hasPermission } from "@/lib/permissions";
 import { EditChallengeModal } from "@/components/challenges/edit-challenge-modal";
+import { SubmissionReviewPanel } from "@/components/challenges/submission-review-panel";
+import { LeaderboardPanel } from "@/components/challenges/leaderboard-panel";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
+import { SelectablePill } from "@/components/ui/selectable-pill";
 import type { ChallengeItem, ChallengeParticipant } from "@/types/api";
 import { useRouter } from "next/navigation";
+
+const TRACKING_METHOD_LABELS: Record<string, string> = {
+  automatic: "Automatic",
+  self_reported: "Self-reported",
+  evidence_based: "Evidence-based",
+  platform_recorded: "Platform recorded",
+};
+
+type DetailTab = "overview" | "submissions" | "leaderboard";
 
 export default function ChallengeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -27,6 +39,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [isCancelConfirmOpen, setIsCancelConfirmOpen] = useState(false);
   const [isJoinBusy, setIsJoinBusy] = useState(false);
+  const [activeTab, setActiveTab] = useState<DetailTab>("overview");
 
   const challengeBranchId = challenge?.branchId ?? undefined;
   const canUpdate = currentUser ? hasPermission(currentUser.permissions, "challenge.update", challengeBranchId) : false;
@@ -129,6 +142,29 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
         Go back
       </Link>
 
+      <div className="flex items-center gap-1 flex-wrap border-b border-grey-4 pb-3">
+        <SelectablePill onClick={() => setActiveTab("overview")} selected={activeTab === "overview"} appearance="plain">
+          Overview
+        </SelectablePill>
+        {challenge.trackingMethod === "evidence_based" && canUpdate && (
+          <SelectablePill onClick={() => setActiveTab("submissions")} selected={activeTab === "submissions"} appearance="plain">
+            Submission Review
+          </SelectablePill>
+        )}
+        <SelectablePill onClick={() => setActiveTab("leaderboard")} selected={activeTab === "leaderboard"} appearance="plain">
+          Leaderboard
+        </SelectablePill>
+      </div>
+
+      {activeTab === "submissions" && challenge.trackingMethod === "evidence_based" && canUpdate && id && organizationId && (
+        <SubmissionReviewPanel organizationId={organizationId} challengeId={id} canReview={canUpdate} />
+      )}
+
+      {activeTab === "leaderboard" && id && organizationId && (
+        <LeaderboardPanel organizationId={organizationId} challengeId={id} canEditScore={canUpdate} />
+      )}
+
+      {activeTab === "overview" && (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
@@ -181,7 +217,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <div className="p-4 bg-grey-5 rounded-[8px] border border-grey-4">
                   <div className="flex items-center gap-2 text-grey-3 mb-1">
                     <Calendar className="w-4 h-4" />
@@ -212,7 +248,16 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
                     <Trophy className="w-4 h-4" />
                     <span className="text-[10px] font-bold uppercase tracking-wider">Scope</span>
                   </div>
-                  <p className="text-xs font-bold text-grey-1">{challenge.branchId ? "Branch" : "General"}</p>
+                  <p className="text-xs font-bold text-grey-1">{challenge.branchId ? "Branch" : "Organization-wide"}</p>
+                </div>
+                <div className="p-4 bg-grey-5 rounded-[8px] border border-grey-4">
+                  <div className="flex items-center gap-2 text-grey-3 mb-1">
+                    <Target className="w-4 h-4" />
+                    <span className="text-[10px] font-bold uppercase tracking-wider">Tracking</span>
+                  </div>
+                  <p className="text-xs font-bold text-grey-1">
+                    {TRACKING_METHOD_LABELS[challenge.trackingMethod] ?? challenge.trackingMethod}
+                  </p>
                 </div>
               </div>
 
@@ -263,6 +308,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
           </div>
         </div>
       </div>
+      )}
 
       <EditChallengeModal
         isOpen={isEditModalOpen}
