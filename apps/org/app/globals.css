@@ -1,0 +1,8 @@
+/* Scan only the live UI source. This keeps archived backup copies from being
+   processed during each local development compilation. */
+@import "tailwindcss" source(none);
+@import "@wellstaq/ui/theme.css";
+@source "../app";
+@source "../components";
+@source "../design-system";
+@source "../../../packages/ui/src";
