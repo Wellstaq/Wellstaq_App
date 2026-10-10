@@ -1,0 +1,19 @@
+/* Scan only the live UI source. This keeps archived backup copies from being
+   processed during each local development compilation. */
+@import "tailwindcss" source(none);
+@import "@wellstaq/ui/theme.css";
+@source "../app";
+@source "../components";
+@source "../design-system";
+@source "../../../packages/ui/src";
+
+
+/* Auth hero: the photo eases in from slightly zoomed-out and settles slowly. */
+@keyframes hero-scale-in {
+  from { transform: scale(1); }
+  to { transform: scale(1.1); }
+}
+.hero-scale-in {
+  animation: hero-scale-in 14s cubic-bezier(0.4, 0, 0.2, 1) both;
+  will-change: transform;
+}
