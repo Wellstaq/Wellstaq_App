@@ -105,7 +105,7 @@ export const adminApi = {
   },
 
   auditLog: {
-    list: (params: ListParams & { targetType?: string }, { signal }: Signal = {}) =>
+    list: (params: ListParams & { targetType?: string; startDate?: string; endDate?: string }, { signal }: Signal = {}) =>
       request<Paginated<AuditEntry>>(`/audit-log${toQueryString({ ...params })}`, { signal }),
   },
 
