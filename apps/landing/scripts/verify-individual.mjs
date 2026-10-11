@@ -32,6 +32,13 @@ try {
     assert.equal(await page.locator("h1").count(), 1);
     assert.equal(
       await page
+        .getByRole("link", { name: "Get the app", exact: true })
+        .getAttribute("href"),
+      "https://wellstaqemployee.vercel.app/",
+      "The individual page links to the deployed individual app",
+    );
+    assert.equal(
+      await page
         .locator("#navigation")
         .getByRole("link", { name: "Pricing", exact: true })
         .count(),

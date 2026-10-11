@@ -713,7 +713,11 @@ document.querySelector("#app").innerHTML = `${header()}<main id="main">${
       : isIndividual
         ? individualPage({
             icon,
-            getApp: getAppSection({ icon, appUrl: APP_URL, audience: "individual" }),
+            getApp: getAppSection({
+              icon,
+              appUrl: EMPLOYEE_APP_URL,
+              audience: "individual",
+            }),
           })
         : isContact
           ? contactHero() + faq()
