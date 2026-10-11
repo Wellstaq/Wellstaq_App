@@ -130,7 +130,7 @@ export function EventFormDrawer({
     setImageUrl(null);
     setIsUploadingImage(true);
     try {
-      const { uploadUrl, mediaUrl } = await adminApi.storage.requestUploadUrl(file.type);
+      const { uploadUrl, mediaUrl } = await adminApi.storage.requestUploadUrl(file.type, "platform-events");
       const response = await fetch(uploadUrl, { method: "PUT", headers: { "Content-Type": file.type }, body: file });
       if (!response.ok) throw new Error("Upload failed");
       setImageUrl(mediaUrl);
