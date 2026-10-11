@@ -93,8 +93,13 @@ async function proxy(request: NextRequest, context: Context) {
 
   const routePath = path.join("/");
 
-  const backendUrl = process.env.BACKEND_API_URL;
-  if (!backendUrl) return json({ message: "The API isn't configured.", code: "API_NOT_CONFIGURED" }, 503);
+  // Falls back to the known production backend, same as the pre-BFF
+  // services/config.ts always did — this app never required a
+  // BACKEND_API_URL to be configured on Vercel before, and this proxy
+  // shouldn't newly require one either. Only an explicit env var should
+  // ever override it (e.g. for local dev, where BACKEND_API_URL points
+  // at localhost).
+  const backendUrl = process.env.BACKEND_API_URL || "https://wellstaq.up.railway.app";
 
   const isPublic = PUBLIC_ROUTES.has(routePath);
   const refreshToken = request.cookies.get(REFRESH_COOKIE)?.value;
