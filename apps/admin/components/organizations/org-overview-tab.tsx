@@ -4,7 +4,7 @@ import { useState } from "react";
 import { GitBranch } from "lucide-react";
 import { adminApi } from "@/services/admin-api";
 import { useResource } from "@/lib/use-resource";
-import { formatDate, formatNumber, humanize, plural } from "@/lib/format";
+import { formatDate, formatNumber, humanize } from "@/lib/format";
 import { EmptyState, ErrorPanel } from "@/components/ui/states";
 import { TableSkeleton } from "@/components/ui/skeletons";
 import { Pagination } from "@/components/ui/pagination";
@@ -81,7 +81,6 @@ export function OrgOverviewTab({ organization }: { organization: OrganizationDet
               ]}
             />
             <Pagination page={page} pageSize={PAGE_SIZE} total={branches.data.total} noun="branches" onPageChange={setPage} />
-            <p className="mt-3 text-xs text-grey-2">{plural(branches.data.total, "branch", "branches")} in total.</p>
           </>
         )}
       </section>

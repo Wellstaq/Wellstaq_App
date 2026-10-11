@@ -128,10 +128,10 @@ function LoginPageContent() {
   };
 
   return (
-    <SplitLayout>
+    <SplitLayout heroTagline="Beyond the everyday.">
       <OnboardingPane>
-        <div className="flex-1 flex flex-col justify-start">
-          <div className="flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="flex-1 flex flex-col justify-center">
+          <div className="mx-auto flex w-full max-w-[560px] flex-col animate-in fade-in slide-in-from-bottom-4 duration-500">
             <h2 className="mb-8 text-[24px] md:text-[30px] font-bold">{twoFaChallenge ? "Verify your login" : "Get back into your account"}</h2>
 
             {errorParam === "insufficient_permission" && (

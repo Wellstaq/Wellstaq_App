@@ -457,7 +457,6 @@ function people(icon) {
         <div class="people-dots" aria-hidden="true">${list.map((_, i) => `<i${i === 0 ? ' class="on"' : ""}></i>`).join("")}</div>
         <button type="button" class="people-btn next" aria-label="Next person">${icon("arrow")}</button>
       </div>
-      <p class="people-note">Illustrative personas.</p>
     </div>
   </section>`;
 }
@@ -606,6 +605,34 @@ export function initIndividual({ reducedMotion }) {
   if (document.readyState === "complete") measure();
   else window.addEventListener("load", measure, { once: true });
   measure();
+
+  /* On mobile, reveal feed cards from alternating sides as each enters view. */
+  const mobileBoardMedia = window.matchMedia("(max-width: 760px)");
+  let mobileBoardObserver = null;
+  const setupMobileBoard = () => {
+    mobileBoardObserver?.disconnect();
+    mobileBoardObserver = null;
+    board.classList.remove("mobile-reveal");
+    slots.forEach((slot) => slot.classList.remove("is-visible"));
+    if (!mobileBoardMedia.matches || calm() || !window.IntersectionObserver)
+      return;
+
+    board.classList.add("mobile-reveal");
+    mobileBoardObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -8% 0px" },
+    );
+    slots.forEach((slot) => mobileBoardObserver.observe(slot));
+  };
+  mobileBoardMedia.addEventListener("change", setupMobileBoard);
+  reducedMotion.addEventListener("change", setupMobileBoard);
+  setupMobileBoard();
 
   /* Spaces: map pins switch the card */
   const spacesEl = $(".mock-spaces");

@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
-import { Building2, CalendarDays, Inbox, LayoutDashboard, PanelLeftClose, PanelLeftOpen, ScrollText, ShieldCheck, UserRound, UserSearch, X } from "lucide-react";
+import { Building2, CalendarDays, Inbox, LayoutDashboard, PanelLeftClose, PanelLeftOpen, ScrollText, Settings2, ShieldCheck, UserRound, UserSearch, X } from "lucide-react";
 import { cn } from "@wellstaq/ui/utils";
 import { Avatar } from "@/components/ui/avatar";
 import { useAdmin } from "@/components/providers/admin-session";
@@ -41,6 +41,7 @@ const GROUPS: { title?: string; items: NavItem[] }[] = [
 const FOOTER_ITEMS: NavItem[] = [
   { name: "Admin team", href: "/team", icon: ShieldCheck, permission: "admins.manage" },
   { name: "Audit log", href: "/audit-log", icon: ScrollText, permission: "audit.read" },
+  { name: "Settings", href: "/settings", icon: Settings2 },
 ];
 
 export function Sidebar({ onClose }: { onClose?: () => void }) {
@@ -89,22 +90,21 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
 
   return (
     <nav aria-label="Admin" className={cn("flex h-dvh shrink-0 flex-col border-r border-line bg-white transition-[width] duration-300", isCollapsed ? "w-[76px]" : "w-[264px]")}>
-      <div className={cn("flex h-[88px] shrink-0 items-center px-5", isCollapsed ? "justify-center px-0" : "justify-between")}>
+      <div className={cn("flex h-[60px] shrink-0 items-center px-5", isCollapsed ? "justify-center px-0" : "justify-between")}>
         {!isCollapsed && (
           <Link href="/" onClick={onClose} className="flex items-center gap-2.5 rounded-sm">
             <Image src={LOGO} alt="Wellstaq" width={501} height={120} className="h-[30px] w-auto" priority />
-            <span className="rounded-[6px] bg-grey-1 px-1.5 py-0.5 text-[11px] font-semibold leading-4 text-white">Admin</span>
           </Link>
         )}
         <button
           type="button"
           onClick={() => setIsCollapsed((value) => !value)}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="hidden h-8 w-8 items-center justify-center rounded-[8px] border border-line text-grey-2 transition-colors hover:bg-grey-5 hover:text-grey-1 lg:flex"
+          className="hidden h-10 w-10 items-center justify-center rounded-[8px] border border-line text-grey-2 transition-colors hover:bg-grey-5 hover:text-grey-1 lg:flex"
         >
           {isCollapsed ? <PanelLeftOpen className="h-4 w-4" strokeWidth={1.7} /> : <PanelLeftClose className="h-4 w-4" strokeWidth={1.7} />}
         </button>
-        <button type="button" onClick={onClose} aria-label="Close menu" className="flex h-8 w-8 items-center justify-center rounded-[8px] border border-line text-grey-2 hover:text-grey-1 lg:hidden">
+        <button type="button" onClick={onClose} aria-label="Close menu" className="flex h-10 w-10 items-center justify-center rounded-[8px] border border-line text-grey-2 hover:text-grey-1 lg:hidden">
           <X className="h-4 w-4" strokeWidth={1.7} />
         </button>
       </div>

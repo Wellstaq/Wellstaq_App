@@ -11,18 +11,26 @@ const BLUR_LAYERS = [
   { blur: 16, from: 86, to: 100 },
 ];
 
-export function SplitLayout({ children, lockContentScroll = false, fixedViewport = false }: { children: React.ReactNode; lockContentScroll?: boolean; fixedViewport?: boolean }) {
+export function SplitLayout({ children, lockContentScroll = false, fixedViewport = false, heroTagline }: { children: React.ReactNode; lockContentScroll?: boolean; fixedViewport?: boolean; heroTagline?: string }) {
   return (
-    <div className={`flex h-dvh w-full overflow-hidden bg-white ${fixedViewport ? "fixed inset-x-0 top-0" : ""}`}>
-      {/* Left Pane - Wide portrait with room around the subject */}
-      <div className="relative hidden overflow-hidden xl:flex xl:w-[60%]">
+    <div className={`flex h-dvh w-full overflow-hidden bg-white xl:gap-2 xl:p-2 ${fixedViewport ? "fixed inset-x-0 top-0" : ""}`}>
+      {/* Left Pane - alternating brand portraits */}
+      <div className="relative hidden overflow-hidden rounded-xl xl:flex xl:w-[50%]">
         <Image
           src="/assets/welcome-hero-wide.webp"
-          alt="Wellness and Community"
+          alt=""
           fill
-          className="object-cover object-center"
+          className="auth-photo-first object-cover object-center"
           priority
-          sizes="60vw"
+          sizes="50vw"
+        />
+        <Image
+          src="/assets/auth-man-green-lowered.webp"
+          alt=""
+          fill
+          className="auth-photo-second object-cover object-top"
+          priority
+          sizes="50vw"
         />
         <div className="absolute inset-0 bg-black/10 z-10" />
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-[45%]">
@@ -32,9 +40,15 @@ export function SplitLayout({ children, lockContentScroll = false, fixedViewport
           })}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/25" />
         </div>
+        {heroTagline && (
+          <h2 className="auth-hero-heading absolute inset-x-5 top-8 z-30 text-center text-[clamp(2.5rem,4.2vw,4.5rem)] font-bold leading-[1.05] text-white drop-shadow-md 2xl:top-12">
+            <span className="block">Beyond</span>
+            <span className="block text-white/70">the everyday.</span>
+          </h2>
+        )}
       </div>
       {/* Right Pane - Content */}
-      <div className={`relative z-20 flex min-h-0 w-full flex-col overflow-y-auto overscroll-contain xl:w-[40%] ${lockContentScroll ? "md:overflow-y-hidden [@media(max-height:640px)]:overflow-y-auto" : ""}`}>
+      <div className={`relative z-20 flex min-h-0 w-full flex-col overflow-y-auto overscroll-contain xl:w-[50%] ${lockContentScroll ? "md:overflow-y-hidden [@media(max-height:640px)]:overflow-y-auto" : ""}`}>
         {children}
       </div>
     </div>

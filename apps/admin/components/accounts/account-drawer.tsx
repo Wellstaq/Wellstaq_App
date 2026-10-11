@@ -4,7 +4,7 @@ import { useState } from "react";
 import { KeyRound, ShieldOff, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Modal } from "@wellstaq/ui/modal";
-import { Button } from "@wellstaq/ui/button";
+import { Button } from "@/components/ui/controls";
 import { Avatar } from "@/components/ui/avatar";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { ActionDialog } from "@/components/ui/action-dialog";

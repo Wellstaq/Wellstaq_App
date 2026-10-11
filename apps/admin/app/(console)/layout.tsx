@@ -17,15 +17,15 @@ export default function ConsoleLayout({ children }: { children: React.ReactNode 
   return (
     <AdminSessionProvider>
       <OverviewProvider>
-      <div className="flex h-dvh overflow-hidden bg-grey-5">
+      <div className="fixed inset-x-0 top-0 flex h-dvh overflow-hidden bg-grey-5">
         {isSidebarOpen && <div className="fixed inset-0 z-40 bg-grey-1/40 lg:hidden" onClick={() => setIsSidebarOpen(false)} aria-hidden="true" />}
         <div className={cn("fixed z-50 transition-transform duration-300 lg:relative lg:translate-x-0", isSidebarOpen ? "translate-x-0" : "-translate-x-full")}>
           <Sidebar onClose={() => setIsSidebarOpen(false)} />
         </div>
         <div className="flex w-full min-w-0 flex-1 flex-col overflow-hidden">
           <TopBar onMenuClick={() => setIsSidebarOpen(true)} />
-          <main id="main" className="min-h-0 flex-1 overflow-y-auto">
-            <div className="mx-auto flex w-full max-w-[1520px] flex-col gap-6 px-4 py-6 pb-16 sm:px-6 lg:px-8 lg:py-8">{children}</div>
+          <main id="main" className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+            <div className="mx-auto flex w-full max-w-[1520px] flex-col gap-6 px-4 py-3 sm:px-5">{children}</div>
           </main>
         </div>
       </div>

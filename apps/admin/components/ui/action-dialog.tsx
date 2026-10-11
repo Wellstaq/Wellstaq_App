@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useState } from "react";
 import { Modal } from "@wellstaq/ui/modal";
-import { Button } from "@wellstaq/ui/button";
+import { Button } from "@/components/ui/controls";
 import { Label } from "@wellstaq/ui/label";
 import { dangerButton, primaryButton, secondaryButton } from "@/components/ui/button-styles";
 

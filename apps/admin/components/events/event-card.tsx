@@ -13,12 +13,14 @@ interface EventCardProps {
   time: string;
   status: EventStatus;
   participantCount: number;
+  maxParticipants?: number | null;
   meta?: ReactNode;
   href?: string;
 }
 
 /** Mirrors the event card in the organization app so events look the same everywhere. */
-export function EventCard({ title, imageUrl, startDate, time, status, participantCount, meta, href }: EventCardProps) {
+export function EventCard({ title, imageUrl, startDate, time, status, participantCount, maxParticipants, meta, href }: EventCardProps) {
+  const isSoldOut = (status === "scheduled" || status === "ongoing") && maxParticipants != null && maxParticipants > 0 && participantCount >= maxParticipants;
   const content = (
     <>
       <div className="relative h-[85px] w-full shrink-0 overflow-hidden rounded-lg bg-grey-4">
@@ -30,6 +32,7 @@ export function EventCard({ title, imageUrl, startDate, time, status, participan
           </span>
         )}
         <StatusBadge status={status} className="absolute left-2 top-2 bg-white/95" />
+        {isSoldOut && <span className="absolute right-2 top-2 rounded-md bg-grey-1 px-2 py-1 text-xs font-medium text-white">Sold out</span>}
       </div>
       <div className="flex flex-1 flex-col gap-3 px-1 pb-1">
         <div className="flex flex-col gap-1">
@@ -44,7 +47,7 @@ export function EventCard({ title, imageUrl, startDate, time, status, participan
           </p>
         </div>
         <div className="mt-auto flex items-center justify-between gap-2 text-xs leading-[18px] text-grey-2">
-          <span>{plural(participantCount, "participant")}</span>
+          <span>{maxParticipants != null && maxParticipants > 0 ? `${participantCount}/${maxParticipants} participants` : plural(participantCount, "participant")}</span>
           {meta}
         </div>
       </div>

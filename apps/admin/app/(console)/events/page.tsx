@@ -6,7 +6,7 @@ import { CalendarCheck2, CalendarClock, CalendarDays, Plus } from "lucide-react"
 import { MetricCard, MetricGrid } from "@/components/ui/metric-card";
 import { useOverview } from "@/components/providers/overview";
 import { formatNumber } from "@/lib/format";
-import { Button } from "@wellstaq/ui/button";
+import { Button } from "@/components/ui/controls";
 import { PageHeader } from "@/components/ui/page-header";
 import { FilterPills, SearchInput, Toolbar } from "@/components/ui/toolbar";
 import { EmptyState, ErrorPanel, NoResults } from "@/components/ui/states";
@@ -113,7 +113,7 @@ function PlatformEventsView() {
               aria-label="Filter by audience"
               value={audience}
               onChange={(event) => resetPage(setAudience)(event.target.value as "all" | EventAudience)}
-              className="h-9 border border-line bg-white text-xs"
+              className="h-10 border border-line bg-white text-xs"
             >
               <option value="all">All audiences</option>
               {AUDIENCE_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}

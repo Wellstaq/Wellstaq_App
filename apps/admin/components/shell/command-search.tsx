@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
-import { Building2, CalendarDays, CornerDownLeft, Inbox, LayoutDashboard, ScrollText, Search, ShieldCheck, UserRound, UserSearch } from "lucide-react";
+import { Building2, CalendarDays, CornerDownLeft, Inbox, LayoutDashboard, ScrollText, Search, Settings2, ShieldCheck, UserRound, UserSearch } from "lucide-react";
 import { ModalLayer } from "@wellstaq/ui/modal-layer";
 import { cn } from "@wellstaq/ui/utils";
 import { useAdmin } from "@/components/providers/admin-session";
@@ -28,6 +28,7 @@ const PAGES: (Omit<Command, "id"> & { permission?: AdminPermission })[] = [
   { label: "Support inbox", hint: "Page", icon: Inbox, href: "/support", permission: "support.read" },
   { label: "Admin team", hint: "Page", icon: ShieldCheck, href: "/team", permission: "admins.manage" },
   { label: "Audit log", hint: "Page", icon: ScrollText, href: "/audit-log", permission: "audit.read" },
+  { label: "Settings", hint: "Page", icon: Settings2, href: "/settings" },
 ];
 
 export function CommandSearch() {
@@ -79,7 +80,7 @@ export function CommandSearch() {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="hidden h-11 w-full max-w-[460px] items-center gap-3 rounded-[10px] border border-line bg-white px-4 text-left text-[15px] text-grey-3 transition-colors hover:border-grey-3 md:flex"
+        className="hidden h-10 w-full max-w-[460px] items-center gap-3 rounded-[10px] border border-line bg-white px-4 text-left text-[15px] text-grey-3 transition-colors hover:border-grey-3 md:flex"
       >
         <Search className="h-[18px] w-[18px] text-grey-2" strokeWidth={1.7} aria-hidden="true" />
         <span className="flex-1 truncate">Search organizations, people, pages</span>
@@ -109,7 +110,7 @@ export function CommandSearch() {
                 aria-controls="command-results"
                 aria-activedescendant={commands[active] ? `command-${commands[active].id}` : undefined}
                 placeholder="Type to search or jump to a page"
-                className="h-14 flex-1 bg-transparent text-[15px] text-grey-1 placeholder:text-grey-3 focus:outline-none"
+                className="h-10 flex-1 bg-transparent text-[15px] text-grey-1 placeholder:text-grey-3 focus:outline-none"
               />
               <kbd className="rounded-[6px] border border-line bg-grey-5 px-1.5 py-0.5 text-[11px] font-medium text-grey-2">Esc</kbd>
             </div>
@@ -121,7 +122,7 @@ export function CommandSearch() {
                     type="button"
                     onMouseEnter={() => setActive(index)}
                     onClick={() => go(command)}
-                    className={cn("flex w-full items-center gap-3 rounded-[10px] px-3 py-2.5 text-left text-sm", index === active ? "bg-primary-5 text-grey-1" : "text-grey-2")}
+                    className={cn("flex h-10 w-full items-center gap-3 rounded-[10px] px-3 text-left text-sm", index === active ? "bg-primary-5 text-grey-1" : "text-grey-2")}
                   >
                     <span className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px]", index === active ? "bg-white text-primary-hover" : "bg-grey-5 text-grey-2")}>
                       <command.icon className="h-4 w-4" strokeWidth={1.7} aria-hidden="true" />

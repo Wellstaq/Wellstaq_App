@@ -2,8 +2,8 @@
 
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
-import { Button } from "@wellstaq/ui/button";
-import { Input } from "@wellstaq/ui/input";
+import { Button } from "@/components/ui/controls";
+import { Input } from "@/components/ui/controls";
 import { Label } from "@wellstaq/ui/label";
 import { AuthCard, FormAlert } from "@/components/shell/auth-card";
 import { primaryButton } from "@/components/ui/button-styles";

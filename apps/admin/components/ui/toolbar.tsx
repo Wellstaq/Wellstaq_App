@@ -17,7 +17,7 @@ export function SearchInput({ value, onChange, label, placeholder }: { value: st
         className="h-10 w-full rounded-[8px] border border-line bg-white pl-9 pr-9 text-sm text-grey-1 placeholder:text-grey-3 focus:border-primary-1 focus:outline-none focus:ring-2 focus:ring-primary-1/20 [&::-webkit-search-cancel-button]:hidden"
       />
       {value && (
-        <button type="button" aria-label="Clear search" onClick={() => onChange("")} className="absolute right-2 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded text-grey-3 hover:bg-grey-5 hover:text-grey-1">
+        <button type="button" aria-label="Clear search" onClick={() => onChange("")} className="absolute right-0 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded text-grey-3 hover:bg-grey-5 hover:text-grey-1">
           <X className="h-3.5 w-3.5" aria-hidden="true" />
         </button>
       )}
@@ -29,7 +29,7 @@ export function FilterPills<T extends string>({ options, value, onChange, label 
   return (
     <div role="group" aria-label={label} className="no-scrollbar flex w-full items-center overflow-x-auto sm:w-auto">
       {options.map((option) => (
-        <SelectablePill key={option.value} selected={value === option.value} appearance="plain" onClick={() => onChange(option.value)} className="whitespace-nowrap">
+        <SelectablePill key={option.value} selected={value === option.value} appearance="plain" onClick={() => onChange(option.value)} className="h-10 whitespace-nowrap">
           {option.label}
         </SelectablePill>
       ))}

@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import { AlertCircle, Lock, RefreshCw, SearchX } from "lucide-react";
-import { Button } from "@wellstaq/ui/button";
+import { Button } from "@/components/ui/controls";
 import { cn } from "@wellstaq/ui/utils";
 import { secondaryButton } from "@/components/ui/button-styles";
 import type { ApiError } from "@/services/http";

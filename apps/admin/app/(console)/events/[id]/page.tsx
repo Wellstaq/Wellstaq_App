@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Ban, Calendar, CalendarDays, Clock, Edit2, Globe2, Trash2, Users } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@wellstaq/ui/button";
+import { Button } from "@/components/ui/controls";
 import { BackLink } from "@/components/ui/back-link";
 import { ErrorPanel } from "@/components/ui/states";
 import { DetailSkeleton } from "@/components/ui/skeletons";

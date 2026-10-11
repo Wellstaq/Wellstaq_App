@@ -4,8 +4,8 @@ import { Suspense, useEffect, useState, type FormEvent } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ShieldCheck, Trash2, UserPlus } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@wellstaq/ui/button";
-import { Input } from "@wellstaq/ui/input";
+import { Button } from "@/components/ui/controls";
+import { Input } from "@/components/ui/controls";
 import { Label } from "@wellstaq/ui/label";
 import { Modal } from "@wellstaq/ui/modal";
 import { PageHeader } from "@/components/ui/page-header";
@@ -145,7 +145,7 @@ function AdminTeamView() {
             value={item.role}
             disabled={savingRoleId === item.id}
             onChange={(event) => void changeRole(item, event.target.value as AdminRole)}
-            className="h-9 border border-line bg-white text-sm"
+            className="h-10 border border-line bg-white text-sm"
           >
             {ROLES.map((value) => <option key={value} value={value}>{ROLE_LABELS[value]}</option>)}
           </select>
@@ -159,7 +159,7 @@ function AdminTeamView() {
       header: "Actions",
       render: (item) =>
         item.id === me.id ? null : (
-          <button type="button" onClick={() => setRemoving(item)} className="inline-flex items-center gap-1.5 rounded-[8px] px-2 py-1 text-sm font-medium text-error-1 hover:bg-error-5">
+          <button type="button" onClick={() => setRemoving(item)} className="inline-flex h-10 items-center gap-1.5 rounded-[8px] px-2 text-sm font-medium text-error-1 hover:bg-error-5">
             <Trash2 className="h-4 w-4" aria-hidden="true" /> Remove
           </button>
         ),

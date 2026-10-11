@@ -15,7 +15,7 @@ function pageWindow(current: number, total: number): (number | "gap")[] {
   return result;
 }
 
-const navButton = "flex h-9 items-center justify-center gap-1 rounded-[8px] bg-grey-5 px-3 text-sm text-grey-1 transition-colors hover:bg-grey-4 disabled:cursor-not-allowed disabled:opacity-50";
+const navButton = "flex h-10 items-center justify-center gap-1 rounded-[8px] bg-grey-5 px-3 text-sm text-grey-1 transition-colors hover:bg-grey-4 disabled:cursor-not-allowed disabled:opacity-50";
 
 export function Pagination({
   page,
@@ -55,7 +55,7 @@ export function Pagination({
                 aria-current={item === page ? "page" : undefined}
                 aria-label={`Page ${item}`}
                 onClick={() => onPageChange(item)}
-                className={`flex h-8 min-w-8 items-center justify-center rounded-[8px] px-2 text-sm font-medium transition-colors ${item === page ? "bg-primary-hover text-white" : "text-grey-2 hover:bg-grey-5"}`}
+                className={`flex h-10 min-w-10 items-center justify-center rounded-[8px] px-2 text-sm font-medium transition-colors ${item === page ? "bg-primary-hover text-white" : "text-grey-2 hover:bg-grey-5"}`}
               >
                 {item}
               </button>

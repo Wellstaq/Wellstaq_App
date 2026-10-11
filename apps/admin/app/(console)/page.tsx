@@ -36,7 +36,6 @@ const QUICK_ACTIONS: { label: string; href: string; icon: LucideIcon; permission
   { label: "Create event", href: "/events?create=1", icon: CalendarPlus, permission: "events.manage" },
   { label: "Review suspended", href: "/organizations?status=suspended", icon: ShieldAlert, permission: "organizations.read" },
   { label: "Support inbox", href: "/support", icon: Inbox, permission: "support.read" },
-  { label: "Find a person", href: "/individuals", icon: UserRound, permission: "individuals.read" },
   { label: "Invite an admin", href: "/team?invite=1", icon: UserPlus, permission: "admins.manage" },
 ];
 
@@ -107,14 +106,14 @@ export default function OverviewPage() {
       {quickActions.length > 0 && (
         <section aria-labelledby="quick-actions">
           <h2 id="quick-actions" className="mb-3 font-sans text-[17px] font-semibold text-grey-1">Quick actions</h2>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {quickActions.map((action) => (
               <Link
                 key={action.href}
                 href={action.href}
-                className="group flex h-[60px] items-center gap-3 rounded-[12px] border border-line bg-white px-3 text-[15px] font-medium text-grey-1 transition-all hover:-translate-y-px hover:border-primary-border hover:shadow-[0_6px_16px_-10px_rgba(234,106,5,0.45)] active:translate-y-0"
+                className="flex h-[60px] items-center gap-3 rounded-[12px] border border-line bg-white px-3 text-[15px] font-medium text-grey-1 transition-colors hover:border-primary-border"
               >
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] bg-primary-5 text-primary-hover transition-colors group-hover:bg-primary-mid" aria-hidden="true">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] bg-primary-5 text-primary-hover" aria-hidden="true">
                   <action.icon className="h-[18px] w-[18px]" strokeWidth={1.7} />
                 </span>
                 <span className="truncate">{action.label}</span>

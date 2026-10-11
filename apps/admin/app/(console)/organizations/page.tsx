@@ -99,7 +99,7 @@ function OrganizationsView() {
           />
           <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
             <FilterPills label="Filter by status" options={STATUS_FILTERS} value={status} onChange={(value) => { setStatus(value); setPage(1); }} />
-            <select aria-label="Sort organizations" value={sort} onChange={(event) => { setSort(event.target.value); setPage(1); }} className="h-9 border border-line bg-white text-xs">
+            <select aria-label="Sort organizations" value={sort} onChange={(event) => { setSort(event.target.value); setPage(1); }} className="h-10 border border-line bg-white text-xs">
               {SORTS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
             </select>
           </div>

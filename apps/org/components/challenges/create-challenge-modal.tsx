@@ -4,10 +4,12 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ImagePlus, Loader2, X } from "lucide-react";
+import { Calendar as CalendarIcon } from "iconsax-react";
 import { Modal } from "@/components/ui/modal";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { FilterDropdown } from "@/components/ui/filter-dropdown";
 import { FieldError } from "@/components/onboarding/field-error";
 import { api } from "@/services/api";
 import { ApiError } from "@/services/http";
@@ -69,7 +71,7 @@ export function CreateChallengeModal({
     setDescription("");
     setStartDate("");
     setEndDate("");
-    setMetricType("");
+    setMetricType(METRIC_TYPES[0]);
     setTrackingMethod("automatic");
     setActivityLabel("");
     setEvidenceRequired(false);
@@ -238,17 +240,15 @@ export function CreateChallengeModal({
 
         <div className="space-y-2">
           <Label htmlFor="wellbeingChallenge">Based on a wellbeing challenge (optional)</Label>
-          <select
+          <FilterDropdown
             id="wellbeingChallenge"
+            ariaLabel="Based on a wellbeing challenge"
             value={selectedWellbeingChallengeId}
-            onChange={(e) => setSelectedWellbeingChallengeId(e.target.value)}
-            className="w-full h-[44px] rounded-[8px] border border-grey-4 bg-white px-3 text-sm"
-          >
-            <option value="">None — custom challenge</option>
-            {wellbeingChallenges.map((wc) => (
-              <option key={wc.id} value={wc.id}>{wc.name}</option>
-            ))}
-          </select>
+            onValueChange={setSelectedWellbeingChallengeId}
+            options={[{ value: "", label: "None, custom challenge" }, ...wellbeingChallenges.map((wc) => ({ value: wc.id, label: wc.name }))]}
+            buttonClassName="h-11 w-full font-normal"
+            menuClassName="w-full"
+          />
         </div>
 
         <div className="space-y-2">
@@ -256,6 +256,7 @@ export function CreateChallengeModal({
           <Input
             id="challengeName"
             placeholder="e.g. 10k Steps a Day"
+            className="placeholder:text-center"
             value={name}
             onChange={(e) => { setName(e.target.value); clearErrors(); }}
             required
@@ -267,7 +268,7 @@ export function CreateChallengeModal({
           <Label htmlFor="challengeDescription">Description</Label>
           <textarea
             id="challengeDescription"
-            className="w-full p-4 rounded-[8px] border border-grey-4 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-1 min-h-[100px] resize-none"
+            className="w-full p-4 rounded-[8px] border border-grey-4 bg-white text-sm placeholder:text-center focus:outline-none focus:ring-2 focus:ring-primary-1 min-h-[100px] resize-none"
             placeholder="Describe the challenge goals and rules..."
             value={description}
             onChange={(e) => { setDescription(e.target.value); clearErrors(); }}
@@ -311,24 +312,30 @@ export function CreateChallengeModal({
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="startDate">Start Date</Label>
-            <Input id="startDate" type="date" value={startDate} onChange={(e) => { setStartDate(e.target.value); clearErrors(); }} required />
+            <div className="relative">
+              <Input id="startDate" type="date" value={startDate} onChange={(e) => { setStartDate(e.target.value); clearErrors(); }} className="w-full pr-11 [&::-webkit-calendar-picker-indicator]:opacity-0" required />
+              <button type="button" aria-label="Choose start date" onClick={() => document.querySelector<HTMLInputElement>("#startDate")?.showPicker?.()} className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-grey-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-1"><CalendarIcon size="18" aria-hidden="true" /></button>
+            </div>
             <FieldError errors={fieldErrors} field="start_date" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="endDate">End Date</Label>
-            <Input id="endDate" type="date" value={endDate} onChange={(e) => { setEndDate(e.target.value); clearErrors(); }} required />
+            <div className="relative">
+              <Input id="endDate" type="date" value={endDate} onChange={(e) => { setEndDate(e.target.value); clearErrors(); }} className="w-full pr-11 [&::-webkit-calendar-picker-indicator]:opacity-0" required />
+              <button type="button" aria-label="Choose end date" onClick={() => document.querySelector<HTMLInputElement>("#endDate")?.showPicker?.()} className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-grey-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-1"><CalendarIcon size="18" aria-hidden="true" /></button>
+            </div>
             <FieldError errors={fieldErrors} field="end_date" />
           </div>
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="trackingMethod">How progress is tracked</Label>
-          <select id="trackingMethod" value={trackingMethod} onChange={(e) => { setTrackingMethod(e.target.value as TrackingMethod); clearErrors(); }} className="w-full h-[44px] rounded-[8px] border border-grey-4 bg-white px-3 text-sm">
-            <option value="automatic">Automatic — phone or wearable health data</option>
-            <option value="self_reported">Self-reported — mark the activity complete</option>
-            <option value="evidence_based">Evidence-based — photo and optional notes</option>
-            <option value="platform_recorded">Platform recorded — event, club or in-app activity</option>
-          </select>
+          <FilterDropdown id="trackingMethod" ariaLabel="How progress is tracked" value={trackingMethod} onValueChange={(value) => { setTrackingMethod(value as TrackingMethod); clearErrors(); }} options={[
+            { value: "automatic", label: "Automatic, phone or wearable health data" },
+            { value: "self_reported", label: "Self-reported, mark the activity complete" },
+            { value: "evidence_based", label: "Evidence-based, photo and optional notes" },
+            { value: "platform_recorded", label: "Platform recorded, event, club or in-app activity" },
+          ]} buttonClassName="h-11 w-full font-normal" menuClassName="w-full" />
           <p className="text-xs text-grey-3">Automatic metrics cannot be typed by participants; they must arrive from a connected device.</p>
         </div>
 
@@ -338,6 +345,7 @@ export function CreateChallengeModal({
             <Input
               id="activityLabel"
               placeholder="e.g. Prepare a healthy meal containing vegetables"
+              className="placeholder:text-center"
               value={activityLabel}
               onChange={(e) => { setActivityLabel(e.target.value); clearErrors(); }}
             />
@@ -347,64 +355,47 @@ export function CreateChallengeModal({
 
         {isEvidenceBased && (
           <div className="grid grid-cols-2 gap-4">
-            <label className="flex items-center gap-2 rounded-[8px] border border-grey-4 bg-white px-3 h-[44px] text-sm cursor-pointer">
-              <input
-                type="checkbox"
-                checked={evidenceRequired}
-                onChange={(e) => { setEvidenceRequired(e.target.checked); clearErrors(); }}
-              />
-              Evidence required
-            </label>
-            <label className="flex items-center gap-2 rounded-[8px] border border-grey-4 bg-white px-3 h-[44px] text-sm cursor-pointer">
-              <input
-                type="checkbox"
-                checked={requiresApproval}
-                onChange={(e) => { setRequiresApproval(e.target.checked); clearErrors(); }}
-              />
-              Requires admin approval
-            </label>
+            <button type="button" aria-pressed={evidenceRequired} onClick={() => { setEvidenceRequired(!evidenceRequired); clearErrors(); }} className={`min-h-11 rounded-[8px] border px-3 text-sm ${evidenceRequired ? "border-black text-black" : "border-grey-4 text-grey-2"}`}>Evidence required</button>
+            <button type="button" aria-pressed={requiresApproval} onClick={() => { setRequiresApproval(!requiresApproval); clearErrors(); }} className={`min-h-11 rounded-[8px] border px-3 text-sm ${requiresApproval ? "border-black text-black" : "border-grey-4 text-grey-2"}`}>Requires admin approval</button>
           </div>
         )}
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="metricType">Metric Type</Label>
-            <select
+            <FilterDropdown
               id="metricType"
+              ariaLabel="Metric Type"
               value={metricType}
-              onChange={(e) => { setMetricType(e.target.value); clearErrors(); }}
-              className="w-full h-[44px] rounded-[8px] border border-grey-4 bg-white px-3 text-sm"
-            >
-              {METRIC_TYPES.map((m) => (
-                <option key={m} value={m}>{m.replace(/_/g, " ")}</option>
-              ))}
-            </select>
+              onValueChange={(value) => { setMetricType(value); clearErrors(); }}
+              options={METRIC_TYPES.map((value) => ({ value, label: value.replace(/_/g, " ") }))}
+              buttonClassName="h-11 w-full font-normal" menuClassName="w-full"
+            />
             <FieldError errors={fieldErrors} field="metric_type" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="targetType">Target Type</Label>
-            <select
+            <FilterDropdown
               id="targetType"
+              ariaLabel="Target Type"
               value={targetType}
-              onChange={(e) => { setTargetType(e.target.value); clearErrors(); }}
-              className="w-full h-[44px] rounded-[8px] border border-grey-4 bg-white px-3 text-sm"
-            >
-              {TARGET_TYPES.map((t) => (
-                <option key={t} value={t}>{t.replace(/_/g, " ")}</option>
-              ))}
-            </select>
+              onValueChange={(value) => { setTargetType(value); clearErrors(); }}
+              options={TARGET_TYPES.map((value) => ({ value, label: value.replace(/_/g, " ") }))}
+              buttonClassName="h-11 w-full font-normal" menuClassName="w-full"
+            />
             <FieldError errors={fieldErrors} field="target_type" />
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="targetValue">Target Value</Label>
+          <Label htmlFor="targetValue">{targetType === "daily_minimum" ? "Daily" : "Total"} {metricType.replace(/_/g, " ")} goal</Label>
           <Input
             id="targetValue"
             type="number"
             min="0"
             step="any"
             placeholder="10000"
+            className="placeholder:text-center"
             value={targetValue}
             onChange={(e) => { setTargetValue(e.target.value); clearErrors(); }}
             required
@@ -415,36 +406,29 @@ export function CreateChallengeModal({
         {scope.type === "overview" && creatable && !creatable.canCreateOrgWide && (
           <div className="space-y-2">
             <Label htmlFor="branchSelect">Branch</Label>
-            <select
+            <FilterDropdown
               id="branchSelect"
+              ariaLabel="Branch"
               value={selectedBranchId}
-              onChange={(e) => { setSelectedBranchId(e.target.value); clearErrors(); }}
-              className="w-full h-[44px] rounded-[8px] border border-grey-4 bg-white px-3 text-sm"
-              required
-            >
-              <option value="">Select a branch</option>
-              {branchOptions.map((b) => (
-                <option key={b.id} value={b.id}>{b.name}</option>
-              ))}
-            </select>
+              onValueChange={(value) => { setSelectedBranchId(value); clearErrors(); }}
+              options={[{ value: "", label: "Select a branch" }, ...branchOptions.map((branch) => ({ value: branch.id, label: branch.name }))]}
+              buttonClassName="h-11 w-full font-normal" menuClassName="w-full"
+            />
             <FieldError errors={fieldErrors} field="branch_id" />
           </div>
         )}
 
         {scope.type === "overview" && creatable?.canCreateOrgWide && (
           <div className="space-y-2">
-            <Label htmlFor="branchSelectWide">Branch (optional — leave blank for General)</Label>
-            <select
+            <Label htmlFor="branchSelectWide">Branch (optional, leave blank for General)</Label>
+            <FilterDropdown
               id="branchSelectWide"
+              ariaLabel="Branch"
               value={selectedBranchId}
-              onChange={(e) => { setSelectedBranchId(e.target.value); clearErrors(); }}
-              className="w-full h-[44px] rounded-[8px] border border-grey-4 bg-white px-3 text-sm"
-            >
-              <option value="">General</option>
-              {branchOptions.map((b) => (
-                <option key={b.id} value={b.id}>{b.name}</option>
-              ))}
-            </select>
+              onValueChange={(value) => { setSelectedBranchId(value); clearErrors(); }}
+              options={[{ value: "", label: "General" }, ...branchOptions.map((branch) => ({ value: branch.id, label: branch.name }))]}
+              buttonClassName="h-11 w-full font-normal" menuClassName="w-full"
+            />
             <FieldError errors={fieldErrors} field="branch_id" />
           </div>
         )}

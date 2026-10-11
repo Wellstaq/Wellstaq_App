@@ -114,7 +114,7 @@ export default function SupportPage() {
             <div className="space-y-2">
               <Label htmlFor="ticket-status" className="text-sm font-medium text-grey-1">Status</Label>
               {canManage ? (
-                <select id="ticket-status" value={selected.status} disabled={isSaving} onChange={(event) => void changeStatus(selected, event.target.value as TicketStatus)} className="h-11 w-full border border-line bg-white text-sm">
+                <select id="ticket-status" value={selected.status} disabled={isSaving} onChange={(event) => void changeStatus(selected, event.target.value as TicketStatus)} className="h-10 w-full border border-line bg-white text-sm">
                   {STATUS_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                 </select>
               ) : (
