@@ -41,6 +41,9 @@ export const adminApi = {
     verifyTwoFa: (challengeToken: string, code: string) =>
       request<LoginResult>("/auth/2fa/verify", { method: "POST", body: { challengeToken, code }, redirectOnUnauthorized: false, notify: false }),
     me: ({ signal }: Signal = {}) => request<AdminMe>("/auth/me", { signal }),
+    /** Self-service only — always the signed-in admin's own row. */
+    updateProfile: (input: { firstName: string; lastName: string; avatarUrl: string | null }) =>
+      request<AdminMe>("/auth/me", { method: "PATCH", body: input }),
     logout: () => request<void>("/auth/logout", { method: "POST", redirectOnUnauthorized: false, notify: false }),
     forgotPassword: (email: string) =>
       request<void>("/auth/password/forgot", { method: "POST", body: { email }, redirectOnUnauthorized: false, notify: false }),
@@ -133,7 +136,7 @@ export const adminApi = {
   },
 
   storage: {
-    requestUploadUrl: (contentType: string) =>
-      request<UploadUrlResponse>("/storage/upload-url", { method: "POST", body: { domain: "events", contentType } }),
+    requestUploadUrl: (contentType: string, domain: "admin-avatars" | "platform-events") =>
+      request<UploadUrlResponse>("/storage/upload-url", { method: "POST", body: { domain, contentType } }),
   },
 };

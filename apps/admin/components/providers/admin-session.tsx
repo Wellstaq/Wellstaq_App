@@ -7,7 +7,14 @@ import { useResource } from "@/lib/use-resource";
 import { ErrorPanel } from "@/components/ui/states";
 import type { AdminMe } from "@/types/admin";
 
-const AdminSessionContext = createContext<AdminMe | null>(null);
+interface AdminSessionValue {
+  admin: AdminMe;
+  /** Updates the session in place after e.g. a profile edit, so the
+   * sidebar/top-bar avatar and name refresh everywhere without a reload. */
+  setAdmin: (admin: AdminMe) => void;
+}
+
+const AdminSessionContext = createContext<AdminSessionValue | null>(null);
 
 /** Loads the signed-in admin once for the whole console. A 401 redirects to login inside the HTTP client. */
 export function AdminSessionProvider({ children }: { children: ReactNode }) {
@@ -28,11 +35,20 @@ export function AdminSessionProvider({ children }: { children: ReactNode }) {
       </div>
     );
   }
-  return <AdminSessionContext.Provider value={session.data}>{children}</AdminSessionContext.Provider>;
+  const value: AdminSessionValue = { admin: session.data, setAdmin: (admin) => session.setData(() => admin) };
+  return <AdminSessionContext.Provider value={value}>{children}</AdminSessionContext.Provider>;
 }
 
 export function useAdmin(): AdminMe {
-  const admin = useContext(AdminSessionContext);
-  if (!admin) throw new Error("useAdmin must be used inside AdminSessionProvider");
-  return admin;
+  const context = useContext(AdminSessionContext);
+  if (!context) throw new Error("useAdmin must be used inside AdminSessionProvider");
+  return context.admin;
+}
+
+/** Like useAdmin(), but also returns a setter for updating the session
+ * after a self-service profile edit — see Settings page. */
+export function useAdminSession(): AdminSessionValue {
+  const context = useContext(AdminSessionContext);
+  if (!context) throw new Error("useAdminSession must be used inside AdminSessionProvider");
+  return context;
 }
