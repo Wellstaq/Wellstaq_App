@@ -10,13 +10,7 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
   images: {
-    // This deployment's Vercel project uses the multi-service feature
-    // (host-based rewrites to per-app "services" in the root vercel.json).
-    // Next's built-in /_next/image optimization route doesn't get forwarded
-    // correctly across that service boundary and 404s in production, so
-    // images are served unoptimized (the raw remote URL) instead of routed
-    // through the optimizer. Revisit if Vercel fixes this for multi-service.
-    unoptimized: true,
+    unoptimized: process.env.NODE_ENV === 'development',
     remotePatterns: [
       {
         protocol: 'https',
