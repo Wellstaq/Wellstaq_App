@@ -2,7 +2,7 @@
 
 import { Suspense, use, useState, type KeyboardEvent } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { CalendarDays, GitBranch, Layers, ShieldCheck, ShieldOff, Users, UsersRound } from "lucide-react";
+import { CalendarDays, Gift, GitBranch, Layers, ShieldCheck, ShieldOff, Users, UsersRound } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/controls";
 import { BackLink } from "@/components/ui/back-link";
@@ -15,7 +15,7 @@ import { ActionDialog } from "@/components/ui/action-dialog";
 import { dangerButton, secondaryButton } from "@/components/ui/button-styles";
 import { OrgOverviewTab } from "@/components/organizations/org-overview-tab";
 import { OrgEmployeesTab } from "@/components/organizations/org-employees-tab";
-import { OrgClubsTab, OrgDepartmentsTab, OrgEventsTab } from "@/components/organizations/org-collection-tabs";
+import { OrgClubsTab, OrgDepartmentsTab, OrgEventsTab, OrgBillingTab } from "@/components/organizations/org-collection-tabs";
 import { useAdmin } from "@/components/providers/admin-session";
 import { adminApi } from "@/services/admin-api";
 import { can } from "@/lib/permissions";
@@ -28,6 +28,7 @@ const TABS = [
   { value: "departments", label: "Departments" },
   { value: "clubs", label: "Clubs" },
   { value: "events", label: "Events" },
+  { value: "billing", label: "Billing" },
 ] as const;
 type Tab = (typeof TABS)[number]["value"];
 
@@ -40,7 +41,7 @@ function OrganizationDetail({ id }: { id: string }) {
   const tab: Tab = TABS.some((item) => item.value === requestedTab) ? (requestedTab as Tab) : "overview";
   const canManage = can(admin, "organizations.manage");
   const organization = useResource((signal) => adminApi.organizations.get(id, { signal }), [id]);
-  const [dialog, setDialog] = useState<"suspend" | "reactivate" | null>(null);
+  const [dialog, setDialog] = useState<"suspend" | "reactivate" | "comp" | "revokeComp" | null>(null);
 
   const selectTab = (next: Tab) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -99,7 +100,16 @@ function OrganizationDetail({ id }: { id: string }) {
           </div>
         </div>
         {canManage && (
-          <div className="flex shrink-0 gap-2">
+          <div className="flex shrink-0 flex-wrap gap-2">
+            {data.platformComped ? (
+              <Button type="button" size="sm" className={secondaryButton} onClick={() => setDialog("revokeComp")}>
+                <Gift className="h-4 w-4" aria-hidden="true" /> Revoke free access
+              </Button>
+            ) : (
+              <Button type="button" size="sm" className={secondaryButton} onClick={() => setDialog("comp")}>
+                <Gift className="h-4 w-4" aria-hidden="true" /> Give free access
+              </Button>
+            )}
             {isSuspended ? (
               <Button type="button" size="sm" className={secondaryButton} onClick={() => setDialog("reactivate")}>
                 <ShieldCheck className="h-4 w-4" aria-hidden="true" /> Reactivate organization
@@ -112,6 +122,13 @@ function OrganizationDetail({ id }: { id: string }) {
           </div>
         )}
       </header>
+
+      {data.platformComped && (
+        <div role="status" className="rounded-[14px] border border-line bg-primary-5 p-4 text-sm text-grey-1">
+          <p className="font-semibold">Free platform access</p>
+          <p className="mt-1 text-grey-2">This organization has free access to Wellstaq, bypassing payment. Revoke it any time from the button above.</p>
+        </div>
+      )}
 
       {isSuspended && (
         <div role="status" className="rounded-[14px] border border-error-4 bg-error-5 p-4 text-sm text-error-1">
@@ -149,6 +166,7 @@ function OrganizationDetail({ id }: { id: string }) {
         {tab === "departments" && <OrgDepartmentsTab organizationId={data.id} />}
         {tab === "clubs" && <OrgClubsTab organizationId={data.id} />}
         {tab === "events" && <OrgEventsTab organizationId={data.id} />}
+        {tab === "billing" && <OrgBillingTab organizationId={data.id} canManage={canManage} onSubscriptionActivated={(updated) => organization.setData(() => updated)} />}
       </div>
 
       <ActionDialog
@@ -177,6 +195,33 @@ function OrganizationDetail({ id }: { id: string }) {
           const updated = await adminApi.organizations.reactivate(data.id);
           organization.setData(() => updated);
           toast.success(`${data.name} is active again`);
+        }}
+      />
+      <ActionDialog
+        isOpen={dialog === "comp"}
+        onClose={() => setDialog(null)}
+        title={`Give ${data.name} free access?`}
+        description="They can use Wellstaq without a subscription until you revoke it. This doesn't affect any existing paid subscription."
+        confirmLabel="Give free access"
+        pendingLabel="Granting..."
+        onConfirm={async () => {
+          const updated = await adminApi.organizations.comp(data.id);
+          organization.setData(() => updated);
+          toast.success(`${data.name} now has free access`);
+        }}
+      />
+      <ActionDialog
+        isOpen={dialog === "revokeComp"}
+        onClose={() => setDialog(null)}
+        title={`Revoke ${data.name}'s free access?`}
+        description="They'll need an active subscription to keep using Wellstaq."
+        confirmLabel="Revoke free access"
+        pendingLabel="Revoking..."
+        destructive
+        onConfirm={async () => {
+          const updated = await adminApi.organizations.revokeComp(data.id);
+          organization.setData(() => updated);
+          toast.success(`Free access revoked for ${data.name}`);
         }}
       />
     </>

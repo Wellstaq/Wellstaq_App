@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
-import { Building2, CalendarDays, Inbox, LayoutDashboard, PanelLeftClose, PanelLeftOpen, ScrollText, Settings2, ShieldCheck, UserRound, UserSearch, X } from "lucide-react";
+import { Building2, CalendarDays, CreditCard, Inbox, LayoutDashboard, PanelLeftClose, PanelLeftOpen, ScrollText, Settings2, ShieldCheck, UserRound, UserSearch, X } from "lucide-react";
 import { cn } from "@wellstaq/ui/utils";
 import { Avatar } from "@/components/ui/avatar";
 import { useAdmin } from "@/components/providers/admin-session";
@@ -35,6 +35,7 @@ const GROUPS: { title?: string; items: NavItem[] }[] = [
     ],
   },
   { title: "Engagement", items: [{ name: "Platform events", href: "/events", icon: CalendarDays, permission: "events.read" }] },
+  { title: "Billing", items: [{ name: "Find a payment", href: "/payments", icon: CreditCard, permission: "organizations.read" }] },
   { title: "Help desk", items: [{ name: "Support inbox", href: "/support", icon: Inbox, permission: "support.read", badge: "support" }] },
 ];
 

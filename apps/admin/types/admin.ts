@@ -86,6 +86,8 @@ export interface OrganizationSummary {
   branchCount: number;
   planName: string | null;
   subscriptionStatus: string | null;
+  /** Free platform access, bypassing payment — granted/revoked from the org detail page. */
+  platformComped: boolean;
   owner: OrganizationOwner | null;
   createdAt: string;
 }
@@ -135,6 +137,31 @@ export interface UserSearchResult {
   organizationId: string;
   organizationName: string | null;
   joinedAt: string | null;
+}
+
+/** A row from GET /app-admin/organizations/{id}/transactions or /app-admin/payments/search. */
+export interface PaymentTransaction {
+  id: string;
+  amount: number;
+  currency: string;
+  status: string;
+  paymentMethod: string | null;
+  isRecurring: boolean;
+  externalReference: string | null;
+  failureReason: string | null;
+  createdAt: string;
+  /** Present only on the cross-organization search response. */
+  organizationId?: string;
+  organizationName?: string | null;
+}
+
+/** A row from GET /app-admin/plans — the platform's plan catalogue. */
+export interface SubscriptionPlan {
+  id: string;
+  name: string;
+  billingInterval: string;
+  amount: number;
+  currency: string;
 }
 
 export interface OrganizationBranch {
