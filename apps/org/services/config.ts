@@ -1,7 +1,8 @@
 // path: services/config.ts
-// Client-side fetches hit this directly (browser → backend), so it needs
-// the NEXT_PUBLIC_ prefix to be inlined into the bundle. Falls back to
-// production so nothing breaks for anyone who hasn't set it locally.
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://wellstaq.up.railway.app";
+// Browser code never talks to the backend directly — it calls this
+// same-origin BFF proxy (app/api/backend/[...path]/route.ts), which holds
+// BACKEND_API_URL server-side only and keeps tokens out of browser JS via
+// httpOnly cookies. See apps/admin's equivalent for the pattern this follows.
+const BFF_BASE = "/api/backend";
 
-export const backendPath = (path: string) => `${API_BASE_URL}${path}`;
+export const backendPath = (path: string) => `${BFF_BASE}${path}`;

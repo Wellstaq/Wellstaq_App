@@ -1,7 +1,5 @@
 // path: services/http.ts
 import type { ApiErrorBody, ApiResponse, FastApiValidationItem } from "@/types/api";
-import { getAuthTokens, updateAccessToken, clearAuthTokens } from "@/services/auth-token";
-import { backendPath } from "@/services/config";
 import { getApiErrorMessage, getFieldErrorMessage, getFriendlyFieldErrors, getRequestErrorMessage } from "@/lib/errors";
 
 const DEFAULT_TIMEOUT_MS = 15_000;
@@ -106,11 +104,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   headers.set("Accept", "application/json");
   headers.set("X-Request-Id", headers.get("X-Request-Id") ?? requestId());
 
-  const tokens = getAuthTokens();
   const method = (fetchOptions.method ?? "GET").toUpperCase();
-  if (tokens?.accessToken && !headers.has("Authorization")) {
-    headers.set("Authorization", `${tokens.tokenType || "Bearer"} ${tokens.accessToken}`);
-  }
 
   let body: BodyInit | undefined;
   if (requestBody instanceof FormData) {
@@ -125,33 +119,17 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
       ...fetchOptions,
       body,
       headers,
-      credentials: "include",
+      credentials: "same-origin",
       cache: "no-store",
       signal: controller.signal,
     });
 
-    if (response.status === 401 && !path.includes("/auth/") && !headers.has("X-Auth-Retry")) {
-      const currentTokens = getAuthTokens();
-      if (currentTokens?.refreshToken) {
-        const refreshResponse = await fetch(backendPath("/auth/refresh"), {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "X-Request-Id": requestId() },
-          body: JSON.stringify({ refresh_token: currentTokens.refreshToken }),
-        });
-
-        if (refreshResponse.ok) {
-          const refreshed = await refreshResponse.json();
-          updateAccessToken(refreshed.access_token, refreshed.token_type);
-          headers.set("Authorization", `${refreshed.token_type} ${refreshed.access_token}`);
-          headers.set("X-Auth-Retry", "1");
-          return request<T>(path, { ...options, headers });
-        }
-
-        clearAuthTokens();
-        if (typeof window !== "undefined") {
-          window.location.assign("/login?error=session_revoked");
-        }
-      }
+    // The BFF proxy (app/api/backend/[...path]/route.ts) already retries
+    // once against a fresh access token using the httpOnly refresh cookie
+    // before ever answering 401 — so a 401 here means the session is truly
+    // gone, not just an expired access token.
+    if (response.status === 401 && !path.includes("/auth/") && typeof window !== "undefined" && window.location.pathname !== "/login") {
+      window.location.assign("/login?error=session_revoked");
     }
 
     const contentType = response.headers.get("content-type") ?? "";

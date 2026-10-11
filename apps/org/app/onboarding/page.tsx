@@ -17,7 +17,6 @@ import { Step7WorkModel } from "@/components/onboarding/step-7-work-model";
 import { OnboardingData, initialData, Step } from "@/types";
 import { api } from "@/services/api";
 import { ApiError } from "@/services/http";
-import { setAuthTokens } from "@/services/auth-token";
 import { Mail, User, Briefcase } from "lucide-react";
 
 function SkeletonLoader() {
@@ -175,8 +174,7 @@ export default function OnboardingPage() {
       setIsLoading(true);
       let isNavigating = false;
       try {
-        const tokens = await api.onboarding.complete(data);
-        setAuthTokens(tokens);
+        await api.onboarding.complete(data);
         isNavigating = true;
         router.replace("/dashboard");
       } catch (err) {

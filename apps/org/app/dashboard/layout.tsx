@@ -7,7 +7,8 @@ import { Sidebar } from "@/components/dashboard/sidebar";
 import { TopNav } from "@/components/dashboard/top-nav";
 import { DashboardDataProvider, useDashboardData } from "@/components/providers/dashboard-data-provider";
 import { getSwitchableScopes } from "@/lib/permissions";
-import { clearAuthTokens } from "@/services/auth-token";
+import { api } from "@/services/api";
+import { clearCachedCurrentUser } from "@/services/auth-token";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 function AccessGate({ children }: { children: React.ReactNode }) {
@@ -20,7 +21,8 @@ function AccessGate({ children }: { children: React.ReactNode }) {
     if (isLoading || !currentUser) return;
 
     if (!getSwitchableScopes(currentUser.permissions).canViewOverview) {
-      clearAuthTokens();
+      clearCachedCurrentUser();
+      void api.auth.logout().catch(() => {});
       router.replace("/login?error=insufficient_permission");
       return;
     }

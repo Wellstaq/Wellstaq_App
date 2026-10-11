@@ -13,7 +13,7 @@ import { FieldError } from "@/components/onboarding/field-error";
 import { Eye, EyeOff, Mail } from "lucide-react";
 import { api } from "@/services/api";
 import { ApiError } from "@/services/http";
-import { cacheCurrentUser, clearAuthTokens, getAuthTokens, setAuthTokens, type AuthTokens } from "@/services/auth-token";
+import { cacheCurrentUser, clearCachedCurrentUser } from "@/services/auth-token";
 import { getSwitchableScopes } from "@/lib/permissions";
 import { getUserErrorMessage } from "@/lib/errors";
 import type { TwoFaChallengeResponse } from "@/types/api";
@@ -54,20 +54,18 @@ function LoginPageContent() {
   useEffect(() => {
     router.prefetch("/dashboard");
     if (errorParam === "insufficient_permission") {
-      clearAuthTokens();
-      return;
+      clearCachedCurrentUser();
     }
-    if (getAuthTokens()?.accessToken) {
-      router.replace("/dashboard");
-    }
+    // No client-side "already logged in" check needed here — middleware
+    // redirects /login -> /dashboard server-side before this page renders
+    // when a session cookie is present.
   }, [errorParam, router]);
 
-  const finishLogin = async (tokens: AuthTokens) => {
-    setAuthTokens(tokens);
+  const finishLogin = async () => {
     try {
       const me = await api.auth.me();
       if (!getSwitchableScopes(me.permissions).canViewOverview) {
-        clearAuthTokens();
+        await api.auth.logout().catch(() => {});
         setCredentialsError("You don't have permission to view this resource.");
         return;
       }
@@ -76,11 +74,11 @@ function LoginPageContent() {
       router.replace(returnTo && returnTo.startsWith("/") ? returnTo : "/dashboard");
       router.refresh();
     } catch (error) {
-      clearAuthTokens();
+      await api.auth.logout().catch(() => {});
       throw error;
     }
   };
-  
+
   const handleSubmit = async () => {
     setIsLoading(true);
     setFieldErrors({});
@@ -91,7 +89,7 @@ function LoginPageContent() {
         setTwoFaChallenge(result);
         return;
       }
-      await finishLogin(result);
+      await finishLogin();
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.fieldErrors) {
@@ -114,8 +112,8 @@ function LoginPageContent() {
     setIsLoading(true);
     setCredentialsError(null);
     try {
-      const tokens = await api.auth.verifyTwoFa(twoFaChallenge.twoFaChallengeToken, twoFaCode);
-      await finishLogin(tokens);
+      await api.auth.verifyTwoFa(twoFaChallenge.twoFaChallengeToken, twoFaCode);
+      await finishLogin();
     } catch (err) {
       setCredentialsError(getUserErrorMessage(err, "We couldn't verify that code. Try again."));
     } finally {

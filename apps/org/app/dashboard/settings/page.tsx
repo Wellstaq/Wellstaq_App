@@ -34,7 +34,7 @@ import { useDashboardData } from "@/components/providers/dashboard-data-provider
 import { useTheme } from "@/components/providers/theme-provider";
 import type { OrganizationMemberInfo, OrganizationSubscriptionInfo, PermissionCatalogueItem, RoleItem, SecuritySessionItem, SubscriptionPlanItem, UserPermissionDetail, UserPreferences } from "@/types/api";
 import { hasOrgWidePermission, hasPermission, readablePermission } from "@/lib/permissions";
-import { clearAuthTokens } from "@/services/auth-token";
+import { clearCachedCurrentUser } from "@/services/auth-token";
 import { humanizeIdentifier } from "@/lib/format";
 import { getUserErrorMessage } from "@/lib/errors";
 import { useDashboardScope } from "@/lib/scope";
@@ -495,7 +495,11 @@ export default function SettingsPage() {
   const revokeLoginSession = async (session: SecuritySessionItem) => {
     await api.security.revokeSession(session.id);
     if (session.isCurrent) {
-      clearAuthTokens();
+      clearCachedCurrentUser();
+      // The backend already revoked this device; routing it through
+      // /auth/logout here just clears this browser's session cookies
+      // (logout is idempotent, so a device that's already revoked is fine).
+      await api.auth.logout().catch(() => {});
       router.replace("/login?error=session_revoked");
       return;
     }

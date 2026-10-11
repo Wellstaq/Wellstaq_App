@@ -1,107 +1,188 @@
 import { NextRequest, NextResponse } from "next/server";
+import {
+  ACCESS_COOKIE,
+  DEFAULT_ACCESS_MAX_AGE_SECONDS,
+  PUBLIC_ROUTES,
+  REFRESH_COOKIE,
+  REFRESH_COOKIE_PATH,
+  REFRESH_MAX_AGE_SECONDS,
+  SESSION_MARKER_COOKIE,
+  isSameOriginMutation,
+  isValidPath,
+  readIssuedTokens,
+  stripTokens,
+  upstreamUrl,
+  type IssuedTokens,
+} from "@/lib/bff";
 
 export const dynamic = "force-dynamic";
 
 const ALLOWED_METHODS = new Set(["GET", "POST", "PUT", "PATCH", "DELETE"]);
-const FORWARDED_RESPONSE_HEADERS = ["content-type", "cache-control", "etag"];
+const FORWARDED_REQUEST_HEADERS = ["accept", "content-type", "x-request-id", "user-agent"];
+const FORWARDED_RESPONSE_HEADERS = ["content-type", "etag"];
+const UPSTREAM_TIMEOUT_MS = 30_000;
 
-async function proxy(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
-  const backendUrl = process.env.BACKEND_API_URL;
-  if (!backendUrl) {
-    return NextResponse.json({ message: "BACKEND_API_URL is not configured", code: "API_NOT_CONFIGURED" }, { status: 503 });
-  }
-  if (!ALLOWED_METHODS.has(request.method)) {
-    return NextResponse.json({ message: "Method not allowed" }, { status: 405 });
-  }
-  const origin = request.headers.get("origin");
-  if (request.method !== "GET" && origin && origin !== request.nextUrl.origin) {
-    return NextResponse.json({ message: "Cross-origin request blocked" }, { status: 403 });
-  }
+type Context = { params: Promise<{ path: string[] }> };
 
+function json(body: unknown, status: number) {
+  return NextResponse.json(body, { status, headers: { "cache-control": "no-store" } });
+}
+
+function setSessionCookies(response: NextResponse, tokens: IssuedTokens) {
+  const secure = process.env.NODE_ENV === "production";
+  response.cookies.set(ACCESS_COOKIE, tokens.accessToken, {
+    httpOnly: true,
+    secure,
+    sameSite: "lax",
+    path: REFRESH_COOKIE_PATH,
+    maxAge: tokens.expiresIn || DEFAULT_ACCESS_MAX_AGE_SECONDS,
+  });
+  if (tokens.refreshToken) {
+    response.cookies.set(REFRESH_COOKIE, tokens.refreshToken, {
+      httpOnly: true,
+      secure,
+      sameSite: "strict",
+      path: REFRESH_COOKIE_PATH,
+      maxAge: REFRESH_MAX_AGE_SECONDS,
+    });
+    response.cookies.set(SESSION_MARKER_COOKIE, "1", {
+      httpOnly: true,
+      secure,
+      sameSite: "lax",
+      path: "/",
+      maxAge: REFRESH_MAX_AGE_SECONDS,
+    });
+  }
+}
+
+function clearSessionCookies(response: NextResponse) {
+  response.cookies.set(ACCESS_COOKIE, "", { path: REFRESH_COOKIE_PATH, maxAge: 0 });
+  response.cookies.set(REFRESH_COOKIE, "", { path: REFRESH_COOKIE_PATH, maxAge: 0 });
+  response.cookies.set(SESSION_MARKER_COOKIE, "", { path: "/", maxAge: 0 });
+}
+
+async function callUpstream(url: string, init: { method: string; headers: Headers; body?: ArrayBuffer }) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS);
+  try {
+    return await fetch(url, { ...init, cache: "no-store", redirect: "manual", signal: controller.signal });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function refreshSession(backendUrl: string, refreshToken: string): Promise<IssuedTokens | null> {
+  const response = await callUpstream(upstreamUrl(backendUrl, ["auth", "refresh"], ""), {
+    method: "POST",
+    headers: new Headers({ "content-type": "application/json", accept: "application/json" }),
+    body: new TextEncoder().encode(JSON.stringify({ refresh_token: refreshToken })).buffer as ArrayBuffer,
+  });
+  if (!response.ok) return null;
+  return readIssuedTokens(await response.json().catch(() => null));
+}
+
+async function proxy(request: NextRequest, context: Context) {
   const { path } = await context.params;
-  if (!path.length || path.some((segment) => !/^[a-zA-Z0-9._~-]+$/.test(segment))) {
-    return NextResponse.json({ message: "Invalid API path" }, { status: 400 });
+  const method = request.method.toUpperCase();
+
+  if (!ALLOWED_METHODS.has(method)) return json({ message: "Method not allowed" }, 405);
+  if (!isValidPath(path)) return json({ message: "Invalid API path", code: "INVALID_PATH" }, 400);
+  if (!isSameOriginMutation(method, request.headers.get("origin"), request.nextUrl.origin)) {
+    return json({ message: "Cross-origin request blocked", code: "CROSS_ORIGIN" }, 403);
   }
 
-  const target = new URL(path.map(encodeURIComponent).join("/"), `${backendUrl.replace(/\/$/, "")}/`);
   const routePath = path.join("/");
-  const publicRoutes = new Set(["v1/auth/otp", "v1/auth/otp/verify", "v1/auth/refresh", "v1/public/demo-requests"]);
-  if (routePath === "v1/auth/refresh" && !request.cookies.has("wellstaq_refresh_token")) {
-    return NextResponse.json({ message: "Session expired", code: "SESSION_EXPIRED" }, { status: 401 });
+
+  const backendUrl = process.env.BACKEND_API_URL;
+  if (!backendUrl) return json({ message: "The API isn't configured.", code: "API_NOT_CONFIGURED" }, 503);
+
+  const isPublic = PUBLIC_ROUTES.has(routePath);
+  const refreshToken = request.cookies.get(REFRESH_COOKIE)?.value;
+  let accessToken = request.cookies.get(ACCESS_COOKIE)?.value;
+  let refreshedTokens: IssuedTokens | null = null;
+
+  if (routePath === "auth/refresh") {
+    if (!refreshToken) return json({ message: "Session expired", code: "SESSION_EXPIRED" }, 401);
+    refreshedTokens = await refreshSession(backendUrl, refreshToken).catch(() => null);
+    const response = refreshedTokens ? json({ authenticated: true }, 200) : json({ message: "Session expired", code: "SESSION_EXPIRED" }, 401);
+    if (refreshedTokens) setSessionCookies(response, refreshedTokens);
+    else clearSessionCookies(response);
+    return response;
   }
-  if (!publicRoutes.has(routePath) && !request.cookies.has("wellstaq_access_token")) {
-    return NextResponse.json({ message: "Authentication required", code: "UNAUTHENTICATED" }, { status: 401 });
+
+  if (routePath === "auth/logout") {
+    const response = json({ loggedOut: true }, 200);
+    if (refreshToken) {
+      await callUpstream(upstreamUrl(backendUrl, path, ""), {
+        method: "POST",
+        headers: new Headers({ "content-type": "application/json", accept: "application/json" }),
+        body: new TextEncoder().encode(JSON.stringify({ refresh_token: refreshToken })).buffer as ArrayBuffer,
+      }).catch(() => null);
+    }
+    clearSessionCookies(response);
+    return response;
   }
-  target.search = request.nextUrl.search;
+
+  if (!isPublic && !accessToken && refreshToken) {
+    refreshedTokens = await refreshSession(backendUrl, refreshToken).catch(() => null);
+    accessToken = refreshedTokens?.accessToken;
+  }
+  if (!isPublic && !accessToken) {
+    const response = json({ message: "Your session has ended. Sign in again.", code: "UNAUTHENTICATED" }, 401);
+    clearSessionCookies(response);
+    return response;
+  }
 
   const headers = new Headers();
-  for (const name of ["accept", "content-type", "x-request-id", "user-agent"]) {
+  for (const name of FORWARDED_REQUEST_HEADERS) {
     const value = request.headers.get(name);
     if (value) headers.set(name, value);
   }
-  const accessToken = request.cookies.get("wellstaq_access_token")?.value;
-  const refreshTokenCookie = request.cookies.get("wellstaq_refresh_token")?.value;
-  const token = routePath === "v1/auth/refresh" ? refreshTokenCookie : accessToken;
-  if (token) headers.set("authorization", `Bearer ${token}`);
+  if (!isPublic && accessToken) headers.set("authorization", `Bearer ${accessToken}`);
 
-  const body = request.method === "GET" ? undefined : await request.arrayBuffer();
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 30_000);
+  const body = method === "GET" ? undefined : await request.arrayBuffer();
+  const target = upstreamUrl(backendUrl, path, request.nextUrl.search);
 
   try {
-    const upstream = await fetch(target, {
-      method: request.method,
-      headers,
-      body,
-      cache: "no-store",
-      redirect: "manual",
-      signal: controller.signal,
-    });
+    let upstream = await callUpstream(target, { method, headers, body });
 
-    if (upstream.ok && (routePath === "v1/auth/otp/verify" || routePath === "v1/auth/refresh") && upstream.headers.get("content-type")?.includes("application/json")) {
-      const payload = await upstream.json();
-      const auth = payload?.data ?? payload;
-      if (typeof auth?.accessToken === "string") {
-        const { accessToken, refreshToken, ...safeAuth } = auth;
-        const response = NextResponse.json({ data: safeAuth }, { status: upstream.status });
-        response.cookies.set("wellstaq_access_token", accessToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
-          path: "/",
-          maxAge: Number(auth.expiresIn) || 3_600,
-        });
-        if (typeof refreshToken === "string") {
-          response.cookies.set("wellstaq_refresh_token", refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            path: "/api/backend/v1/auth",
-            maxAge: 60 * 60 * 24 * 30,
-          });
-        }
-        return response;
+    if (upstream.status === 401 && !isPublic && refreshToken && !refreshedTokens) {
+      refreshedTokens = await refreshSession(backendUrl, refreshToken).catch(() => null);
+      if (refreshedTokens) {
+        headers.set("authorization", `Bearer ${refreshedTokens.accessToken}`);
+        upstream = await callUpstream(target, { method, headers, body });
       }
     }
-    const responseHeaders = new Headers();
+
+    const contentType = upstream.headers.get("content-type") ?? "";
+    if (upstream.ok && contentType.includes("application/json")) {
+      const payload = await upstream.json().catch(() => null);
+      const tokens = readIssuedTokens(payload);
+      const response = json(tokens ? stripTokens(payload) : payload, upstream.status);
+      if (tokens) setSessionCookies(response, tokens);
+      else if (refreshedTokens) setSessionCookies(response, refreshedTokens);
+      return response;
+    }
+
+    const responseHeaders = new Headers({ "cache-control": "no-store" });
     for (const name of FORWARDED_RESPONSE_HEADERS) {
       const value = upstream.headers.get(name);
       if (value) responseHeaders.set(name, value);
     }
-    const response = new NextResponse(upstream.body, { status: upstream.status, headers: responseHeaders });
-    if (routePath === "v1/auth/logout") {
-      response.cookies.delete("wellstaq_access_token");
-      response.cookies.delete("wellstaq_refresh_token");
-    }
+    const response = new NextResponse(upstream.status === 204 ? null : upstream.body, { status: upstream.status, headers: responseHeaders });
+
+    if (upstream.status === 401 && !isPublic) clearSessionCookies(response);
+    else if (refreshedTokens) setSessionCookies(response, refreshedTokens);
     return response;
   } catch (error) {
     const timedOut = error instanceof DOMException && error.name === "AbortError";
-    return NextResponse.json({
-      message: timedOut ? "The upstream API timed out" : "The upstream API is unavailable",
-      code: timedOut ? "UPSTREAM_TIMEOUT" : "UPSTREAM_UNAVAILABLE",
-    }, { status: timedOut ? 504 : 502 });
-  } finally {
-    clearTimeout(timeout);
+    return json(
+      {
+        message: timedOut ? "The API took too long to respond." : "The API is unavailable right now.",
+        code: timedOut ? "UPSTREAM_TIMEOUT" : "UPSTREAM_UNAVAILABLE",
+      },
+      timedOut ? 504 : 502,
+    );
   }
 }
 
