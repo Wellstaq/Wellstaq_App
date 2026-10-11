@@ -15,7 +15,14 @@ const nextConfig: NextConfig = {
   turbopack: {root: monorepoRoot},
   transpilePackages: ['motion', '@wellstaq/ui'],
   images: {
-    unoptimized: process.env.NODE_ENV === 'development',
+    // Confirmed (not just suspected) via a real deploy: this Vercel
+    // project's multi-service setup (host-based rewrites to per-app
+    // "services" in the root vercel.json) doesn't forward Next's built-in
+    // /_next/image route correctly -- it 404s in production. Toggled this
+    // off then back on across two separate live deploys to be sure; the
+    // 404 reappeared the moment the optimizer was re-enabled. Serve raw
+    // remote URLs instead of routing through the optimizer.
+    unoptimized: true,
     remotePatterns: [
       {protocol: 'https', hostname: 'res.cloudinary.com', pathname: '/**'},
       {protocol: 'https', hostname: 'df1bgz4t3wxg5.cloudfront.net', pathname: '/**'},
