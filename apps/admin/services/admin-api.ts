@@ -16,9 +16,11 @@ import type {
   OrganizationMember,
   OrganizationSummary,
   Paginated,
+  PaymentTransaction,
   PlatformEvent,
   PlatformEventInput,
   PlatformOverview,
+  SubscriptionPlan,
   SupportTicket,
   SupportTicketList,
   TicketStatus,
@@ -55,6 +57,9 @@ export const adminApi = {
     suspend: (orgId: string, reason: string) =>
       request<OrganizationDetail>(`/organizations/${id(orgId)}/suspend`, { method: "POST", body: { reason } }),
     reactivate: (orgId: string) => request<OrganizationDetail>(`/organizations/${id(orgId)}/reactivate`, { method: "POST" }),
+    /** Flips the organization to free platform access, bypassing payment. */
+    comp: (orgId: string) => request<OrganizationDetail>(`/organizations/${id(orgId)}/comp`, { method: "POST" }),
+    revokeComp: (orgId: string) => request<OrganizationDetail>(`/organizations/${id(orgId)}/comp/revoke`, { method: "POST" }),
     members: (orgId: string, params: ListParams, { signal }: Signal = {}) =>
       request<Paginated<OrganizationMember>>(`/organizations/${id(orgId)}/members${toQueryString({ ...params })}`, { signal }),
     branches: (orgId: string, params: ListParams, { signal }: Signal = {}) =>
@@ -65,6 +70,21 @@ export const adminApi = {
       request<Paginated<OrganizationClub>>(`/organizations/${id(orgId)}/clubs${toQueryString({ ...params })}`, { signal }),
     events: (orgId: string, params: ListParams, { signal }: Signal = {}) =>
       request<Paginated<OrganizationEvent>>(`/organizations/${id(orgId)}/events${toQueryString({ ...params })}`, { signal }),
+    transactions: (orgId: string, params: ListParams, { signal }: Signal = {}) =>
+      request<Paginated<PaymentTransaction>>(`/organizations/${id(orgId)}/transactions${toQueryString({ ...params })}`, { signal }),
+    /** Reconciliation tool: marks the org's subscription active on a plan without going through checkout. */
+    activateSubscription: (orgId: string, planId: string, reason: string) =>
+      request<OrganizationDetail>(`/organizations/${id(orgId)}/subscription/activate`, { method: "POST", body: { planId, reason } }),
+  },
+
+  payments: {
+    /** Cross-organization lookup by gateway reference or internal transaction id. */
+    search: (params: ListParams, { signal }: Signal = {}) =>
+      request<Paginated<PaymentTransaction>>(`/payments/search${toQueryString({ ...params })}`, { signal }),
+  },
+
+  plans: {
+    list: ({ signal }: Signal = {}) => request<{ items: SubscriptionPlan[] }>("/plans", { signal }),
   },
 
   /** Account actions shared by organization employees and individual users. */

@@ -51,6 +51,22 @@ export function formatNumber(value: number | null | undefined): string {
   return numberFormatter.format(value ?? 0);
 }
 
+const moneyFormatterCache = new Map<string, Intl.NumberFormat>();
+
+/** amount is in the smallest currency unit (kobo, cents, etc.) — same convention as the backend's PaymentTransaction model. */
+export function formatMoney(amount: number, currency: string): string {
+  let formatter = moneyFormatterCache.get(currency);
+  if (!formatter) {
+    formatter = new Intl.NumberFormat("en-GB", { style: "currency", currency, currencyDisplay: "narrowSymbol" });
+    moneyFormatterCache.set(currency, formatter);
+  }
+  try {
+    return formatter.format(amount / 100);
+  } catch {
+    return `${(amount / 100).toFixed(2)} ${currency}`;
+  }
+}
+
 export function plural(count: number, singular: string, pluralForm = `${singular}s`): string {
   return `${formatNumber(count)} ${count === 1 ? singular : pluralForm}`;
 }
