@@ -18,5 +18,8 @@
     "check:org": "npm run check --workspace @wellstaq/org",
     "check:admin": "npm run check --workspace @wellstaq/admin",
     "check": "npm run check --workspaces --if-present"
+  },
+  "overrides": {
+    "sharp": "0.35.5"
   }
 }

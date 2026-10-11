@@ -12,7 +12,7 @@ import { individualPage, initIndividual } from "./individual.js";
 import { getAppSection } from "./get-app.js";
 import "./get-app.css";
 
-const APP_URL = "https://appwellstaq6.vercel.app/";
+const APP_URL = "https://appwellstaq.vercel.app/";
 const EMPLOYEE_APP_URL = "https://wellstaqemployee.vercel.app/";
 const DEMO_URL = "/contact?interest=demo#contact-form";
 const PRICING_URL = "/contact?interest=pricing#contact-form";
@@ -713,7 +713,11 @@ document.querySelector("#app").innerHTML = `${header()}<main id="main">${
       : isIndividual
         ? individualPage({
             icon,
-            getApp: getAppSection({ icon, appUrl: APP_URL, audience: "individual" }),
+            getApp: getAppSection({
+              icon,
+              appUrl: EMPLOYEE_APP_URL,
+              audience: "individual",
+            }),
           })
         : isContact
           ? contactHero() + faq()

@@ -31,7 +31,7 @@ The production output is `dist/`. For a static host, serve the marketing routes 
 - Section photography has responsive 800px/1536px WebP variants. Why Wellstaq now shows a happy team. HR insights and integrations use native SVG illustrations, with Wellstaq at the centre of the integration grid. The built-in image generation prompts and source paths are recorded in `design-reference/calendly-redesign/annotation-image-prompts.md` and `business-update-assets.md` in the same directory.
 - `design-reference/` holds source design context and visual QA screenshots, and is excluded from the production output.
 - Desktop dimensions follow the 1440px Figma frames; responsive layouts adapt to tablet and phone screens.
-- All Get Started links lead to `https://appwellstaq6.vercel.app/`.
+- Business Get Started links lead to `https://appwellstaq.vercel.app/`. Individual web-app links lead to `https://wellstaqemployee.vercel.app/`.
 - Demo and pricing links open the contact page with a relevant message prefilled.
 - The contact form validates email, organization, and message, then opens an email draft to `hello@wellstaq.com`. Delivery occurs only after the visitor sends that email. No form backend was supplied.
 - Existing privacy and terms pages and every original link destination are retained.

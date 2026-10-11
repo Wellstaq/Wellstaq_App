@@ -23,5 +23,6 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
+  runtime: "nodejs",
   matcher: ["/((?!api/|_next/|icon.svg|favicon.ico|assets/).*)"],
 };

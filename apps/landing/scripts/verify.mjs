@@ -60,7 +60,7 @@ try {
       for (const href of await page
         .getByRole("link", { name: "Get Started", exact: true })
         .evaluateAll((links) => links.map((link) => link.href)))
-        assert.equal(href, "https://appwellstaq6.vercel.app/");
+        assert.equal(href, "https://appwellstaq.vercel.app/");
       if (width <= 768) {
         await page.getByRole("button", { name: "Menu", exact: true }).click();
         await page
