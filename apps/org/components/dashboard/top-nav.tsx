@@ -7,6 +7,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { Modal } from "@/components/ui/modal";
+import { DRAWER_WIDTH_CLASS } from "@wellstaq/ui/drawer";
 import { ModalLayer } from "@/components/ui/modal-layer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -503,7 +504,7 @@ export function TopNav({ onMenuClick }: { onMenuClick?: () => void }) {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-[420px] bg-white flex flex-col overflow-hidden"
+              className={`fixed right-0 top-0 bottom-0 z-50 bg-white flex flex-col overflow-hidden ${DRAWER_WIDTH_CLASS}`}
             >
               {/* Chat Header */}
               <div className="p-4 flex items-center justify-between bg-white border-b border-grey-4">

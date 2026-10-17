@@ -68,9 +68,9 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         aria-label={isCollapsed ? item.name : undefined}
         title={isCollapsed ? item.name : undefined}
         className={cn(
-          "relative flex h-11 items-center gap-3 rounded-[8px] px-3 text-[15px] transition-colors",
+          "admin-nav-item relative flex h-11 items-center gap-3 rounded-[8px] px-3 text-[15px] transition-colors",
           isCollapsed && "justify-center px-0",
-          active ? "bg-primary-5 font-medium text-primary-hover" : "text-grey-2 hover:bg-grey-5 hover:text-grey-1",
+          active ? "bg-primary-5 font-semibold text-primary-hover" : "text-grey-2 hover:bg-grey-5 hover:text-grey-1",
         )}
       >
         {active && <span aria-hidden="true" className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-primary-1" />}
@@ -90,11 +90,11 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
   const footerItems = visible(FOOTER_ITEMS);
 
   return (
-    <nav aria-label="Admin" className={cn("flex h-dvh shrink-0 flex-col border-r border-line bg-white transition-[width] duration-300", isCollapsed ? "w-[76px]" : "w-[264px]")}>
-      <div className={cn("flex h-[60px] shrink-0 items-center px-5", isCollapsed ? "justify-center px-0" : "justify-between")}>
+    <nav aria-label="Admin" className={cn("admin-sidebar flex h-dvh shrink-0 flex-col border-r border-line bg-white transition-[width] duration-300", isCollapsed ? "w-[76px]" : "w-[248px]")}>
+      <div className={cn("flex h-[76px] shrink-0 items-center px-5", isCollapsed ? "justify-center px-0" : "justify-between")}>
         {!isCollapsed && (
           <Link href="/" onClick={onClose} className="flex items-center gap-2.5 rounded-sm">
-            <Image src={LOGO} alt="Wellstaq" width={501} height={120} className="h-[30px] w-auto" priority />
+            <Image src={LOGO} alt="Wellstaq" width={501} height={120} className="h-[27px] w-auto" priority />
           </Link>
         )}
         <button
@@ -111,10 +111,10 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
       </div>
 
       <div className="no-scrollbar flex flex-1 flex-col overflow-y-auto overflow-x-hidden px-4 pb-4">
-        <div className="space-y-5">
+        <div className="space-y-4">
           {groups.map((group, index) => (
             <div key={group.title ?? index}>
-              {group.title && !isCollapsed && <p className="mb-1.5 px-3 text-[13px] font-medium text-grey-1">{group.title}</p>}
+              {group.title && !isCollapsed && <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-grey-2">{group.title}</p>}
               {group.title && isCollapsed && <div className="mx-3 mb-2 border-t border-line" aria-hidden="true" />}
               <div className="space-y-0.5">{group.items.map(renderItem)}</div>
             </div>
@@ -123,7 +123,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
 
         <div className="mt-auto pt-6">
           {footerItems.length > 0 && <div className="space-y-0.5 border-t border-line pt-4">{footerItems.map(renderItem)}</div>}
-          <div className={cn("mt-4 flex items-center gap-3 rounded-[12px] bg-grey-5 p-3", isCollapsed && "justify-center bg-transparent p-0")}>
+          <div className={cn("mt-4 flex items-center gap-3 rounded-[12px] border border-line bg-white p-3", isCollapsed && "justify-center bg-transparent p-0")}>
             <Avatar name={name} src={admin.avatarUrl} size={40} />
             {!isCollapsed && (
               <div className="min-w-0">

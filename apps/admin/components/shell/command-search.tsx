@@ -82,7 +82,7 @@ export function CommandSearch() {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="hidden h-10 w-full max-w-[460px] items-center gap-3 rounded-[10px] border border-line bg-white px-4 text-left text-[15px] text-grey-3 transition-colors hover:border-grey-3 md:flex"
+        className="hidden h-10 w-full max-w-[460px] items-center gap-3 rounded-[10px] border border-line bg-grey-5 px-4 text-left text-[13px] text-grey-2 transition-colors hover:border-grey-3 md:flex"
       >
         <Search className="h-[18px] w-[18px] text-grey-2" strokeWidth={1.7} aria-hidden="true" />
         <span className="flex-1 truncate">Search organizations, people, pages</span>

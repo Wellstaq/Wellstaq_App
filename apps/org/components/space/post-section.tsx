@@ -481,6 +481,7 @@ export function PostsSection({
   user,
   posts,
   postsLoading,
+  feedNotice,
   sharedPostId = null,
   getMember,
   badgeMap,
@@ -515,6 +516,7 @@ export function PostsSection({
   user: { id: string; avatarUrl?: string; firstName?: string; lastName?: string };
   posts: Post[];
   postsLoading: boolean;
+  feedNotice?: React.ReactNode;
   sharedPostId?: string | null;
   getMember: (userId: string) => OrganizationMemberInfo | undefined;
   badgeMap: Map<string, Badge>;
@@ -596,6 +598,7 @@ export function PostsSection({
         canSubmit={!!(postContent.trim() || attachments.length > 0 || postLocation)}
       />
 
+      {feedNotice}
       {postsLoading && (
         <div className="space-y-6">
           {Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-64 bg-grey-5 rounded-xl animate-pulse" />)}

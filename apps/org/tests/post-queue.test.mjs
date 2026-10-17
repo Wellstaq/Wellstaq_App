@@ -124,3 +124,12 @@ test("a text-only post says Posting, not Uploading, and sends no media fields", 
   assert.equal(calls[0].mediaUrl, undefined);
   assert.match(calls[0].content, /Lagos, Nigeria/, "the location is appended to the body");
 });
+
+
+test("a failed image post retains uploaded URLs so retry does not require picking files again", async () => {
+ const queue = loadQueue(async () => { throw new Error("Save failed"); });
+ await queue.publishPostInBackground(draft({ uploads: [Promise.resolve("https://cdn.example/photo.jpg")], mediaType: "image" }));
+ const failure = queue.events.find(event => event.type === queue.POST_FAILED_EVENT);
+ assert.deepEqual(Array.from(failure.detail.mediaUrls), ["https://cdn.example/photo.jpg"]);
+ assert.equal(failure.detail.mediaType, "image");
+});

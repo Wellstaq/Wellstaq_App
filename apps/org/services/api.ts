@@ -832,9 +832,9 @@ post: {
     );
   },
   createPost: (orgId: string, payload: CreatePostPayload) => {
-    // Send both shapes: `media_urls` carries every attachment (the API allows 15),
-    // while `media_url` stays set to the first so anything still reading the old
-    // single field keeps working. `branch_id` is sent explicitly as null for
+    // The API rejects requests containing both media formats. Prefer the array
+    // for attachments and retain the single URL only for legacy callers.
+    // `branch_id` is sent explicitly as null for
     // "Everyone" rather than omitted, so the audience is never inferred server-side.
     const mediaUrls = payload.mediaUrls?.length ? payload.mediaUrls : undefined;
     return fromApi<Post>(`/organizations/${orgId}/posts`, {
@@ -842,7 +842,7 @@ post: {
       body: {
         branch_id: payload.branchId ?? null,
         content: payload.content,
-        media_url: payload.mediaUrl ?? mediaUrls?.[0],
+        media_url: mediaUrls ? undefined : payload.mediaUrl,
         media_type: payload.mediaType,
         media_urls: mediaUrls,
       },

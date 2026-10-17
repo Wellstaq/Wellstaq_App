@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
+import { createCombinedFeedLoader } from "@/lib/combined-feed";
 import { loadFeedThroughPost } from "@/lib/post-sharing";
 import { PanelLeftOpen, X, Loader2, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
@@ -16,7 +17,7 @@ import { useDashboardData } from "@/components/providers/dashboard-data-provider
 import { useDashboardScope } from "@/lib/scope";
 import { hasPermission } from "@/lib/permissions";
 import { getUserErrorMessage } from "@/lib/errors";
-import { findUploadRejection, mediaKindOf, MAX_POST_ATTACHMENTS, type PostAttachment } from "@/lib/media";
+import { findUploadRejection, looksLikeVideo, mediaKindOf, MAX_POST_ATTACHMENTS, type PostAttachment } from "@/lib/media";
 import {
   publishPostInBackground, POST_PUBLISHED_EVENT, POST_FAILED_EVENT, type PostDraft,
 } from "@/lib/post-queue";
@@ -67,9 +68,8 @@ export default function SpacePage() {
   const [deleteConfirmComment, setDeleteConfirmComment] = useState<{ postId: string; commentId: string } | null>(null);
   const [activeMobileTab, setActiveMobileTab] = useState<"explore" | "feed" | "clubs">("feed");
 
-  const [feedView, setFeedView] = useState<"branch" | "org">("branch");
-  const effectiveFeedScope: "org_only" | "branch_and_org" =
-    scope.type === "overview" ? "org_only" : feedView === "org" ? "org_only" : "branch_and_org";
+  const [feedView, setFeedView] = useState<"branch" | "org" | "all">("all");
+  const effectiveFeedScope = feedView === "org" ? "org_only" : scope.type === "overview" || feedView === "all" ? "all" : "branch_and_org";
 
   // ── Activity stat deltas (optimistic local bumps — see ActivitySection) ──
   const [postDelta, setPostDelta] = useState(0);
@@ -357,6 +357,8 @@ export default function SpacePage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [postsLoading, setPostsLoading] = useState(true);
   const [postsTotal, setPostsTotal] = useState(0);
+  const nextPostsOffset = useRef(0);
+  const feedGeneration = useRef(0);
   const [isLoadingMorePosts, setIsLoadingMorePosts] = useState(false);
   const [postContent, setPostContent] = useState("");
   const [attachments, setAttachments] = useState<PostAttachment[]>([]);
@@ -371,24 +373,45 @@ export default function SpacePage() {
   // uploads to the background publisher instead of waiting on them.
   const uploadPromises = useRef(new Map<string, Promise<string>>());
 
-  const fetchPostsPage = useCallback((orgId: string, offset: number) => (
-    effectiveFeedScope === "org_only"
-      ? api.post.getPosts(orgId, { scope: "org_only", offset })
-      : api.post.getPosts(orgId, { branchId: scope.type === "branch" ? scope.branchId : undefined, scope: "branch_and_org", offset })
-  ), [effectiveFeedScope, scope]);
+  const fetchPostsPage = useMemo(() => {
+    if (!organizationId) return async () => ({ items: [], total: 0, offset: 0, limit: 20 });
+    const orgId = organizationId;
+    if (effectiveFeedScope === "all") {
+      return createCombinedFeedLoader([
+        (offset) => api.post.getPosts(orgId, { scope: "org_only", offset }),
+        ...branches.map((branch) => async (offset: number) => {
+          try {
+            return await api.post.getPosts(orgId, { scope: "branch_and_org", branchId: branch.id, offset });
+          } catch (error) {
+            // The server remains the authority for access to each branch.
+            if (error instanceof ApiError && error.status === 403) return { items: [], total: 0, offset, limit: 20 };
+            throw error;
+          }
+        }),
+      ]);
+    }
+    return (offset: number) => api.post.getPosts(orgId, {
+      scope: effectiveFeedScope,
+      branchId: effectiveFeedScope === "branch_and_org" && scope.type === "branch" ? scope.branchId : undefined,
+      offset,
+    });
+  }, [organizationId, effectiveFeedScope, branches, scope]);
 
   useEffect(() => {
     if (!organizationId) return;
     let cancelled = false;
-    async function loadPosts(orgId: string) {
+    ++feedGeneration.current;
+    nextPostsOffset.current = 0;
+    async function loadPosts() {
       setPostsLoading(true);
+      setIsLoadingMorePosts(false);
       try {
         // `loadFeedThroughPost` returns items only, so the page total is picked up
         // from the last response it read — that is what tells paging when to stop.
         let total = 0;
         const items = await loadFeedThroughPost(
           async (offset) => {
-            const response = await fetchPostsPage(orgId, offset);
+            const response = await fetchPostsPage(offset);
             total = response.total;
             return response;
           },
@@ -396,6 +419,7 @@ export default function SpacePage() {
           () => cancelled,
         );
         if (!cancelled) {
+          nextPostsOffset.current = items.length;
           setPosts(items);
           setPostsTotal(total);
           setResourceForbidden("posts");
@@ -410,17 +434,20 @@ export default function SpacePage() {
         if (!cancelled) setPostsLoading(false);
       }
     }
-    void loadPosts(organizationId);
+    void loadPosts();
     return () => { cancelled = true; };
   }, [organizationId, fetchPostsPage, setResourceForbidden, sharedPostId]);
 
   const handleLoadMorePosts = useCallback(async () => {
     if (!organizationId || isLoadingMorePosts || postsLoading) return;
-    const offset = posts.length;
+    const generation = feedGeneration.current;
+    const offset = nextPostsOffset.current;
     if (offset >= postsTotal) return;
     setIsLoadingMorePosts(true);
     try {
-      const response = await fetchPostsPage(organizationId, offset);
+      const response = await fetchPostsPage(offset);
+      if (generation !== feedGeneration.current) return;
+      nextPostsOffset.current = response.offset + response.items.length;
       setPosts((prev) => {
         const seen = new Set(prev.map((post) => post.id));
         return [...prev, ...response.items.filter((post) => !seen.has(post.id))];
@@ -429,9 +456,9 @@ export default function SpacePage() {
     } catch {
       toast.error("We couldn't load more posts. Try again.");
     } finally {
-      setIsLoadingMorePosts(false);
+      if (generation === feedGeneration.current) setIsLoadingMorePosts(false);
     }
-  }, [organizationId, isLoadingMorePosts, postsLoading, posts.length, postsTotal, fetchPostsPage]);
+  }, [organizationId, isLoadingMorePosts, postsLoading, postsTotal, fetchPostsPage]);
 
   const handleMediaSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target;
@@ -506,19 +533,25 @@ export default function SpacePage() {
       setPostDelta((d) => d + 1);
       // A post only joins the list in front of you when this feed would show it —
       // an org-wide post does belong in a branch feed, which also reads org posts.
-      const belongsInCurrentFeed = effectiveFeedScope === "org_only"
+      const belongsInCurrentFeed = effectiveFeedScope === "all" || (effectiveFeedScope === "org_only"
         ? !created.branchId
-        : !created.branchId || (scope.type === "branch" && created.branchId === scope.branchId);
+        : !created.branchId || (scope.type === "branch" && created.branchId === scope.branchId));
       if (!belongsInCurrentFeed) return;
       setPosts((prev) => (prev.some((post) => post.id === created.id) ? prev : [created, ...prev]));
       setPostsTotal((total) => total + 1);
     };
     const onFailed = (event: Event) => {
-      // Give the wording back rather than losing it. Attachments cannot be
-      // restored, and the upload error already named the file that failed.
+      // Restore the wording and successfully uploaded attachments for retry.
       const draft = (event as CustomEvent<PostDraft>).detail;
       setPostContent((current) => current || draft.content);
       setPostLocation((current) => current ?? draft.location);
+      if (draft.mediaUrls?.length) {
+        setAttachments((current) => [...current, ...(draft.mediaUrls ?? []).map((mediaUrl) => ({
+          id: crypto.randomUUID(), name: "Uploaded attachment",
+          kind: looksLikeVideo(mediaUrl, draft.mediaType) ? "video" as const : "image" as const,
+          previewUrl: mediaUrl, mediaUrl,
+        }))].slice(0, MAX_POST_ATTACHMENTS));
+      }
       setAudienceBranchId(draft.branchId);
     };
     window.addEventListener(POST_PUBLISHED_EVENT, onPublished);
@@ -915,7 +948,7 @@ export default function SpacePage() {
 
   return (
     <>
-      <div className="relative flex h-full min-h-0 flex-col overflow-hidden bg-white lg:flex-row">
+      <div className="relative flex h-full min-h-0 min-w-0 w-full flex-1 flex-col overflow-hidden bg-white lg:flex-row">
         <div className="flex shrink-0 border-b border-grey-4 bg-white lg:hidden">
           <button onClick={() => setActiveMobileTab("explore")} className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${activeMobileTab === "explore" ? "border-primary-1 text-primary-1" : "border-transparent text-grey-2"}`}>Explore</button>
           <button onClick={() => setActiveMobileTab("feed")} className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${activeMobileTab === "feed" ? "border-primary-1 text-primary-1" : "border-transparent text-grey-2"}`}>Feed</button>
@@ -939,7 +972,7 @@ export default function SpacePage() {
           />}
         </div>
 
-        <div className={`flex-1 min-w-0 bg-[#FAFAFA] overflow-y-auto ${activeMobileTab === "feed" ? "block" : "hidden lg:block"}`}>
+        <div className={`flex-1 min-h-0 min-w-0 self-stretch bg-[#FAFAFA] overflow-hidden ${activeMobileTab === "feed" ? "block" : "hidden lg:block"}`}>
           {selectedClub ? (
             <ClubChatView
               club={activeClubData}
@@ -959,7 +992,7 @@ export default function SpacePage() {
             />
           ) : (
             <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#FAFAFA]">
-              <div className="px-4 pt-4 pb-2 bg-white border-b border-grey-4 flex items-center gap-3">
+              <div className="px-4 pt-4 pb-2 bg-white border-b border-grey-4 flex flex-wrap items-center gap-3">
                 {!isLeftColumnOpen && (
                   <button onClick={() => setIsLeftColumnOpen(true)} className="text-grey-2 hover:text-grey-1 p-1 border border-grey-4 rounded-md bg-white flex-shrink-0">
                     <PanelLeftOpen size={14} strokeWidth={1.5} />
@@ -967,9 +1000,10 @@ export default function SpacePage() {
                 )}
                 <h2 className="page-title">Feed</h2>
                 <div className="ml-auto flex items-center gap-2">
-                  {scope.type === "branch" && (
+                  {(
                     <div className="flex bg-grey-5 rounded-lg p-0.5">
-                      <SelectablePill onClick={() => setFeedView("branch")} selected={feedView === "branch"} appearance="plain" className="px-3">My Branch</SelectablePill>
+                      <SelectablePill onClick={() => setFeedView("all")} selected={feedView === "all"} appearance="plain" className="px-3">All posts</SelectablePill>
+                      {scope.type === "branch" && <SelectablePill onClick={() => setFeedView("branch")} selected={feedView === "branch"} appearance="plain" className="px-3">My Branch</SelectablePill>}
                       <SelectablePill onClick={() => setFeedView("org")} selected={feedView === "org"} appearance="plain" className="px-3">General</SelectablePill>
                     </div>
                   )}
@@ -1003,7 +1037,8 @@ export default function SpacePage() {
                     onDeleteStory={setDeleteConfirmStoryId}
                   />}
                 </div>
-                {restrictedResources.has("posts") ? <RestrictedResource label="posts" /> : <PostsSection
+                {<PostsSection
+                  feedNotice={restrictedResources.has("posts") ? <RestrictedResource label="posts" /> : undefined}
                   user={spaceUser}
                   posts={posts}
                   postsLoading={postsLoading}

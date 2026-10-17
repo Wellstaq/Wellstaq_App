@@ -55,7 +55,7 @@ const TRACKING_METHOD_LABELS: Record<string, string> = {
 };
 
 function TrendLabel({ trend }: { trend: TrendData | null }) {
-  if (!trend) return <span className="text-xs font-medium text-grey-3">No trend data yet</span>;
+  if (!trend) return null;
   const isUp = trend.changePct >= 0;
   return (
     <span className={`text-xs font-medium ${isUp ? "text-green-600" : "text-red-600"}`}>

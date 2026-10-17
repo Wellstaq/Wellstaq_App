@@ -56,7 +56,7 @@ export default function OverviewPage() {
 
   return (
     <>
-      <div>
+      <div className="admin-page-header border-b border-line pb-6">
         <h1 className="font-sans text-[28px] font-semibold leading-9 tracking-[-0.02em] text-grey-1 sm:text-[32px] sm:leading-10" suppressHydrationWarning>
           {greeting(hour)}, {admin.firstName || "there"}
         </h1>
@@ -111,9 +111,9 @@ export default function OverviewPage() {
               <Link
                 key={action.href}
                 href={action.href}
-                className="flex h-[60px] items-center gap-3 rounded-[12px] border border-line bg-white px-3 text-[15px] font-medium text-grey-1 transition-colors hover:border-primary-border"
+                className="admin-quick-action group flex min-h-[72px] items-center gap-3 rounded-[12px] border border-line bg-white px-4 text-[14px] font-medium text-grey-1 transition-colors hover:border-primary-border"
               >
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] bg-primary-5 text-primary-hover" aria-hidden="true">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] bg-grey-5 text-grey-2 transition-colors group-hover:bg-primary-5 group-hover:text-primary-hover" aria-hidden="true">
                   <action.icon className="h-[18px] w-[18px]" strokeWidth={1.7} />
                 </span>
                 <span className="truncate">{action.label}</span>

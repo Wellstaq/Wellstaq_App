@@ -37,15 +37,15 @@ export function DataTable<T>({ rows, columns, getRowId, caption, onRowClick }: D
 
   return (
     <>
-      <div className="hidden overflow-x-auto md:block">
+      <div className="admin-table hidden overflow-x-auto rounded-[10px] border border-line md:block">
         <table className="w-full text-left">
           <caption className="sr-only">{caption}</caption>
           <thead>
             <tr className="text-[13px] text-grey-2">
               {columns.map((column) => (
-                <th key={column.key} scope="col" className={cn("whitespace-nowrap bg-[#F6F6F6] px-4 py-3 font-medium first:rounded-l-[10px] last:rounded-r-[10px]", column.className)}>{column.header}</th>
+                <th key={column.key} scope="col" className={cn("whitespace-nowrap border-b border-line bg-grey-5 px-4 py-3.5 text-xs font-medium", column.className)}>{column.header}</th>
               ))}
-              {onRowClick && <th scope="col" className="w-10 rounded-r-[10px] bg-[#F6F6F6] px-2"><span className="sr-only">Open</span></th>}
+              {onRowClick && <th scope="col" className="w-10 bg-grey-5 border-b border-line px-2"><span className="sr-only">Open</span></th>}
             </tr>
           </thead>
           <tbody>
@@ -58,7 +58,7 @@ export function DataTable<T>({ rows, columns, getRowId, caption, onRowClick }: D
                 className={cn("border-b border-line last:border-b-0", onRowClick && "cursor-pointer transition-colors hover:bg-grey-5 focus-visible:bg-grey-5 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary-1")}
               >
                 {columns.map((column) => (
-                  <td key={column.key} className={cn("px-4 py-4 align-middle text-sm text-grey-1", column.className)}>{column.render(row)}</td>
+                  <td key={column.key} className={cn("px-4 py-[18px] align-middle text-sm text-grey-1", column.className)}>{column.render(row)}</td>
                 ))}
                 {onRowClick && <td className="px-2 text-grey-3"><ChevronRight className="h-4 w-4" strokeWidth={1.7} aria-hidden="true" /></td>}
               </tr>

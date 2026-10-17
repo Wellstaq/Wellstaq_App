@@ -24,13 +24,13 @@ function setup(reduced = false) {
     "motion/react": { AnimatePresence: "AnimatePresence", motion: { div: "MotionDiv" }, useReducedMotion: () => reduced },
     "./modal-layer": { ModalLayer: "ModalLayer" },
   };
-  const module = { exports: {} };
-  vm.runInNewContext(compiled, { module, exports: module.exports, document, require: (key) => { assert.ok(key in imports); return imports[key]; } });
+  const loadedModule = { exports: {} };
+  vm.runInNewContext(compiled, { module: loadedModule, exports: loadedModule.exports, document, require: (key) => { assert.ok(key in imports); return imports[key]; } });
   const props = { label: "Create club", children: "Form", onClose: () => closes++ };
-  const tree = module.exports.DrawerLayer(props);
+  const tree = loadedModule.exports.DrawerLayer(props);
   refs[0].current = panel;
   const cleanup = effects.map((fn) => fn());
-  return { tree, document, first, last, otherLayer, props, exports: module.exports, get closes() { return closes; }, get restored() { return restored; }, close: () => cleanup.forEach(fn => fn?.()), key(key, shiftKey = false) { let prevented = false; listeners.get("keydown")({ key, shiftKey, preventDefault: () => { prevented = true; } }); return prevented; } };
+  return { tree, document, first, last, otherLayer, props, exports: loadedModule.exports, get closes() { return closes; }, get restored() { return restored; }, close: () => cleanup.forEach(fn => fn?.()), key(key, shiftKey = false) { let prevented = false; listeners.get("keydown")({ key, shiftKey, preventDefault: () => { prevented = true; } }); return prevented; } };
 }
 
 test("drawer covers the full viewport, has a responsive right panel, and keeps exit animation mounted", () => {
@@ -38,7 +38,7 @@ test("drawer covers the full viewport, has a responsive right panel, and keeps e
   const [backdrop, panel] = ui.tree.props.children;
   assert.equal(ui.tree.type, "ModalLayer");
   assert.match(ui.tree.props.className, /justify-end/);
-  assert.match(panel.props.className, /h-\[100dvh\].*w-full.*sm:max-w-\[560px\]/);
+  assert.match(panel.props.className, /h-\[100dvh\].*w-full.*sm:w-\[max\(440px,35vw\)\]/);
   assert.equal(panel.props.role, "dialog");
   assert.equal(panel.props["aria-label"], "Create club");
   assert.equal(panel.props.initial.transform, "translateX(100%)");

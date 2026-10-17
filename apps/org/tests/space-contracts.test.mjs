@@ -56,7 +56,7 @@ test("sharing a post posts to /share with a body, because that endpoint requires
   assert.deepEqual(shape(last().options.body), {}, "ShareCreateRequest is required, and all its fields are nullable");
 });
 
-test("a post sends every attachment in media_urls while keeping media_url on the first", async () => {
+test("a post sends every attachment in media_urls without the mutually exclusive media_url", async () => {
   const { api, last } = apiFixture();
   await api.post.createPost("org-1", {
     branchId: null,
@@ -67,7 +67,7 @@ test("a post sends every attachment in media_urls while keeping media_url on the
   });
   const body = last().options.body;
   assert.deepEqual(body.media_urls, ["https://cdn.example/a.jpg", "https://cdn.example/b.mp4"]);
-  assert.equal(body.media_url, "https://cdn.example/a.jpg", "the legacy single field keeps working");
+  assert.equal("media_url" in shape(body), false, "the API rejects requests containing both media formats");
 });
 
 test("posting to Everyone sends branch_id: null rather than omitting it", async () => {
@@ -208,4 +208,13 @@ test("notifications are grouped by day, newest group first", () => {
   assert.deepEqual(shape(groups[0].items.map(item => item.id)), ["a", "b"]);
   assert.equal(groups.length, 3);
   assert.equal(groups.flatMap(group => group.items).length, items.length, "no notification may be dropped by grouping");
+});
+
+
+test("legacy single-image callers send only media_url", async () => {
+ const { api, last } = apiFixture();
+ await api.post.createPost("org-1", { branchId: null, mediaUrl: "https://cdn.example/photo.jpg", mediaType: "image" });
+ const body = shape(last().options.body);
+ assert.equal(body.media_url, "https://cdn.example/photo.jpg");
+ assert.equal("media_urls" in body, false);
 });

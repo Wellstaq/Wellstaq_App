@@ -256,7 +256,7 @@ export function CreateChallengeModal({
           <Input
             id="challengeName"
             placeholder="e.g. 10k Steps a Day"
-            className="placeholder:text-center"
+            className="text-left placeholder:text-left"
             value={name}
             onChange={(e) => { setName(e.target.value); clearErrors(); }}
             required
@@ -268,7 +268,7 @@ export function CreateChallengeModal({
           <Label htmlFor="challengeDescription">Description</Label>
           <textarea
             id="challengeDescription"
-            className="w-full p-4 rounded-[8px] border border-grey-4 bg-white text-sm placeholder:text-center focus:outline-none focus:ring-2 focus:ring-primary-1 min-h-[100px] resize-none"
+            className="w-full p-4 rounded-[8px] border border-grey-4 bg-white text-sm text-left placeholder:text-left focus:outline-none focus:ring-2 focus:ring-primary-1 min-h-[100px] resize-none"
             placeholder="Describe the challenge goals and rules..."
             value={description}
             onChange={(e) => { setDescription(e.target.value); clearErrors(); }}
@@ -345,7 +345,7 @@ export function CreateChallengeModal({
             <Input
               id="activityLabel"
               placeholder="e.g. Prepare a healthy meal containing vegetables"
-              className="placeholder:text-center"
+              className="text-left placeholder:text-left"
               value={activityLabel}
               onChange={(e) => { setActivityLabel(e.target.value); clearErrors(); }}
             />
@@ -395,7 +395,7 @@ export function CreateChallengeModal({
             min="0"
             step="any"
             placeholder="10000"
-            className="placeholder:text-center"
+            className="text-left placeholder:text-left"
             value={targetValue}
             onChange={(e) => { setTargetValue(e.target.value); clearErrors(); }}
             required

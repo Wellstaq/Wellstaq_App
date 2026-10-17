@@ -27,7 +27,7 @@ export function SearchInput({ value, onChange, label, placeholder }: { value: st
 
 export function FilterPills<T extends string>({ options, value, onChange, label }: { options: { value: T; label: string }[]; value: T; onChange: (value: T) => void; label: string }) {
   return (
-    <div role="group" aria-label={label} className="no-scrollbar flex w-full items-center overflow-x-auto sm:w-auto">
+    <div role="group" aria-label={label} className="no-scrollbar flex w-full items-center gap-1 overflow-x-auto rounded-[10px] border border-line bg-grey-5 p-1 sm:w-auto">
       {options.map((option) => (
         <SelectablePill key={option.value} selected={value === option.value} appearance="plain" onClick={() => onChange(option.value)} className="h-10 whitespace-nowrap">
           {option.label}

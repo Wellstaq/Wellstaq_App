@@ -27,12 +27,12 @@ interface MetricCardProps {
 /** Quiet KPI card: icon and label on one line, a regular-weight value, one supporting line. */
 export function MetricCard({ icon: Icon, label, value, footnote, footnoteTone = "neutral", aside, className }: MetricCardProps) {
   return (
-    <div className={cn("flex min-h-[120px] flex-col rounded-[14px] border border-line bg-white px-4 py-4 sm:min-h-[132px] sm:px-5", className)}>
+    <div className={cn("admin-metric relative flex min-w-0 min-h-[152px] flex-col rounded-[16px] border border-line bg-white p-4 sm:min-h-[164px] sm:p-5", className)}>
       <div className="flex items-center gap-2.5">
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[8px] bg-grey-5 text-grey-2" aria-hidden="true">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] border border-line bg-grey-5 text-grey-2" aria-hidden="true">
           <Icon className="h-4 w-4" strokeWidth={1.7} />
         </span>
-        <p className="truncate text-sm font-medium text-grey-1 sm:text-[15px]">{label}</p>
+        <p className="truncate text-xs font-medium text-grey-2 sm:text-[13px]">{label}</p>
       </div>
       <div className="mt-auto pt-4">
         {value === null ? (
@@ -43,10 +43,10 @@ export function MetricCard({ icon: Icon, label, value, footnote, footnoteTone = 
         ) : (
           <>
             <div className="flex items-end justify-between gap-3">
-              <p className="text-[20px] font-normal sm:text-[22px] leading-7 tracking-[-0.01em] text-grey-1 tabular-nums">{value}</p>
+              <p className="text-[28px] font-semibold sm:text-[32px] leading-10 tracking-[-0.04em] text-grey-1 tabular-nums">{value}</p>
               {aside && <div className="pb-0.5 text-[13px]">{aside}</div>}
             </div>
-            {footnote && <p className={cn("mt-1 truncate text-xs leading-5 sm:text-[13px]", TONE_TEXT[footnoteTone])}>{footnote}</p>}
+            {footnote && <p className={cn("mt-1 text-xs leading-5", TONE_TEXT[footnoteTone])}>{footnote}</p>}
           </>
         )}
       </div>
@@ -56,5 +56,5 @@ export function MetricCard({ icon: Icon, label, value, footnote, footnoteTone = 
 
 export function MetricGrid({ children, columns = 5 }: { children: ReactNode; columns?: 3 | 4 | 5 }) {
   const cols = { 3: "lg:grid-cols-3", 4: "lg:grid-cols-4", 5: "lg:grid-cols-3 xl:grid-cols-5" }[columns];
-  return <div className={cn("grid grid-cols-2 gap-3 sm:gap-4", cols)}>{children}</div>;
+  return <div className={cn("grid grid-cols-1 min-[360px]:grid-cols-2 gap-3 sm:gap-4", cols)}>{children}</div>;
 }

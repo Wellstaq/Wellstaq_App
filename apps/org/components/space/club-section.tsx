@@ -223,14 +223,14 @@ function ClubChatView({
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#FAFAFA] relative">
-      <div className="p-5 bg-white border-b border-grey-4 flex items-center gap-2 sticky top-0 z-20 w-full">
+    <div className="flex-1 flex min-h-0 min-w-0 w-full flex-col h-full overflow-hidden bg-[#FAFAFA] relative">
+      <div className="p-5 shrink-0 bg-white border-b border-grey-4 flex items-center gap-2 sticky top-0 z-20 w-full">
         <button onClick={onBack} className="flex items-center gap-2 text-sm font-bold text-grey-1 hover:text-primary-1 transition-colors">
           <ChevronLeft className="w-5 h-5" /> Go back to Feed
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto no-scrollbar flex flex-col relative">
+      <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar flex flex-col relative">
         <div className="sticky top-0 z-10 w-full self-start bg-white border-b border-grey-4 pb-[12px] pt-[20px] px-[20px]">
           <div className="flex items-center justify-between mb-2">
             <h1 className="page-title">{club?.name}</h1>

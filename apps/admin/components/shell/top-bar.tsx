@@ -22,11 +22,11 @@ export function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-[60px] shrink-0 items-center gap-4 border-b border-line bg-white px-4 lg:px-5">
+    <header className="sticky top-0 z-30 admin-topbar flex h-[76px] shrink-0 items-center gap-4 border-b border-line bg-white px-4 lg:px-9">
       <button type="button" onClick={onMenuClick} aria-label="Open menu" className="flex h-10 w-10 items-center justify-center rounded-[10px] text-grey-2 hover:bg-grey-5 lg:hidden">
         <Menu className="h-5 w-5" strokeWidth={1.7} aria-hidden="true" />
       </button>
-      <p className="hidden min-w-0 shrink-0 truncate text-[15px] font-medium text-grey-1 xl:block" suppressHydrationWarning>{today}</p>
+      <p className="hidden min-w-0 shrink-0 truncate text-[13px] font-medium text-grey-2 xl:block" suppressHydrationWarning>{today}</p>
       <div className="flex flex-1 justify-end md:justify-center">
         <CommandSearch />
       </div>

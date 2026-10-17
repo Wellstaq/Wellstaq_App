@@ -11,12 +11,14 @@ export const POST_PUBLISHED_EVENT = "wellstaq:post-published";
 export const POST_FAILED_EVENT = "wellstaq:post-failed";
 
 /** Everything the composer needs back if publishing fails, so a typed-out post
- *  is not lost. Attachments cannot be restored — the file inputs are gone — and
- *  the failure names the offending file instead. */
+ *  is not lost. Uploaded URLs can be reused on retry; files whose upload failed
+ *  must be selected again. */
 export interface PostDraft {
   content: string;
   location: string | null;
   branchId: string | null;
+  mediaUrls?: string[];
+  mediaType?: string;
 }
 
 export interface BackgroundPost extends PostDraft {
@@ -26,7 +28,6 @@ export interface BackgroundPost extends PostDraft {
   /** One per attachment, in the order they were added, each resolving to its
    *  stored URL. Already in flight by the time Post is pressed. */
   uploads: Array<Promise<string>>;
-  mediaType?: string;
 }
 
 function failureMessage(error: unknown): string {
@@ -40,10 +41,11 @@ export async function publishPostInBackground(post: BackgroundPost): Promise<voi
   const toastId = toast.loading(post.uploads.length > 0 ? "Uploading your post…" : "Posting…");
   const body = post.content + (post.location ? `\n📍 ${post.location}` : "");
 
+  let mediaUrls: string[] = [];
   try {
     // Waiting here rather than in the composer is the point: Post can be pressed
     // the moment the files are chosen, and the last bytes land in the background.
-    const mediaUrls = await Promise.all(post.uploads);
+    mediaUrls = await Promise.all(post.uploads);
     const created = await api.post.createPost(post.organizationId, {
       branchId: post.branchId,
       content: body.trim() || undefined,
@@ -56,7 +58,7 @@ export async function publishPostInBackground(post: BackgroundPost): Promise<voi
   } catch (error) {
     toast.error(failureMessage(error), { id: toastId });
     window.dispatchEvent(new CustomEvent<PostDraft>(POST_FAILED_EVENT, {
-      detail: { content: post.content, location: post.location, branchId: post.branchId },
+      detail: { content: post.content, location: post.location, branchId: post.branchId, mediaUrls, mediaType: post.mediaType },
     }));
   }
 }
