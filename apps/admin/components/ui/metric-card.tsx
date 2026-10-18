@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { LucideIcon } from "lucide-react";
+import type { IconComponent } from "@wellstaq/ui/icons";
 import { Skeleton } from "@wellstaq/ui/skeleton";
 import { cn } from "@wellstaq/ui/utils";
 
@@ -13,7 +13,7 @@ const TONE_TEXT: Record<MetricTone, string> = {
 };
 
 interface MetricCardProps {
-  icon: LucideIcon;
+  icon: IconComponent;
   label: string;
   value: string | null;
   /** Small line under the value, e.g. "+246 this week". */

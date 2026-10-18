@@ -2,7 +2,7 @@
 
 import { Suspense, use, useState, type KeyboardEvent } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { CalendarDays, Gift, GitBranch, Layers, ShieldCheck, ShieldOff, Users, UsersRound } from "lucide-react";
+import { CalendarDays, Gift, GitBranch, Layers, ShieldCheck, ShieldOff, Users, UsersRound } from "@wellstaq/ui/icons";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/controls";
 import { BackLink } from "@/components/ui/back-link";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { ImagePlus, Loader2, X } from "lucide-react";
+import { ImagePlus, Loader2, X } from "@wellstaq/ui/icons";
 import { toast } from "sonner";
 import { Modal } from "@wellstaq/ui/modal";
 import { Button } from "@/components/ui/controls";

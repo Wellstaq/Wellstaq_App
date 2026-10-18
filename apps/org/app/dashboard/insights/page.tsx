@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ArrowUpRight, ArrowDownRight, HeartPulse, Medal, MessageSquareHeart, Trophy, UsersRound } from "lucide-react";
+import { HeartPulse, Medal, MessageSquareHeart, Trophy, UsersRound } from "@wellstaq/ui/icons";
 import Image from "next/image";
 import { InsightsHeader } from "@/components/dashboard/insights/header";
 import {
@@ -27,6 +28,7 @@ export default function InsightsPage() {
   const [wellbeingLoading, setWellbeingLoading] = useState(true);
   const { organizationId, currentUser } = useDashboardData();
   const { scope } = useDashboardScope();
+  const metricHref = (path: string) => scope.type === "branch" ? `${path}?branchId=${encodeURIComponent(scope.branchId)}` : path;
   const selectedBranchId = scope.type === "branch" ? scope.branchId : undefined;
   const canViewWellbeing = currentUser
     ? hasPermission(currentUser.permissions, "wellbeing.view_team", selectedBranchId)
@@ -112,60 +114,55 @@ export default function InsightsPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[12px]">
-        <div className="dashboard-card">
+        <Link href={metricHref("/dashboard/wellbeing-pulse")} className="dashboard-card">
           <div className="flex items-start justify-between mb-4">
             <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-500 flex items-center justify-center">
               <MessageSquareHeart className="w-5 h-5" />
             </div>
           </div>
           <p className="text-sm text-[#4D4D4D] mb-1 font-medium">Weekly Check-ins</p>
-          <h3 className="text-xl font-bold text-[#1A1A1A] mb-1">{wellbeingLoading ? "—" : canViewWellbeing ? pulse?.respondentCount ?? 0 : "—"}</h3>
+          <h3 className="text-xl font-bold text-[#1A1A1A] mb-1">{wellbeingLoading ? "—" : canViewWellbeing ? pulse?.respondentCount ?? "Unavailable" : "—"}</h3>
           <p className="text-xs text-grey-3">{canViewWellbeing ? "employee wellbeing responses" : "wellbeing insights unavailable"}</p>
-        </div>
+        </Link>
 
-        <div className="dashboard-card">
+        <Link href={"#wellbeing-details"} className="dashboard-card">
           <div className="flex items-start justify-between mb-4">
             <div className="w-10 h-10 rounded-xl bg-red-100 text-red-500 flex items-center justify-center">
               <HeartPulse className="w-5 h-5" />
             </div>
-            <span className="flex items-center text-xs font-medium text-green-600">
-              <ArrowUpRight className="w-3 h-3 mr-1" /> {insights.summary.healthScoreTrend}
-            </span>
+            {insights.summary.healthScoreTrend && <span className="text-xs font-medium text-grey-2">{insights.summary.healthScoreTrend}</span>}
           </div>
           <p className="text-sm text-[#4D4D4D] mb-1 font-medium">Wellbeing Score</p>
           <h3 className="text-xl font-bold text-[#1A1A1A] mb-1">{insights.summary.healthScore}</h3>
           <p className="text-xs text-grey-3">overall average</p>
-        </div>
+        </Link>
 
-        <div className="dashboard-card">
+        <Link href={metricHref("/dashboard/teams")} className="dashboard-card">
           <div className="flex items-start justify-between mb-4">
             <div className="w-10 h-10 rounded-xl bg-orange-100 text-orange-500 flex items-center justify-center">
               <UsersRound className="w-5 h-5" />
             </div>
-            <span className="flex items-center text-xs font-medium text-red-500">
-              <ArrowDownRight className="w-3 h-3 mr-1" /> {insights.summary.activeEmployeesTrend}
-            </span>
+            {insights.summary.activeEmployeesTrend && <span className="text-xs font-medium text-grey-2">{insights.summary.activeEmployeesTrend}</span>}
           </div>
           <p className="text-sm text-[#4D4D4D] mb-1 font-medium">Employee Engagement</p>
           <h3 className="text-xl font-bold text-[#1A1A1A] mb-1">{insights.summary.activeEmployees}</h3>
           <p className="text-xs text-grey-3">participation rate</p>
-        </div>
+        </Link>
 
-        <div className="dashboard-card">
+        <Link href={metricHref("/dashboard/challenges")} className="dashboard-card">
           <div className="flex items-start justify-between mb-4">
             <div className="w-10 h-10 rounded-xl bg-lime-100 text-lime-600 flex items-center justify-center">
               <Trophy className="w-5 h-5" />
             </div>
-            <span className="flex items-center text-xs font-medium text-green-600">
-              <ArrowUpRight className="w-3 h-3 mr-1" /> {insights.summary.challengesWonTrend}
-            </span>
+            {insights.summary.challengesWonTrend && <span className="text-xs font-medium text-grey-2">{insights.summary.challengesWonTrend}</span>}
           </div>
           <p className="text-sm text-[#4D4D4D] mb-1 font-medium">Wellness Challenges Won</p>
           <h3 className="text-xl font-bold text-[#1A1A1A] mb-1">{insights.summary.challengesWon}</h3>
           <p className="text-xs text-grey-3">{selectedPeriodLabel[period]}</p>
-        </div>
+        </Link>
       </div>
 
+      <div id="wellbeing-details" />
       {/* Row 1 Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-[12px]">
         <MonthlyWellbeingTrendChart data={wellbeingTrend} loading={wellbeingLoading} />

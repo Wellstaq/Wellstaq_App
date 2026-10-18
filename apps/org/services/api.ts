@@ -276,6 +276,19 @@ export const api = {
         `/organizations/${orgId}/events?${query.toString()}`,
       );
     },
+    getAllEvents: async (orgId: string, branchId?: string): Promise<EventItem[]> => {
+      const events: EventItem[] = [];
+      let offset = 0;
+      while (true) {
+        const page = await api.organization.getEvents(orgId, { branchId, offset, limit: 100 });
+        events.push(...page.items);
+        const next = page.offset + page.items.length;
+        if (!page.items.length || next >= page.total) break;
+        if (next <= offset) throw new Error("Event pagination did not advance");
+        offset = next;
+      }
+      return Array.from(new Map(events.map(event => [event.id, event])).values());
+    },
     getEvent: (orgId: string, eventId: string) =>
       fromApi<EventItem>(`/organizations/${orgId}/events/${eventId}`),
     createEvent: (orgId: string, payload: { branchId: string; title: string; description?: string; imageUrl?: string; startDate: string; endDate?: string; recurrenceRule?: string; time: string }) =>
@@ -615,15 +628,15 @@ kpiSnapshots: {
     const raw = await request<KPIOverviewApiResponse>(
       backendPath(`/organizations/${orgId}/kpi-snapshots/overview?${query.toString()}`),
     );
-    const number = (value: number | null) => value === null ? "0" : value.toLocaleString();
-    const trend = (value: number | null, suffix = "%") => value === null ? `0${suffix}` : `${value > 0 ? "+" : ""}${value}${suffix}`;
+    const number = (value: number | null) => value === null ? "Unavailable" : value.toLocaleString();
+    const trend = (value: number | null, suffix = "%") => value === null ? "" : `${value > 0 ? "+" : ""}${value}${suffix}`;
     return {
       summary: {
         averageDailySteps: number(raw.summary.averageDailySteps.value),
         averageDailyStepsTrend: trend(raw.summary.averageDailySteps.change),
         healthScore: number(raw.summary.healthScore.value),
         healthScoreTrend: trend(raw.summary.healthScore.change, "pts"),
-        activeEmployees: `${number(raw.summary.activeEmployees.value)}%`,
+        activeEmployees: raw.summary.activeEmployees.value === null ? "Unavailable" : `${number(raw.summary.activeEmployees.value)}%`,
         activeEmployeesTrend: trend(raw.summary.activeEmployees.change),
         challengesWon: number(raw.summary.challengesWon.value),
         challengesWonTrend: trend(raw.summary.challengesWon.change, ""),

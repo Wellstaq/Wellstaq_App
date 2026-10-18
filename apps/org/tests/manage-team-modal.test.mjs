@@ -9,7 +9,7 @@ import ts from "typescript";
 
 // Test the page's frontend state and rendered control props. All API imports are
 // fixtures; no real member, branch, role, or session is read or changed.
-const member = { id: "member-1", firstName: "Test", lastName: "Member", email: "member@example.test", roleId: "role-1", roleName: "manager", branchId: "branch-1", departmentId: "department-1", status: "active" };
+const member = { id: "member-1", firstName: "Test", lastName: "Member", email: "member@example.test", roleId: "role-1", roleName: "manager", organizationRoleId: "role-1", organizationRoleName: "manager", branchId: "branch-1", departmentId: "department-1", status: "active" };
 const branches = [{ id: "branch-1", name: "First branch" }, { id: "branch-2", name: "Second branch" }];
 const departments = [
   { id: "department-1", branchId: "branch-1", name: "Operations" },
@@ -45,6 +45,7 @@ async function setup(permissions = null) {
       return hooks[index] ?? (hooks[index] = { current: initial });
     },
     useMemo: (calculate) => calculate(),
+    useCallback: (callback) => callback,
     useEffect(effect, dependencies) {
       const index = cursor++;
       const previous = hooks[index];
@@ -60,8 +61,10 @@ async function setup(permissions = null) {
     react: hooksMock,
     "react/jsx-runtime": jsxRuntime,
     "next/image": "Image",
+    "@/components/ui/scroll-area": { ScrollArea: "ScrollArea" },
     "next/link": "Link",
-    "lucide-react": new Proxy({}, { get: (_, key) => `Icon${key}` }),
+    "next/navigation": { useSearchParams: () => new URLSearchParams(), useRouter: () => ({ replace() {}, push() {} }), usePathname: () => "/dashboard/teams" },
+    "@wellstaq/ui/icons": new Proxy({}, { get: (_, key) => `Icon${key}` }),
     sonner: { toast: { error: (message) => { throw Error(message); } } },
     "@/services/api": { api },
     "@/components/providers/dashboard-data-provider": { useDashboardData: () => ({ organizationId: "organization-1", branches, currentUser: { permissions: [] } }) },
@@ -118,9 +121,9 @@ test("each tab renders only its fields and one dedicated bottom action", async (
   const ui = await setup();
   assert.equal(ui.tabs().length, 3);
   const drawer = ui.find((node) => node.type === "DrawerLayer")[0];
-  assert.equal(drawer.props.label, "Manage team");
+  assert.equal(drawer.props.label, "Team member details");
   assert.match(drawer.props.children.props.className, /h-full/);
-  assert.match(ui.panel().props.className, /overflow-y-auto/);
+  assert.ok(ui.find(node => node.type === "ScrollArea").some(node => walk(node, child => child === ui.panel()).length > 0), "the form stays inside the scrollable region");
   for (const [tab, label, fields] of [["role", "Change role", 1], ["department", "Move department", 1], ["branch", "Move branch", 2]]) {
     ui.select(tab);
     assert.equal(ui.tabs().filter((item) => item.props["aria-selected"]).length, 1);
@@ -128,7 +131,7 @@ test("each tab renders only its fields and one dedicated bottom action", async (
     assert.equal(walk(ui.panel(), (node) => node.type === "Button").length, 1);
     assert.equal(ui.action().props.children, label);
     assert.equal(ui.action().props.disabled, true);
-    assert.equal(walk(ui.panel(), (node) => node.props.className === "mt-[80px]").length, 1);
+    assert.equal(walk(ui.panel(), (node) => node.props.className === "mt-6").length, 1);
   }
 });
 

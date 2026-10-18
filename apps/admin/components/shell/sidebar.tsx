@@ -4,8 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { LucideIcon } from "lucide-react";
-import { Building2, CalendarDays, CreditCard, Inbox, LayoutDashboard, PanelLeftClose, PanelLeftOpen, ScrollText, Settings2, ShieldCheck, UserRound, UserSearch, X } from "lucide-react";
+import type { IconComponent } from "@wellstaq/ui/icons";
+import { Building2, CalendarDays, CreditCard, Inbox, LayoutDashboard, PanelLeftClose, PanelLeftOpen, ScrollText, Settings2, ShieldCheck, UserRound, UserSearch, X } from "@wellstaq/ui/icons";
 import { cn } from "@wellstaq/ui/utils";
 import { Avatar } from "@/components/ui/avatar";
 import { useAdmin } from "@/components/providers/admin-session";
@@ -19,7 +19,7 @@ const LOGO = "/assets/logo.webp";
 interface NavItem {
   name: string;
   href: string;
-  icon: LucideIcon;
+  icon: IconComponent;
   permission?: AdminPermission;
   badge?: "support";
 }

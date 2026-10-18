@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Home } from 'lucide-react';
+import { Home } from "@wellstaq/ui/icons";
 
 export default function NotFound() {
   return (

@@ -8,7 +8,7 @@ import { DrawerLayer } from "@/components/ui/drawer";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { Globe2, Lock, Plus, Search, Users, X } from "lucide-react";
+import { Globe2, Lock, Plus, Search, Users, X } from "@wellstaq/ui/icons";
 import { toast } from "sonner";
 import { useDashboardData } from "@/components/providers/dashboard-data-provider";
 import { hasPermission } from "@/lib/permissions";

@@ -30,7 +30,7 @@ import {
   PanelLeftOpen,
   LoaderCircle,
   X
-} from "lucide-react";
+} from "@wellstaq/ui/icons";
 
 function ActivePageStroke() {
   return (

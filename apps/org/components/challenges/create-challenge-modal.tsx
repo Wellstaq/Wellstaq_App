@@ -3,9 +3,10 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ImagePlus, Loader2, X } from "lucide-react";
+import { ImagePlus, Loader2, X } from "@wellstaq/ui/icons";
 import { Calendar as CalendarIcon } from "iconsax-react";
 import { Modal } from "@/components/ui/modal";
+import { BooleanRadio } from "@wellstaq/ui/boolean-radio";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -354,9 +355,9 @@ export function CreateChallengeModal({
         )}
 
         {isEvidenceBased && (
-          <div className="grid grid-cols-2 gap-4">
-            <button type="button" aria-pressed={evidenceRequired} onClick={() => { setEvidenceRequired(!evidenceRequired); clearErrors(); }} className={`min-h-11 rounded-[8px] border px-3 text-sm ${evidenceRequired ? "border-black text-black" : "border-grey-4 text-grey-2"}`}>Evidence required</button>
-            <button type="button" aria-pressed={requiresApproval} onClick={() => { setRequiresApproval(!requiresApproval); clearErrors(); }} className={`min-h-11 rounded-[8px] border px-3 text-sm ${requiresApproval ? "border-black text-black" : "border-grey-4 text-grey-2"}`}>Requires admin approval</button>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <BooleanRadio label="Evidence required" value={evidenceRequired} onChange={(value) => { setEvidenceRequired(value); clearErrors(); }} />
+            <BooleanRadio label="Requires admin approval" value={requiresApproval} onChange={(value) => { setRequiresApproval(value); clearErrors(); }} />
           </div>
         )}
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { TrendingUp, Flame } from "lucide-react";
+import { TrendingUp, Flame } from "@wellstaq/ui/icons";
 import { api } from "@/services/api";
 
 interface TrendingTopic {

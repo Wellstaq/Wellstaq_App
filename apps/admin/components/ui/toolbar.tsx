@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, X } from "lucide-react";
+import { Search, X } from "@wellstaq/ui/icons";
 import { SelectablePill } from "@wellstaq/ui/selectable-pill";
 
 export function SearchInput({ value, onChange, label, placeholder }: { value: string; onChange: (value: string) => void; label: string; placeholder: string }) {

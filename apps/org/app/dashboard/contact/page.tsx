@@ -9,7 +9,7 @@ import {
   CheckCircle2,
   Clock,
   Globe
-} from "lucide-react";
+} from "@wellstaq/ui/icons";
 import { toast } from "sonner";
 import { api } from "@/services/api";
 import { FilterDropdown, type FilterDropdownOption } from "@/components/ui/filter-dropdown";

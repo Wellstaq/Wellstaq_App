@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Building2, Mail, MapPin, Phone, ShieldCheck, Users } from "lucide-react";
+import { Building2, Mail, MapPin, Phone, ShieldCheck, Users } from "@wellstaq/ui/icons";
 import { api } from "@/services/api";
 import type { DirectoryUserProfile } from "@/types/api";
 

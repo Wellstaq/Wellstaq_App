@@ -2,7 +2,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ChevronDown, Globe, Building2, LoaderCircle } from "lucide-react";
+import { ChevronDown, Globe, Building2, LoaderCircle } from "@wellstaq/ui/icons";
 import { AnimatePresence, motion } from "motion/react";
 import { useClickOutside } from "@/hooks/use-click-outside";
 import { useDashboardScope } from "@/lib/scope";

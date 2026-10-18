@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@wellstaq/ui/icons";
 import { cn } from "@wellstaq/ui/utils";
 
 export function Card({ className, children, ...props }: React.HTMLAttributes<HTMLElement> & { children: ReactNode }) {

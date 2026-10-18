@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, type TooltipProps } from "recharts";
-import { LineChart as LineChartIcon } from "lucide-react";
+import { LineChart as LineChartIcon } from "@wellstaq/ui/icons";
 import { SelectablePill } from "@wellstaq/ui/selectable-pill";
 import { formatNumber } from "@/lib/format";
 import type { SignupTrendPoint } from "@/types/admin";

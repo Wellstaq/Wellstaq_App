@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { Camera, LockKeyhole } from "lucide-react";
+import { Camera, LockKeyhole } from "@wellstaq/ui/icons";
 import { Avatar } from "@/components/ui/avatar";
 import { Button, Input } from "@/components/ui/controls";
 import { PageHeader } from "@/components/ui/page-header";

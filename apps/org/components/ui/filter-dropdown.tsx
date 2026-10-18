@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown } from "@wellstaq/ui/icons";
 
 import { useClickOutside } from "@/hooks/use-click-outside";
 import { cn } from "@/lib/utils";

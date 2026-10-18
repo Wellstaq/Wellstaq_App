@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { Search, Plus, Calendar, Users, TrendingUp, MoreHorizontal, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Clock } from "lucide-react";
+import { useCallback, useRef, useEffect, useState } from "react";
+import { Search, Plus, Calendar, Users, TrendingUp, MoreHorizontal, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Clock } from "@wellstaq/ui/icons";
 import Image from "next/image";
 import Link from "next/link";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
@@ -31,7 +31,8 @@ export default function EventsPage() {
   const [activeTab, setActiveTab] = useState<string>("All Events");
   const [searchQuery, setSearchQuery] = useState("");
   const [events, setEvents] = useState<EventItem[]>([]);
-  const [total, setTotal] = useState(0);
+  const loadGeneration = useRef(0);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [deleteConfirmEventId, setDeleteConfirmEventId] = useState<string | null>(null);
@@ -46,21 +47,19 @@ export default function EventsPage() {
 
   const loadEvents = useCallback(async () => {
     if (!organizationId) return;
+    const generation = ++loadGeneration.current;
     setIsLoading(true);
+    setLoadError(null);
     try {
-      const res = await api.organization.getEvents(organizationId, {
-        branchId,
-        offset: (currentPage - 1) * itemsPerPage,
-        limit: itemsPerPage,
-      });
-      setEvents(res.items);
-      setTotal(res.total);
+      const collected = await api.organization.getAllEvents(organizationId, branchId);
+      if (generation !== loadGeneration.current) return;
+      setEvents(collected);
     } catch {
-      // error toast handled globally
+      if (generation === loadGeneration.current) setLoadError("We couldn’t load events. Try again.");
     } finally {
-      setIsLoading(false);
+      if (generation === loadGeneration.current) setIsLoading(false);
     }
-  }, [organizationId, branchId, currentPage]);
+  }, [organizationId, branchId]);
 
   useEffect(() => {
     void loadEvents();
@@ -68,7 +67,7 @@ export default function EventsPage() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeTab, branchId]);
+  }, [activeTab, branchId, searchQuery]);
 
   // Client-side filter for tab + search since backend list endpoint doesn't
   // filter by status/title. If this list grows large, ask backend to add
@@ -79,10 +78,12 @@ export default function EventsPage() {
     return matchesSearch && matchesTab;
   });
 
+  const total = filteredEvents.length;
   const totalPages = Math.max(1, Math.ceil(total / itemsPerPage));
+  const visibleEvents = filteredEvents.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const stats = {
-    totalEvents: total,
+    totalEvents: events.length,
     upcomingEvents: events.filter((e) => e.status === "scheduled").length,
     completedEvents: events.filter((e) => e.status === "completed").length,
     totalParticipants: events.reduce((acc, e) => acc + (e.participantCount ?? 0), 0),
@@ -92,7 +93,7 @@ export default function EventsPage() {
     { title: "Total Events", value: stats.totalEvents.toString(), icon: <Users className="w-5 h-5" />, iconClassName: "bg-pink-100 text-pink-500" },
     { title: "Upcoming Events", value: stats.upcomingEvents.toString(), icon: <TrendingUp className="w-5 h-5" />, iconClassName: "bg-purple-100 text-purple-500" },
     { title: "Completed Events", value: stats.completedEvents.toString(), icon: <Calendar className="w-5 h-5" />, iconClassName: "bg-blue-100 text-blue-500" },
-    { title: "Total Participants", value: stats.totalParticipants.toString(), icon: <Users className="w-5 h-5" />, iconClassName: "bg-green-100 text-green-500" },
+    { title: "Event registrations", value: stats.totalParticipants.toString(), icon: <Users className="w-5 h-5" />, iconClassName: "bg-green-100 text-green-500" },
   ];
 
   const handleDeleteEvent = async (id: string) => {
@@ -127,20 +128,22 @@ export default function EventsPage() {
         )}
       </div>
 
+      {loadError && <div role="alert" className="rounded-xl border border-grey-4 bg-white p-4 text-sm">{loadError}<button type="button" onClick={() => void loadEvents()} className="ml-3 text-primary-hover">Try again</button></div>}
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[12px] mb-0">
         {dashboardStats.map((stat) => (
           <StatCard
             key={stat.title}
             title={stat.title}
-            value={stat.value}
+            value={isLoading ? "Loading…" : loadError ? "Unavailable" : stat.value}
+            onClick={() => { setSearchQuery(""); setCurrentPage(1); setActiveTab(stat.title === "Upcoming Events" ? "scheduled" : stat.title === "Completed Events" ? "completed" : "All Events"); document.getElementById("event-list")?.scrollIntoView({ behavior: "smooth" }); }}
             icon={stat.icon}
             iconClassName={stat.iconClassName}
           />
         ))}
       </div>
 
-      <div className="bg-white rounded-[12px] p-6 flex flex-col gap-[20px] border border-grey-4">
+      <div id="event-list" className="bg-white rounded-[12px] p-6 flex flex-col gap-[20px] border border-grey-4">
         {/* Filters */}
         <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
           <div className="relative w-full xl:w-[320px] xl:shrink-0">
@@ -178,7 +181,7 @@ export default function EventsPage() {
           <>
             {/* Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-              {filteredEvents.map((event) => (
+              {visibleEvents.map((event) => (
                 <Link href={`/dashboard/events/${event.id}`} key={event.id} className="bg-[#FAFAFA] rounded-lg border border-[#F0F0F0] overflow-hidden flex flex-col p-2 gap-2 h-[220px] cursor-pointer relative">
                   <div className="relative h-[85px] w-full rounded-lg overflow-hidden shrink-0 bg-grey-4">
                     {event.imageUrl && (

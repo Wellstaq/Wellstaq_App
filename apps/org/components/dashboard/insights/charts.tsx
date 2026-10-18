@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Building2, HeartPulse } from "lucide-react";
+import { Building2, HeartPulse } from "@wellstaq/ui/icons";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar, PieChart, Pie, Cell

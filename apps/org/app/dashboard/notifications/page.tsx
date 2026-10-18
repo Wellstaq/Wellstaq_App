@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Bell, CheckCheck, Calendar, Trophy, ShieldAlert, MessageSquare, Loader2 } from "lucide-react";
+import { Bell, CheckCheck, Calendar, Trophy, ShieldAlert, MessageSquare, Loader2 } from "@wellstaq/ui/icons";
 import { toast } from "sonner";
 import { api } from "@/services/api";
 import { useDashboardData } from "@/components/providers/dashboard-data-provider";

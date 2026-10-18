@@ -2,7 +2,7 @@
 
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { BadgeCheck, UserPlus, UserRound } from "lucide-react";
+import { BadgeCheck, UserPlus, UserRound } from "@wellstaq/ui/icons";
 import { MetricCard, MetricGrid } from "@/components/ui/metric-card";
 import { useOverview } from "@/components/providers/overview";
 import { PageHeader } from "@/components/ui/page-header";

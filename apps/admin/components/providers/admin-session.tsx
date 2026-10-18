@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, type ReactNode } from "react";
-import { LoaderCircle } from "lucide-react";
+import { LoaderCircle } from "@wellstaq/ui/icons";
 import { adminApi } from "@/services/admin-api";
 import { useResource } from "@/lib/use-resource";
 import { ErrorPanel } from "@/components/ui/states";

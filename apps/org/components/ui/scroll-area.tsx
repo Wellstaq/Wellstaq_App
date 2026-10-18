@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type HTMLAttributes } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp } from "@wellstaq/ui/icons";
 
 /** Persistent mouse controls, independent of OS auto-hiding scrollbars. */
 export function ScrollArea({ children, className = "", ...props }: HTMLAttributes<HTMLDivElement>) {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { LogOut, Menu } from "lucide-react";
+import { LogOut, Menu } from "@wellstaq/ui/icons";
 import { CommandSearch } from "@/components/shell/command-search";
 import { adminApi } from "@/services/admin-api";
 

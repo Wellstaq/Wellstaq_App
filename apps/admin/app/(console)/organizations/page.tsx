@@ -2,7 +2,7 @@
 
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Building2, CircleCheck, Hourglass, ShieldOff } from "lucide-react";
+import { Building2, CircleCheck, Hourglass, ShieldOff } from "@wellstaq/ui/icons";
 import { MetricCard, MetricGrid } from "@/components/ui/metric-card";
 import { useOverview } from "@/components/providers/overview";
 import { PageHeader } from "@/components/ui/page-header";

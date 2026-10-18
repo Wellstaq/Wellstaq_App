@@ -1,7 +1,7 @@
 "use client";
 
 import type { KeyboardEvent, ReactNode } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight } from "@wellstaq/ui/icons";
 import { cn } from "@wellstaq/ui/utils";
 
 export interface Column<T> {

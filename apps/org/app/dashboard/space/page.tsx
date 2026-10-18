@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { createCombinedFeedLoader } from "@/lib/combined-feed";
 import { loadFeedThroughPost } from "@/lib/post-sharing";
-import { PanelLeftOpen, X, Loader2, Lock } from "lucide-react";
+import { PanelLeftOpen, X, Loader2, Lock } from "@wellstaq/ui/icons";
 import { motion, AnimatePresence } from "motion/react";
 import { toast } from "sonner";
 import { ConfirmModal } from "@/components/ui/confirm-modal";

@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { LucideIcon } from "lucide-react";
-import { Building2, CalendarDays, CornerDownLeft, CreditCard, Inbox, LayoutDashboard, ScrollText, Search, Settings2, ShieldCheck, UserRound, UserSearch } from "lucide-react";
+import type { IconComponent } from "@wellstaq/ui/icons";
+import { Building2, CalendarDays, CornerDownLeft, CreditCard, Inbox, LayoutDashboard, ScrollText, Search, Settings2, ShieldCheck, UserRound, UserSearch } from "@wellstaq/ui/icons";
 import { ModalLayer } from "@wellstaq/ui/modal-layer";
 import { cn } from "@wellstaq/ui/utils";
 import { useAdmin } from "@/components/providers/admin-session";
@@ -14,7 +14,7 @@ interface Command {
   id: string;
   label: string;
   hint: string;
-  icon: LucideIcon;
+  icon: IconComponent;
   href: string;
 }
 

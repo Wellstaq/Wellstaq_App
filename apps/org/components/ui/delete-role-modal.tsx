@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2 } from "@wellstaq/ui/icons";
 
 interface DeleteRoleModalProps {
   roleName: string;

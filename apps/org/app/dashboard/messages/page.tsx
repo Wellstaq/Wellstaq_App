@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Building2, Lock, Send, Users } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { Building2, Lock, Send, Users } from "@wellstaq/ui/icons";
+import type { IconComponent } from "@wellstaq/ui/icons";
 import { useDashboardData } from "@/components/providers/dashboard-data-provider";
 import { api } from "@/services/api";
 import type { MessageResponse } from "@/types/api";
@@ -12,7 +12,7 @@ interface ConversationThread {
   type: "branch" | "department";
   name: string;
   role: string;
-  icon: LucideIcon;
+  icon: IconComponent;
 }
 
 export default function MessagesPage() {

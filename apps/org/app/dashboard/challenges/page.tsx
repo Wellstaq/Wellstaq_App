@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Search, Plus, Trophy, Users, Calendar, CheckCircle2, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, CalendarClock, BadgeCheck } from "lucide-react";
+import { Search, Plus, Trophy, Users, Calendar, CheckCircle2, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, CalendarClock, BadgeCheck } from "@wellstaq/ui/icons";
 import { api } from "@/services/api";
 import { useDashboardData } from "@/components/providers/dashboard-data-provider";
 import { useDashboardScope } from "@/lib/scope";
@@ -82,6 +82,8 @@ export default function ChallengesPage() {
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [wellbeingNames, setWellbeingNames] = useState<Record<string, string>>({});
+  const [statsLoading, setStatsLoading] = useState(true);
+  const [statsFailed, setStatsFailed] = useState(false);
   const [stats, setStats] = useState({
     activeChallenges: 0, activeChallengesTrend: null as TrendData | null,
     totalParticipants: 0, totalParticipantsTrend: null as TrendData | null,
@@ -183,6 +185,8 @@ export default function ChallengesPage() {
     let cancelled = false;
 
     async function loadStats(orgId: string) {
+      setStatsLoading(true);
+      setStatsFailed(false);
       try {
         const res = await api.organization.getChallengeStats(orgId, {
           ...scopeParams,
@@ -192,13 +196,9 @@ export default function ChallengesPage() {
         });
         if (!cancelled) setStats(res);
       } catch {
-        if (!cancelled) setStats({
-          activeChallenges: 0, activeChallengesTrend: null,
-          totalParticipants: 0, totalParticipantsTrend: null,
-          completionRate: 0, completionRateTrend: null,
-          completedChallenges: 0,
-          upcomingChallenges: 0,
-        });
+        if (!cancelled) setStatsFailed(true);
+      } finally {
+        if (!cancelled) setStatsLoading(false);
       }
     }
     void loadStats(organizationId);
@@ -262,58 +262,58 @@ export default function ChallengesPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-[12px] mb-0">
-        <div className="bg-white p-[14px] rounded-[12px] border border-grey-4">
+        <button type="button" onClick={() => { setActiveTab("active"); setSearchQuery(""); setCurrentPage(1); document.getElementById("challenge-list")?.scrollIntoView({ behavior: "smooth" }); }} className="w-full text-left bg-white p-[14px] rounded-[12px] border border-grey-4">
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-orange-50 text-orange-600">
               <Trophy className="w-5 h-5" />
             </div>
-            <TrendLabel trend={stats.activeChallengesTrend} />
+            {!statsLoading && !statsFailed && <TrendLabel trend={stats.activeChallengesTrend} />}
           </div>
           <div className="text-sm font-medium text-grey-2 mb-1">Active Challenges</div>
-          <div className="text-xl font-bold text-grey-1">{stats.activeChallenges}</div>
-        </div>
-        <div className="bg-white p-[14px] rounded-[12px] border border-grey-4">
+          <div className="text-xl font-bold text-grey-1">{statsLoading ? "Loading…" : statsFailed ? "Unavailable" : stats.activeChallenges}</div>
+        </button>
+        <button type="button" onClick={() => { setActiveTab("All"); setSearchQuery(""); setCurrentPage(1); document.getElementById("challenge-list")?.scrollIntoView({ behavior: "smooth" }); }} className="w-full text-left bg-white p-[14px] rounded-[12px] border border-grey-4">
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-blue-50 text-blue-600">
               <Users className="w-5 h-5" />
             </div>
-            <TrendLabel trend={stats.totalParticipantsTrend} />
+            {!statsLoading && !statsFailed && <TrendLabel trend={stats.totalParticipantsTrend} />}
           </div>
           <div className="text-sm font-medium text-grey-2 mb-1">Total Participants</div>
-          <div className="text-xl font-bold text-grey-1">{stats.totalParticipants}</div>
-        </div>
-        <div className="bg-white p-[14px] rounded-[12px] border border-grey-4">
+          <div className="text-xl font-bold text-grey-1">{statsLoading ? "Loading…" : statsFailed ? "Unavailable" : stats.totalParticipants}</div>
+        </button>
+        <button type="button" onClick={() => { setActiveTab("completed"); setSearchQuery(""); setCurrentPage(1); document.getElementById("challenge-list")?.scrollIntoView({ behavior: "smooth" }); }} className="w-full text-left bg-white p-[14px] rounded-[12px] border border-grey-4">
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-green-50 text-green-600">
               <CheckCircle2 className="w-5 h-5" />
             </div>
-            <TrendLabel trend={stats.completionRateTrend} />
+            {!statsLoading && !statsFailed && <TrendLabel trend={stats.completionRateTrend} />}
           </div>
           <div className="text-sm font-medium text-grey-2 mb-1">Completion Rate</div>
-          <div className="text-xl font-bold text-grey-1">{stats.completionRate}%</div>
-        </div>
-        <div className="bg-white p-[14px] rounded-[12px] border border-grey-4">
+          <div className="text-xl font-bold text-grey-1">{statsLoading ? "Loading…" : statsFailed ? "Unavailable" : `${stats.completionRate}%`}</div>
+        </button>
+        <button type="button" onClick={() => { setActiveTab("completed"); setSearchQuery(""); setCurrentPage(1); document.getElementById("challenge-list")?.scrollIntoView({ behavior: "smooth" }); }} className="w-full text-left bg-white p-[14px] rounded-[12px] border border-grey-4">
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-purple-50 text-purple-600">
               <BadgeCheck className="w-5 h-5" />
             </div>
           </div>
           <div className="text-sm font-medium text-grey-2 mb-1">Completed Challenges</div>
-          <div className="text-xl font-bold text-grey-1">{stats.completedChallenges}</div>
-        </div>
-        <div className="bg-white p-[14px] rounded-[12px] border border-grey-4">
+          <div className="text-xl font-bold text-grey-1">{statsLoading ? "Loading…" : statsFailed ? "Unavailable" : stats.completedChallenges}</div>
+        </button>
+        <button type="button" onClick={() => { setActiveTab("upcoming"); setSearchQuery(""); setCurrentPage(1); document.getElementById("challenge-list")?.scrollIntoView({ behavior: "smooth" }); }} className="w-full text-left bg-white p-[14px] rounded-[12px] border border-grey-4">
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-amber-50 text-amber-600">
               <CalendarClock className="w-5 h-5" />
             </div>
           </div>
           <div className="text-sm font-medium text-grey-2 mb-1">Upcoming Challenges</div>
-          <div className="text-xl font-bold text-grey-1">{stats.upcomingChallenges}</div>
-        </div>
+          <div className="text-xl font-bold text-grey-1">{statsLoading ? "Loading…" : statsFailed ? "Unavailable" : stats.upcomingChallenges}</div>
+        </button>
       </div>
 
       {/* Main Content */}
-      <div className="bg-white rounded-[12px] p-6 flex flex-col gap-[20px] border border-grey-4">
+      <div id="challenge-list" className="bg-white rounded-[12px] p-6 flex flex-col gap-[20px] border border-grey-4">
         {/* Filters */}
         <div className="flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

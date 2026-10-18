@@ -4,7 +4,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronLeft, Edit2, Trash2, Users, Calendar, Clock, Send, Plus, Check, Search, Pin, X } from "lucide-react";
+import { ChevronLeft, Edit2, Trash2, Users, Calendar, Clock, Send, Plus, Check, Search, Pin, X } from "@wellstaq/ui/icons";
 import { toast } from "sonner";
 import { api } from "@/services/api";
 import { useDashboardData } from "@/components/providers/dashboard-data-provider";

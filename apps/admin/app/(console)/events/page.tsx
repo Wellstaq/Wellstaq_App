@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { CalendarCheck2, CalendarClock, CalendarDays, Plus } from "lucide-react";
+import { CalendarCheck2, CalendarClock, CalendarDays, Plus } from "@wellstaq/ui/icons";
 import { MetricCard, MetricGrid } from "@/components/ui/metric-card";
 import { useOverview } from "@/components/providers/overview";
 import { formatNumber } from "@/lib/format";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { MailPlus, Search, Trash2 } from "lucide-react";
+import { MailPlus, Search, Trash2 } from "@wellstaq/ui/icons";
 import { toast } from "sonner";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { useDashboardData } from "@/components/providers/dashboard-data-provider";

@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState, type FormEvent } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ShieldCheck, Trash2, UserPlus } from "lucide-react";
+import { ShieldCheck, Trash2, UserPlus } from "@wellstaq/ui/icons";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/controls";
 import { Input } from "@/components/ui/controls";

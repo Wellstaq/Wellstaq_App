@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Inbox, Mail } from "lucide-react";
+import { Inbox, Mail } from "@wellstaq/ui/icons";
 import { toast } from "sonner";
 import { Modal } from "@wellstaq/ui/modal";
 import { Label } from "@wellstaq/ui/label";

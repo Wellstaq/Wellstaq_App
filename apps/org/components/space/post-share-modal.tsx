@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { Check, Copy, ExternalLink, Facebook, Instagram, Linkedin, MessageCircle, X } from "lucide-react";
+import { Check, Copy, ExternalLink, Facebook, Instagram, Linkedin, MessageCircle, X } from "@wellstaq/ui/icons";
 import { getPostShareLinks } from "@/lib/post-sharing";
 
 export function PostShareModal({ link, onShared, onClose }: { link: string; onShared?: () => void; onClose: () => void }) {

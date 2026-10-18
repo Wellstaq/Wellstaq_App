@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Check, Pencil, X } from "lucide-react";
+import { Check, Pencil, X } from "@wellstaq/ui/icons";
 import { api } from "@/services/api";
 import { Input } from "@/components/ui/input";
 import type { ChallengeLeaderboardEntry } from "@/types/api";

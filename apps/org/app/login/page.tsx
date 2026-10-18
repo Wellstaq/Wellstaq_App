@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FieldError } from "@/components/onboarding/field-error";
-import { Eye, EyeOff, Mail } from "lucide-react";
+import { Eye, EyeOff, Mail } from "@wellstaq/ui/icons";
 import { api } from "@/services/api";
 import { ApiError } from "@/services/http";
 import { cacheCurrentUser, clearCachedCurrentUser } from "@/services/auth-token";

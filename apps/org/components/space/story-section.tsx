@@ -5,7 +5,7 @@ import { ModalLayer } from "@/components/ui/modal-layer";
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
-import { Plus, Video, X, Loader2, ImageIcon, ChevronLeft, ChevronRight, Heart, Trash2 } from "lucide-react";
+import { Plus, Video, X, Loader2, ImageIcon, ChevronLeft, ChevronRight, Heart, Trash2 } from "@wellstaq/ui/icons";
 import type { Story, OrganizationMemberInfo, CurrentUserResponse } from "@/types/api";
 
 const IMAGE_STORY_DURATION_MS = 5000;

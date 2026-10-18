@@ -1,9 +1,9 @@
-import type { LucideIcon } from "lucide-react";
+import type { IconComponent } from "@wellstaq/ui/icons";
 
 import { cn } from "@/lib/utils";
 
 interface DashboardEmptyStateProps {
-  icon: LucideIcon;
+  icon: IconComponent;
   title: string;
   description: string;
   className?: string;

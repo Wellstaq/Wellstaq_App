@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Calendar, CalendarDays, Clock } from "lucide-react";
+import { Calendar, CalendarDays, Clock } from "@wellstaq/ui/icons";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { formatDate, formatTime, plural } from "@/lib/format";
 import type { EventStatus } from "@/types/admin";

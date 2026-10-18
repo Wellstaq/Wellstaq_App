@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { CalendarDays, Lock } from "lucide-react";
+import { CalendarDays, Lock, Users, Activity, Building2 } from "@wellstaq/ui/icons";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import {
   DepartmentPerformanceRadar,
@@ -46,6 +46,7 @@ export default function DashboardPage() {
     currentUser,
   } = useDashboardData();
   const { scope } = useDashboardScope();
+  const scopedMetricHref = (path: string) => scope.type === "branch" ? `${path}?branchId=${encodeURIComponent(scope.branchId)}` : path;
 
   const [period, setPeriod] = useState<StatsPeriod | "">("");
   const [customStart, setCustomStart] = useState("");
@@ -109,6 +110,7 @@ export default function DashboardPage() {
       .then((result) => { if (!cancelled) setTrendPoints(result.points ?? []); })
       .catch(() => { if (!cancelled) setTrendPoints([]); })
       .finally(() => { if (!cancelled) setTrendsLoading(false); });
+
     return () => { cancelled = true; };
   }, [organizationId, scope, trendPeriod, canViewPulse]);
 
@@ -271,48 +273,49 @@ export default function DashboardPage() {
           {!statsLoading && !statsError && stats && (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-[12px]">
               <StatCard
+                href={scopedMetricHref("/dashboard/teams")}
                 title="Total Staff"
                 value={stats.staff}
                 subtitle={`${stats.staffActive} active`}
-                icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="sm:w-5 sm:h-5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>}
+                icon={<Users size={18} className="sm:w-5 sm:h-5" aria-hidden="true" />}
                 iconClassName="bg-red-100 text-red-500"
                 trend={stats.usersTrend}
               />
 
-              <div className="dashboard-card border border-grey-4">
+              <Link href={scopedMetricHref("/dashboard/insights")} className="dashboard-card border border-grey-4">
                 <div className="flex items-start justify-between mb-2 sm:mb-4">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-purple-100 text-purple-500 flex items-center justify-center">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="sm:w-5 sm:h-5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
+                    <Activity size={18} className="sm:w-5 sm:h-5" aria-hidden="true" />
                   </div>
                 </div>
                 <p className="text-[10px] sm:text-sm text-[#4D4D4D] mb-1 font-medium truncate">Total Activity</p>
                 <h3 className="text-xl font-bold text-[#1A1A1A] mb-1">{stats.activity.toLocaleString()}</h3>
-                <p className="text-[10px] text-grey-3 truncate">From last week</p>
-              </div>
+                <p className="text-[10px] text-grey-3 truncate">In the selected period</p>
+              </Link>
 
-              <div className="dashboard-card border border-grey-4">
+              <Link href={scopedMetricHref("/dashboard/events")} className="dashboard-card border border-grey-4">
                 <div className="flex items-start justify-between mb-2 sm:mb-4">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-blue-100 text-blue-500 flex items-center justify-center">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="sm:w-5 sm:h-5"><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /></svg>
+                    <CalendarDays size={18} className="sm:w-5 sm:h-5" aria-hidden="true" />
                   </div>
                   <TrendBadge trend={stats.eventsTrend} />
                 </div>
                 <p className="text-[10px] sm:text-sm text-[#4D4D4D] mb-1 font-medium truncate">Events Created</p>
                 <h3 className="text-xl font-bold text-[#1A1A1A] mb-1">{stats.events}</h3>
-                <p className="text-[10px] text-grey-3 truncate">Scheduled</p>
-              </div>
+                <p className="text-[10px] text-grey-3 truncate">In the selected period</p>
+              </Link>
 
-              <div className="dashboard-card border border-grey-4">
+              <Link href={scopedMetricHref("/dashboard/departments")} className="dashboard-card border border-grey-4">
                 <div className="flex items-start justify-between mb-2 sm:mb-4">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-lime-100 text-lime-600 flex items-center justify-center">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="sm:w-5 sm:h-5"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z" /><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" /><path d="M12 2v2" /><path d="M12 22v-2" /><path d="m17 20.66-1-1.73" /><path d="M11 10.27 7 3.34" /><path d="m20.66 17-1.73-1" /><path d="m3.34 7 1.73 1" /><path d="M14 12h8" /><path d="M2 12h2" /><path d="m20.66 7-1.73 1" /><path d="m3.34 17 1.73-1" /><path d="m17 3.34-1 1.73" /><path d="m11 13.73-4 6.93" /></svg>
+                    <Building2 size={18} className="sm:w-5 sm:h-5" aria-hidden="true" />
                   </div>
                   <TrendBadge trend={stats.departmentsTrend} />
                 </div>
                 <p className="text-[10px] sm:text-sm text-[#4D4D4D] mb-1 font-medium truncate">Departments</p>
                 <h3 className="text-xl font-bold text-[#1A1A1A] mb-1">{stats.departments}</h3>
-                <p className="text-[10px] text-grey-3 truncate">Wellness</p>
-              </div>
+                <p className="text-[10px] text-grey-3 truncate">In the selected scope</p>
+              </Link>
             </div>
           )}
 

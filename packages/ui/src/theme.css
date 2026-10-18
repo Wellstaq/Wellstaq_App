@@ -130,7 +130,7 @@
     cursor: pointer;
     padding-left: 0.75rem !important;
     padding-right: 2.5rem !important;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234D4D4D' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2218%22%20height%3D%2218%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%3E%3Cpath%20stroke%3D%22%234D4D4D%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-miterlimit%3D%2210%22%20stroke-width%3D%221.5%22%20d%3D%22M19.92%208.95l-6.52%206.52c-.77.77-2.03.77-2.8%200L4.08%208.95%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E");
     background-position: right 0.75rem center;
     background-repeat: no-repeat;
     background-size: 18px;
@@ -244,3 +244,20 @@
     @apply rounded-[12px] border border-grey-4 bg-white p-3;
   }
 }
+
+/* Shared single-line control size, including native date/time pickers. */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not(.sr-only):not(.hidden), select:not([multiple]) {
+  height: 40px !important;
+  min-height: 40px !important;
+  box-sizing: border-box;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+input:is([type="date"], [type="time"], [type="datetime-local"]) { text-align: left; }
+input:is([type="date"], [type="time"], [type="datetime-local"])::-webkit-datetime-edit { flex: 1; min-width: 0; }
+input:is([type="date"], [type="time"], [type="datetime-local"])::-webkit-calendar-picker-indicator { margin-left: auto; flex-shrink: 0; }
+.relative:has(> svg[class*="left-"]) > input { padding-left: 2.5rem; }
+.relative:has(> :is(svg,button)[class*="right-"]) > input { padding-right: 2.5rem; }
+
+input:is([type="date"], [type="time"], [type="datetime-local"]) { position: relative; padding-right: 40px !important; }
+input:is([type="date"], [type="time"], [type="datetime-local"])::-webkit-calendar-picker-indicator { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); margin: 0; }

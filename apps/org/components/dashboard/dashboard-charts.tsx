@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { ChevronDown, ArrowUpRight, ArrowDownRight, Smile, Heart, MousePointerClick, Trophy } from "lucide-react";
+import { Activity, ChevronDown, ArrowUpRight, ArrowDownRight, Smile, Heart, MousePointerClick, Trophy } from "@wellstaq/ui/icons";
 import { useClickOutside } from "@/hooks/use-click-outside";
 import { SelectablePill } from "@/components/ui/selectable-pill";
 import { DashboardEmptyState } from "@/components/dashboard/dashboard-empty-state";
@@ -70,7 +70,7 @@ export function DepartmentPerformanceRadar({data}: {data?: WellbeingDatum[]}) {
 }
 
 const TREND_METRICS = [
-  { name: "Stress level", key: "stressLevel" as const, icon: <svg key="stress" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m13 14 6.7-2.3c.8-.3 1.3.4 1 1.1l-4.6 9.2"/><path d="M6 14.5 4 17"/><path d="M6 14.5 8 12l2.5 1.5"/><path d="m10.5 13.5 2-2.5-1-2.5"/><path d="M13 14v4l-2.5 1.5"/><path d="M14 6.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/></svg> },
+  { name: "Stress level", key: "stressLevel" as const, icon: <Activity key="stress" size={16} aria-hidden="true" /> },
   { name: "Energy level (physical + mental)", key: "energyLevel" as const, icon: <Smile className="w-4 h-4" /> },
   { name: "Social interaction level", key: "socialInteraction" as const, icon: <Heart className="w-4 h-4" /> },
   { name: "Productivity", key: "productivity" as const, icon: <MousePointerClick className="w-4 h-4" /> },

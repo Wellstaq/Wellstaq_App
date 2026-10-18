@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "@wellstaq/ui/icons";
 import { formatNumber } from "@/lib/format";
 
 function pageWindow(current: number, total: number): (number | "gap")[] {

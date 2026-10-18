@@ -1,5 +1,5 @@
 // path: components/dashboard/trend-badge.tsx
-import { ArrowUpRight, ArrowDownRight, Minus } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, Minus } from "@wellstaq/ui/icons";
 import type { StatTrend } from "@/types/api";
 
 export function TrendBadge({ trend }: { trend: StatTrend | null }) {

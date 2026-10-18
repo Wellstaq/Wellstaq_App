@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Modal } from "@/components/ui/modal";
+import { BooleanRadio } from "@wellstaq/ui/boolean-radio";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -172,15 +173,9 @@ export function EditChallengeModal({
         )}
 
         {isEvidenceBased && (
-          <div className="grid grid-cols-2 gap-4">
-            <label className="flex items-center gap-2 rounded-[8px] border border-grey-4 bg-white px-3 h-[44px] text-sm cursor-pointer">
-              <input type="checkbox" checked={evidenceRequired} onChange={(e) => setEvidenceRequired(e.target.checked)} />
-              Evidence required
-            </label>
-            <label className="flex items-center gap-2 rounded-[8px] border border-grey-4 bg-white px-3 h-[44px] text-sm cursor-pointer">
-              <input type="checkbox" checked={requiresApproval} onChange={(e) => setRequiresApproval(e.target.checked)} />
-              Requires admin approval
-            </label>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <BooleanRadio label="Evidence required" value={evidenceRequired} onChange={(value) => { setEvidenceRequired(value); }} />
+            <BooleanRadio label="Requires admin approval" value={requiresApproval} onChange={(value) => { setRequiresApproval(value); }} />
           </div>
         )}
       </form>

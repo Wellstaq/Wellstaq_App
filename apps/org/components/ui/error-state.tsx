@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { AlertCircle, RefreshCw } from "lucide-react";
+import { AlertCircle, RefreshCw } from "@wellstaq/ui/icons";
 import { Button } from "@/components/ui/button";
 
 interface ErrorStateProps {

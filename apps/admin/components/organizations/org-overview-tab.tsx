@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { GitBranch } from "lucide-react";
+import { GitBranch } from "@wellstaq/ui/icons";
 import { adminApi } from "@/services/admin-api";
 import { useResource } from "@/lib/use-resource";
 import { formatDate, formatNumber, humanize } from "@/lib/format";

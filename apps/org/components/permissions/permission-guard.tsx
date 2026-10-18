@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { LockKeyhole } from "lucide-react";
+import { LockKeyhole } from "@wellstaq/ui/icons";
 import { useDashboardData } from "@/components/providers/dashboard-data-provider";
 import { useDashboardScope } from "@/lib/scope";
 import { hasPermission, readablePermission } from "@/lib/permissions";

@@ -3,7 +3,7 @@
 import { Suspense, useMemo, useState, type DragEvent, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowDown, ArrowLeft, ArrowUp, CheckCircle2, Download, Eye, EyeOff, GripVertical, MailCheck } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowUp, CheckCircle2, Download, Eye, EyeOff, GripVertical, MailCheck } from "@wellstaq/ui/icons";
 import { Country, State } from "country-state-city";
 import { SplitLayout } from "@/components/layout/split-layout";
 import { OnboardingPane } from "@/components/layout/onboarding-pane";

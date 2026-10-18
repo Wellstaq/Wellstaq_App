@@ -3,7 +3,7 @@
 import { Suspense, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "@wellstaq/ui/icons";
 import { Button } from "@/components/ui/controls";
 import { Input } from "@/components/ui/controls";
 import { Label } from "@wellstaq/ui/label";

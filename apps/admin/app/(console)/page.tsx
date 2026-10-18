@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { LucideIcon } from "lucide-react";
-import { Building2, CalendarDays, CalendarPlus, Inbox, ShieldAlert, UserPlus, UserRound, Users } from "lucide-react";
+import type { IconComponent } from "@wellstaq/ui/icons";
+import { Building2, CalendarDays, CalendarPlus, Inbox, ShieldAlert, UserPlus, UserRound, Users } from "@wellstaq/ui/icons";
 import { Card, CardHeader, ViewAllLink } from "@/components/ui/card";
 import { MetricCard, MetricGrid } from "@/components/ui/metric-card";
 import { TableSkeleton, EventGridSkeleton } from "@/components/ui/skeletons";
@@ -32,7 +32,7 @@ function greeting(hour: number) {
   return "Good evening";
 }
 
-const QUICK_ACTIONS: { label: string; href: string; icon: LucideIcon; permission: AdminPermission }[] = [
+const QUICK_ACTIONS: { label: string; href: string; icon: IconComponent; permission: AdminPermission }[] = [
   { label: "Create event", href: "/events?create=1", icon: CalendarPlus, permission: "events.manage" },
   { label: "Review suspended", href: "/organizations?status=suspended", icon: ShieldAlert, permission: "organizations.read" },
   { label: "Support inbox", href: "/support", icon: Inbox, permission: "support.read" },

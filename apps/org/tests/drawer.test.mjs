@@ -38,7 +38,7 @@ test("drawer covers the full viewport, has a responsive right panel, and keeps e
   const [backdrop, panel] = ui.tree.props.children;
   assert.equal(ui.tree.type, "ModalLayer");
   assert.match(ui.tree.props.className, /justify-end/);
-  assert.match(panel.props.className, /h-\[100dvh\].*w-full.*sm:w-\[max\(440px,35vw\)\]/);
+  assert.match(panel.props.className, /h-\[100dvh\].*w-full.*sm:w-\[max\(440px,40vw\)\]/);
   assert.equal(panel.props.role, "dialog");
   assert.equal(panel.props["aria-label"], "Create club");
   assert.equal(panel.props.initial.transform, "translateX(100%)");

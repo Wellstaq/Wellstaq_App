@@ -15,14 +15,14 @@
   "dependencies": {
     "@wellstaq/ui": "*",
     "clsx": "^2.1.1",
-    "lucide-react": "^0.553.0",
     "motion": "^12.23.24",
     "next": "15.5.27",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "recharts": "^2.15.4",
     "sonner": "^2.0.7",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "iconsax-react": "^0.0.8"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",

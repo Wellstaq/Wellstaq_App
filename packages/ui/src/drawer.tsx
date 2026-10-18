@@ -5,7 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ModalLayer } from "./modal-layer";
 
 // Full width on phones; keep forms usable on tablets and fluid on desktops.
-export const DRAWER_WIDTH_CLASS = "w-full sm:w-[max(440px,35vw)] sm:max-w-full";
+export const DRAWER_WIDTH_CLASS = "w-full sm:w-[max(440px,40vw)] sm:max-w-full";
 
 interface DrawerLayerProps {
   children: ReactNode;

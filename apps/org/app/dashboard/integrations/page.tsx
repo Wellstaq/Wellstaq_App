@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { Search, Plus, Calendar, Mail, MessageSquare, Video, Link as LinkIcon, CheckCircle2, XCircle } from "lucide-react";
+import { Search, Plus, Calendar, Mail, MessageSquare, Video, Link as LinkIcon, CheckCircle2, XCircle } from "@wellstaq/ui/icons";
 import { toast } from "sonner";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { api } from "@/services/api";

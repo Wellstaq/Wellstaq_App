@@ -3,7 +3,7 @@
 import { useEffect, useId, useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
-import { CalendarDays, CreditCard, Layers, UsersRound } from "lucide-react";
+import { CalendarDays, CreditCard, Layers, UsersRound } from "@wellstaq/ui/icons";
 import { Modal } from "@wellstaq/ui/modal";
 import { Label } from "@wellstaq/ui/label";
 import { Button } from "@/components/ui/controls";

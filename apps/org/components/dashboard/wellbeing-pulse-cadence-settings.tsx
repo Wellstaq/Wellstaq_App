@@ -7,7 +7,7 @@ import {
   Check,
   LockKeyhole,
   RefreshCw,
-} from "lucide-react";
+} from "@wellstaq/ui/icons";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useDashboardData } from "@/components/providers/dashboard-data-provider";

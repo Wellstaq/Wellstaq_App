@@ -2737,3 +2737,10 @@ details[open] p {
     padding: 32px 20px;
   }
 }
+
+/* Consistent single-line field height; multiline editors retain their space. */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="hidden"]):not([type="color"]):not(.sr-only):not(.hidden), select:not([multiple]) { height: 40px !important; min-height: 40px !important; box-sizing: border-box; padding-top: 0 !important; padding-bottom: 0 !important; }
+input:is([type="date"], [type="time"], [type="datetime-local"])::-webkit-calendar-picker-indicator { margin-left: auto; flex-shrink: 0; }
+
+input:is([type="date"], [type="time"], [type="datetime-local"]) { position: relative; padding-right: 40px !important; }
+input:is([type="date"], [type="time"], [type="datetime-local"])::-webkit-calendar-picker-indicator { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); margin: 0; }

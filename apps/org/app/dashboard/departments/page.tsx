@@ -4,7 +4,7 @@ import { AnimatePresence } from "motion/react";
 import { DrawerLayer } from "@/components/ui/drawer";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Search, Plus, X, Users, Activity, Calendar, ChevronDown, Check, UserPlus, Edit2, Trash2 } from "lucide-react";
+import { Search, Plus, X, Users, Activity, Calendar, ChevronDown, Check, UserPlus, Edit2, Trash2 } from "@wellstaq/ui/icons";
 import Image from "next/image";
 import { useClickOutside } from "@/hooks/use-click-outside";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
@@ -32,15 +32,19 @@ export default function DepartmentsPage() {
     id: string; name: string; members: number; activities: number; rank: number | null;
     branch: string; branchId: string; avatars: string[]; healthScore?: number; avgDailySteps: number | null;
   };
+  const [departmentsLoading, setDepartmentsLoading] = useState(true);
+  const [departmentsError, setDepartmentsError] = useState<string | null>(null);
+  const [reload, setReload] = useState(0);
+  const scopedHref = (path: string) => scope.type === "branch" ? `${path}?branchId=${encodeURIComponent(scope.branchId)}` : path;
   const [departments, setDepartments] = useState<Department[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [organizationMembers, setOrganizationMembers] = useState<OrganizationMemberInfo[]>([]);
   const [departmentMembers, setDepartmentMembers] = useState<DepartmentMemberInfo[]>([]);
   const [stats, setStats] = useState({
-    totalStaff: 0,
+    totalStaff: null as number | null,
     activeStaff: 0,
-    totalActivity: 0,
-    eventsCreated: 0,
+    totalActivity: null as number | null,
+    eventsCreated: null as number | null,
     totalDepartments: 0,
     usersTrend: null as StatTrend | null,
     eventsTrend: null as StatTrend | null,
@@ -52,6 +56,8 @@ export default function DepartmentsPage() {
     let cancelled = false;
     const branchId = scope.type === "branch" ? scope.branchId : undefined;
     const load = async () => {
+      setDepartmentsLoading(true);
+      setDepartmentsError(null);
       try {
         // Department records are the primary data for this screen. Auxiliary
         // stats must never turn a valid department list into an empty/404 page.
@@ -79,24 +85,26 @@ export default function DepartmentsPage() {
             avgDailySteps: rank?.avgDailySteps ? Number(rank.avgDailySteps) : null,
           };
         }));
-        setSelectedDepartment(null);
+        setSelectedDepartment((current) => current && departmentResponse.items.some((item) => item.id === current.id) ? current : null);
         setStats({
-          totalStaff: overallStats?.totalUsers ?? 0,
+          totalStaff: overallStats?.totalUsers ?? null,
           activeStaff: activeStats?.totalUsers ?? 0,
-          totalActivity: activitySummary?.totalCount ?? 0,
-          eventsCreated: overallStats?.totalEvents ?? 0,
-          totalDepartments: overallStats?.totalDepartments ?? departmentResponse.total,
+          totalActivity: activitySummary?.totalCount ?? null,
+          eventsCreated: overallStats?.totalEvents ?? null,
+          totalDepartments: departmentResponse.total,
           usersTrend: overallStats?.usersTrend ?? null,
           eventsTrend: overallStats?.eventsTrend ?? null,
           departmentsTrend: overallStats?.departmentsTrend ?? null,
         });
       } catch (error) {
-        toast.error(getUserErrorMessage(error, "We couldn't load departments. Try again."));
+        if (!cancelled) setDepartmentsError(getUserErrorMessage(error, "We couldn't load departments. Try again."));
+      } finally {
+        if (!cancelled) setDepartmentsLoading(false);
       }
     };
     void load();
     return () => { cancelled = true; };
-  }, [organizationId, scope, branches]);
+  }, [organizationId, scope, branches, reload]);
 
   useEffect(() => {
     if (!organizationId) return;
@@ -112,7 +120,7 @@ export default function DepartmentsPage() {
   const dashboardStats = [
     {
       title: "Total Staff",
-      value: stats.totalStaff.toString(),
+      value: stats.totalStaff?.toLocaleString() ?? "Unavailable",
       icon: Users,
       color: "text-red-500",
       bg: "bg-red-100",
@@ -120,7 +128,7 @@ export default function DepartmentsPage() {
     },
     {
       title: "Total Activity",
-      value: stats.totalActivity.toLocaleString(),
+      value: stats.totalActivity?.toLocaleString() ?? "Unavailable",
       icon: Activity,
       color: "text-purple-500",
       bg: "bg-purple-100",
@@ -128,7 +136,7 @@ export default function DepartmentsPage() {
     },
     {
       title: "Events Created",
-      value: stats.eventsCreated.toString(),
+      value: stats.eventsCreated?.toLocaleString() ?? "Unavailable",
       icon: Calendar,
       color: "text-blue-500",
       bg: "bg-blue-100",
@@ -272,7 +280,8 @@ export default function DepartmentsPage() {
           <StatCard
             key={stat.title}
             title={stat.title}
-            value={stat.value}
+            value={departmentsLoading ? "Loading…" : stat.value}
+            href={stat.title === "Total Staff" ? scopedHref("/dashboard/teams") : stat.title === "Events Created" ? scopedHref("/dashboard/events") : stat.title === "Total Activity" ? scopedHref("/dashboard/insights") : "#department-list"}
             icon={<stat.icon className="w-5 h-5" />}
             iconClassName={`${stat.bg} ${stat.color}`}
             trend={stat.trend}
@@ -294,8 +303,12 @@ export default function DepartmentsPage() {
             />
           </div>
 
-          <div className="flex-1 overflow-y-auto space-y-3 pr-0 no-scrollbar min-h-[400px] lg:min-h-0">
-            {filteredDepartments.length === 0 ? (
+          <div id="department-list" className="flex-1 overflow-y-auto space-y-3 pr-0 no-scrollbar min-h-[400px] lg:min-h-0">
+            {departmentsLoading ? (
+              <div role="status" aria-label="Loading departments" className="space-y-3">{[0, 1, 2].map((row) => <div key={row} className="h-28 animate-pulse rounded-xl bg-grey-5" />)}<span className="sr-only">Loading departments</span></div>
+            ) : departmentsError ? (
+              <div role="alert" className="p-4 text-sm text-grey-2">{departmentsError}<button type="button" onClick={() => setReload((value) => value + 1)} className="mt-3 block text-primary-hover">Try again</button></div>
+            ) : filteredDepartments.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center p-6 bg-white rounded-[12px]">
                 <h3 className="text-lg font-bold text-grey-1 mb-2">No department available</h3>
                 <p className="text-sm text-grey-2 mb-6">
@@ -326,7 +339,7 @@ export default function DepartmentsPage() {
                         {department.name.charAt(0)}
                       </div>
                       <div className="min-w-0">
-                        <span className="block truncate font-bold text-sm text-grey-1">{department.name}</span>
+                        <span className="block truncate font-medium text-sm text-grey-1">{department.name}</span>
                         {scope.type === "overview" && (
                           <span className="mt-0.5 inline-flex rounded-full bg-primary-5 px-2 py-0.5 text-[10px] font-medium text-primary-1">
                             {department.branch}
@@ -362,7 +375,7 @@ export default function DepartmentsPage() {
 
         {/* Right Area - Department Details */}
         <div className={`flex-1 bg-white rounded-[12px] overflow-hidden flex flex-col ${!selectedDepartment ? 'hidden lg:flex' : 'flex'}`}>
-          {!selectedDepartment ? (
+          {departmentsLoading ? <div role="status" className="flex flex-1 items-center justify-center text-sm text-grey-2">Loading departments…</div> : !selectedDepartment ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
               <div className="empty-state-icon w-16 h-16 bg-grey-5 rounded-full flex items-center justify-center mb-4" aria-hidden="true">
                 <Users className="w-8 h-8" />
@@ -384,7 +397,7 @@ export default function DepartmentsPage() {
 
                 <div className="flex flex-col sm:flex-row items-start justify-between mb-8 gap-4">
                   <div className="flex items-start gap-4">
-                    <div className="w-16 h-16 rounded-xl bg-orange-50 flex items-center justify-center text-2xl font-bold text-orange-500 shrink-0">
+                    <div className="w-16 h-16 rounded-xl bg-orange-50 flex items-center justify-center text-2xl font-medium text-grey-2 shrink-0">
                       {selectedDepartment.name.charAt(0)}
                     </div>
                     <div>

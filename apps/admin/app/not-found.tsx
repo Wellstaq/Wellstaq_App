@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Compass } from "lucide-react";
+import { Compass } from "@wellstaq/ui/icons";
 
 export default function NotFound() {
   return (

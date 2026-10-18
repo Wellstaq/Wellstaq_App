@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
-import { Check, X } from "lucide-react";
+import { Check, X } from "@wellstaq/ui/icons";
 import { api } from "@/services/api";
 import { SelectablePill } from "@/components/ui/selectable-pill";
 import { Modal } from "@/components/ui/modal";

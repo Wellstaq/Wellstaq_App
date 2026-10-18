@@ -1,8 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
-import type { LucideIcon } from "lucide-react";
-import { AlertCircle, Lock, RefreshCw, SearchX } from "lucide-react";
+import type { IconComponent } from "@wellstaq/ui/icons";
+import { AlertCircle, Lock, RefreshCw, SearchX } from "@wellstaq/ui/icons";
 import { Button } from "@/components/ui/controls";
 import { cn } from "@wellstaq/ui/utils";
 import { secondaryButton } from "@/components/ui/button-styles";
@@ -15,7 +15,7 @@ export function EmptyState({
   action,
   className,
 }: {
-  icon: LucideIcon;
+  icon: IconComponent;
   title: string;
   description: string;
   action?: ReactNode;
@@ -45,7 +45,7 @@ export function NoResults({ onClear }: { onClear?: () => void }) {
   );
 }
 
-function describe(error: ApiError): { icon: LucideIcon; title: string; message: string } {
+function describe(error: ApiError): { icon: IconComponent; title: string; message: string } {
   if (error.status === 403) {
     return { icon: Lock, title: "You don't have access", message: "Your admin role doesn't include this section. Ask a super admin if you need it." };
   }

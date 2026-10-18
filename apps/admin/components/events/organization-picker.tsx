@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, LoaderCircle, Search, X } from "lucide-react";
+import { Check, LoaderCircle, Search, X } from "@wellstaq/ui/icons";
 import { adminApi } from "@/services/admin-api";
 import { useDebouncedValue, useResource } from "@/lib/use-resource";
 import { plural } from "@/lib/format";

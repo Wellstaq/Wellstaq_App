@@ -23,11 +23,11 @@ function compile(path, imports = {}, globals = {}) {
 const shape = (value) => JSON.parse(JSON.stringify(value));
 
 // ── What goes on the wire ────────────────────────────────────────────────
-function apiFixture() {
+function apiFixture(response = {}) {
   const calls = [];
   const api = compile("../services/api.ts", {
     "@/services/http": {
-      request: (path, options) => { calls.push({ path, options: options ?? {} }); return Promise.resolve({}); },
+      request: (path, options) => { calls.push({ path, options: options ?? {} }); return Promise.resolve(typeof response === "function" ? response(path, options) : response); },
       ApiError: class ApiError extends Error {},
     },
     "@/services/config": { backendPath: (path) => path },
@@ -217,4 +217,27 @@ test("legacy single-image callers send only media_url", async () => {
  const body = shape(last().options.body);
  assert.equal(body.media_url, "https://cdn.example/photo.jpg");
  assert.equal("media_urls" in body, false);
+});
+
+
+test("event metrics load every page in branch scope, not just the visible eight records", async () => {
+ const entries = Array.from({ length: 105 }, (_, id) => ({ id: String(id), title: "Event " + id, status: id < 100 ? "scheduled" : "completed" }));
+ const { api, calls } = apiFixture(path => {
+  const url = new URL(path, "https://example.test");
+  const offset = Number(url.searchParams.get("offset"));
+  assert.equal(url.searchParams.get("branch_id"), "branch-1");
+  return { items: entries.slice(offset, offset + 100), total: entries.length, offset, limit: 100 };
+ });
+ const result = await api.organization.getAllEvents("org-1", "branch-1");
+ assert.equal(result.length, 105);
+ assert.equal(result.filter(event => event.status === "completed").length, 5);
+ assert.equal(calls.length, 2);
+});
+test("missing KPI values stay unavailable while genuine zeroes remain zero", async () => {
+ const { api } = apiFixture({ summary: { averageDailySteps: { value: null, change: null }, healthScore: { value: null, change: null }, activeEmployees: { value: null, change: null }, challengesWon: { value: 0, change: 0 } } });
+ const { summary } = await api.kpiSnapshots.getOverview("org-1");
+ assert.equal(summary.healthScore, "Unavailable");
+ assert.equal(summary.activeEmployees, "Unavailable");
+ assert.equal(summary.healthScoreTrend, "");
+ assert.equal(summary.challengesWon, "0");
 });

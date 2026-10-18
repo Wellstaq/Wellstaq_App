@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ScrollText } from "lucide-react";
+import { ScrollText } from "@wellstaq/ui/icons";
 import { Input } from "@wellstaq/ui/input";
 import { PageHeader } from "@/components/ui/page-header";
 import { SearchInput, Toolbar } from "@/components/ui/toolbar";

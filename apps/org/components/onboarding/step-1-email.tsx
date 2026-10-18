@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ChevronLeft, Mail } from "lucide-react";
+import { ChevronLeft, Mail } from "@wellstaq/ui/icons";
 import { OnboardingData } from "@/types";
 import Link from "next/link";
 

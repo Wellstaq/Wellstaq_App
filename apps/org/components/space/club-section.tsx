@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "motion/react";
 import {
   Search, Plus, Video, Send, Users, ChevronLeft, ImageIcon, MessageCircle,
   PanelLeftClose, Sticker, Paperclip, Trash2, X, Loader2, Pin, PinOff,
-} from "lucide-react";
+} from "@wellstaq/ui/icons";
 import { useClickOutside } from "@/hooks/use-click-outside";
 import { Modal } from "@/components/ui/modal";
 import { FilterDropdown } from "@/components/ui/filter-dropdown";

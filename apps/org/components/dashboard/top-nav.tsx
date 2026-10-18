@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Search, MessageSquare, Bell, Sparkles, ChevronDown, X, Menu, Settings2, ArrowUp, ArrowUpRight, LogOut, History, MessageCirclePlus, UserPlus } from "lucide-react";
+import { Search, MessageSquare, Bell, Sparkles, ChevronDown, X, Menu, Settings2, ArrowUp, ArrowUpRight, LogOut, History, MessageCirclePlus, UserPlus } from "@wellstaq/ui/icons";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import { ConfirmModal } from "@/components/ui/confirm-modal";

@@ -17,7 +17,7 @@ import { Step7WorkModel } from "@/components/onboarding/step-7-work-model";
 import { OnboardingData, initialData, Step } from "@/types";
 import { api } from "@/services/api";
 import { ApiError } from "@/services/http";
-import { Mail, User, Briefcase } from "lucide-react";
+import { Mail, User, Briefcase } from "@wellstaq/ui/icons";
 
 function SkeletonLoader() {
   return (

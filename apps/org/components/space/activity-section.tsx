@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { api } from "@/services/api";
 import { ApiError } from "@/services/http";
-import { Lock } from "lucide-react";
+import { Lock } from "@wellstaq/ui/icons";
 import { Activity, Heart, Note, Profile2User, type IconProps } from "iconsax-react";
 
 interface WeeklyStats {

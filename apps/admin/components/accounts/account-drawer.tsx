@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { KeyRound, ShieldOff, ShieldCheck } from "lucide-react";
+import { KeyRound, ShieldOff, ShieldCheck } from "@wellstaq/ui/icons";
 import { toast } from "sonner";
 import { Modal } from "@wellstaq/ui/modal";
 import { Button } from "@/components/ui/controls";

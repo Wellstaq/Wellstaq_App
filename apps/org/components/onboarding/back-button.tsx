@@ -1,4 +1,4 @@
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft } from "@wellstaq/ui/icons";
 
 interface BackButtonProps {
   onClick: () => void;

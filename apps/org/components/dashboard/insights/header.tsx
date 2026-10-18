@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown } from "@wellstaq/ui/icons";
 import { useClickOutside } from "@/hooks/use-click-outside";
 import type { InsightsPeriod } from "@/types/api";
 

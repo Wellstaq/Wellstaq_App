@@ -5,7 +5,7 @@ import Image from "next/image";
 import {
   ImageIcon, Video, MapPin, Send, Heart, MessageCircle, Share2, Trash2, X, Loader2,
   Check, CornerDownRight,
-} from "lucide-react";
+} from "@wellstaq/ui/icons";
 import type { Post, Comment, CommentReply, OrganizationMemberInfo } from "@/types/api";
 import { MAX_POST_ATTACHMENTS, looksLikeVideo, postMediaUrls, type PostAttachment } from "@/lib/media";
 import { Avatar } from "@/components/space/story-section";

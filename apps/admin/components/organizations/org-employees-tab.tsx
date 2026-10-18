@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Users } from "lucide-react";
+import { Users } from "@wellstaq/ui/icons";
 import { adminApi } from "@/services/admin-api";
 import { useDebouncedValue, useResource } from "@/lib/use-resource";
 import { formatDate, fullName, humanize } from "@/lib/format";

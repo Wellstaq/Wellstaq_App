@@ -68,7 +68,7 @@ function modalFixture(writeText = async () => {}) {
     useRef() { const index = cursor++; return refs[index] ??= { current: input }; },
     useId: () => "share-title", useEffect: () => {},
   };
-  const component = compile("../components/space/post-share-modal.tsx", { react: hooks, "react/jsx-runtime": jsxRuntime, "lucide-react": new Proxy({}, { get: (_, key) => `Icon${key}` }), "@/lib/post-sharing": sharing }, { navigator: { clipboard: { writeText } } });
+  const component = compile("../components/space/post-share-modal.tsx", { react: hooks, "react/jsx-runtime": jsxRuntime, "@wellstaq/ui/icons": new Proxy({}, { get: (_, key) => `Icon${key}` }), "@/lib/post-sharing": sharing }, { navigator: { clipboard: { writeText } } });
   let tree;
   const render = () => { cursor = 0; tree = component.PostShareModal({ link: "https://wellstaq.example/dashboard/space?postId=test", onClose: () => closed++ }); };
   render();
@@ -123,7 +123,7 @@ function postHarness() {
     react: hooks, "react/jsx-runtime": jsxRuntime,
     // next/image is a default export, so the mock has to sit on `.default`.
     "next/image": { default: "Image" },
-    "lucide-react": new Proxy({}, { get: (_, key) => `Icon${key}` }),
+    "@wellstaq/ui/icons": new Proxy({}, { get: (_, key) => `Icon${key}` }),
     "@/components/space/story-section": { Avatar: "Avatar" },
     "@/lib/time": { formatRelativeTime: () => "Today" },
     "@/lib/post-sharing": sharing,

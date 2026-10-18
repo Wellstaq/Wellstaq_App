@@ -1,4 +1,4 @@
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "@wellstaq/ui/icons";
 
 export interface CompletedStep {
   id: string;
