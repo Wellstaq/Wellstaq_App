@@ -57,7 +57,7 @@ function NotificationRow({
     <button
       type="button"
       onClick={onOpen}
-      className={`flex w-full gap-3 px-5 py-4 text-left ${href ? "hover:bg-grey-5" : "cursor-default"}`}
+      className={`flex w-full gap-2 px-5 py-4 text-left ${href ? "hover:bg-grey-5" : "cursor-default"}`}
     >
       <span className={`mt-2 h-2 w-2 shrink-0 rounded-full ${notification.isRead ? "bg-grey-4" : "bg-primary-1"}`} />
       {showActor ? (
@@ -200,7 +200,7 @@ export default function NotificationsPage() {
           <h1 className="page-title">Notifications</h1>
           <p className="page-description">Review invitations and updates from your organization.</p>
         </div>
-        <button type="button" onClick={markAllRead} disabled={!hasUnread} className="inline-flex h-10 items-center justify-between gap-2 rounded-lg border border-grey-4 bg-white px-4 text-sm font-medium text-grey-1 hover:bg-grey-5 disabled:opacity-50">
+        <button type="button" onClick={markAllRead} disabled={!hasUnread} className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-grey-4 bg-white px-4 text-sm font-medium text-grey-1 hover:bg-grey-5 disabled:opacity-50">
           <CheckCheck className="h-4 w-4" /> Mark all read
         </button>
       </div>

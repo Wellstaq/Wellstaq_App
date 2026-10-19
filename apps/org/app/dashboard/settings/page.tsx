@@ -574,7 +574,7 @@ export default function SettingsPage() {
                       className="object-cover"
                     /> : <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary-1/80 to-orange-300 text-xl font-bold text-white">{`${formData.firstName[0] ?? ""}${formData.lastName[0] ?? ""}`.toUpperCase() || "WS"}</div>}
                   </div>
-                  <label className="absolute bottom-0 right-0 w-8 h-8 bg-[#EA6A05] rounded-full flex items-center justify-center text-white border-2 border-white cursor-pointer">
+                  <label className="absolute bottom-0 right-0 w-8 h-8 bg-[#EA6A05] rounded-full flex items-center gap-2 justify-center text-white border-2 border-white cursor-pointer">
                     <Camera className="w-4 h-4" />
                     <input
                       type="file"
@@ -690,7 +690,7 @@ export default function SettingsPage() {
                 </div>
                 <div className="space-y-3 rounded-xl border border-grey-4 p-4">
                   <div><div className="text-sm font-bold text-grey-1">Active Sessions</div><div className="text-xs text-grey-2">Revoke devices you no longer recognize.</div></div>
-                  {sessions.map((session) => <div key={session.id} className="flex items-center justify-between gap-3 rounded-lg border border-grey-4 p-3"><Monitor className="h-5 w-5 text-grey-2" /><div className="min-w-0 flex-1"><p className="truncate text-sm font-medium text-grey-1">{session.deviceName ?? "Unknown device"}{session.isCurrent ? " (Current session)" : ""}</p><p className="text-xs text-grey-3">{session.ipAddress ?? "Unknown IP"} · Last active {formatDate(session.lastSeenAt)}</p></div><button type="button" title="Revoke session" onClick={() => void revokeLoginSession(session)} className="rounded p-2 text-red-500 hover:bg-red-50"><Trash2 className="h-4 w-4" /></button></div>)}
+                  {sessions.map((session) => <div key={session.id} className="flex items-center justify-start gap-2 rounded-lg border border-grey-4 p-3"><Monitor className="h-5 w-5 text-grey-2" /><div className="min-w-0 flex-1"><p className="truncate text-sm font-medium text-grey-1">{session.deviceName ?? "Unknown device"}{session.isCurrent ? " (Current session)" : ""}</p><p className="text-xs text-grey-3">{session.ipAddress ?? "Unknown IP"} · Last active {formatDate(session.lastSeenAt)}</p></div><button type="button" title="Revoke session" onClick={() => void revokeLoginSession(session)} className="rounded p-2 text-red-500 hover:bg-red-50"><Trash2 className="h-4 w-4" /></button></div>)}
                   {sessions.length === 0 && <p className="py-4 text-center text-sm text-grey-3">No active sessions found.</p>}
                 </div>
               </div>
@@ -825,7 +825,7 @@ export default function SettingsPage() {
                           aria-controls={`role-permissions-${role.id}`}
                           aria-label={`${isExpanded ? "Collapse" : "Expand"} ${humanizeIdentifier(role.name)} permissions`}
                           onClick={() => toggleRoleExpanded(role.id)}
-                          className="inline-flex shrink-0 items-center justify-between gap-2 rounded-full bg-grey-5 px-3 py-1 text-[10px] font-bold text-grey-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-1"
+                          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-grey-5 px-3 py-1 text-[10px] font-bold text-grey-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-1"
                         >
                           {role.userCount ?? 0} USERS
                           <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
@@ -867,7 +867,7 @@ export default function SettingsPage() {
             <>
               <h2 className="text-[18px] font-bold text-grey-1 mb-0 leading-[32px]">Billing & Subscription</h2>
               <p className="text-[14px] text-grey-2 pb-[12px]">Manage your subscription plan and billing details.</p>
-              {canManageBilling && billingLoading && <div className="flex items-center justify-between gap-2 py-16 text-sm text-grey-3"><LoaderCircle className="h-5 w-5 animate-spin" /> Loading billing information...</div>}
+              {canManageBilling && billingLoading && <div className="flex items-center justify-start gap-2 py-16 text-sm text-grey-3"><LoaderCircle className="h-5 w-5 animate-spin" /> Loading billing information...</div>}
               {canManageBilling && !billingLoading && subscription && <>
                 <div className="mb-8 rounded-[12px] border border-grey-4 bg-grey-5 p-6">
                   <div className="mb-4">

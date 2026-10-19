@@ -53,7 +53,7 @@ export function OrganizationPicker({ value, onChange, invalid }: { value: Picked
         </div>
         <div className="max-h-52 overflow-y-auto" aria-live="polite">
           {results.isLoading ? (
-            <p className="flex items-center justify-between gap-2 px-3 py-3 text-sm text-grey-2">
+            <p className="flex items-center justify-start gap-2 px-3 py-3 text-sm text-grey-2">
               <LoaderCircle className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
               Loading organizations...
             </p>
@@ -70,7 +70,7 @@ export function OrganizationPicker({ value, onChange, invalid }: { value: Picked
                 const selected = selectedIds.has(organization.id);
                 return (
                   <li key={organization.id} role="option" aria-selected={selected}>
-                    <button type="button" onClick={() => toggle({ id: organization.id, name: organization.name })} className="flex h-10 w-full items-center justify-between gap-3 px-3 text-left hover:bg-grey-5">
+                    <button type="button" onClick={() => toggle({ id: organization.id, name: organization.name })} className="flex h-10 w-full items-center justify-start gap-2 px-3 text-left hover:bg-grey-5">
                       <span className="min-w-0">
                         <span className="block truncate text-sm font-medium text-grey-1">{organization.name}</span>
                         <span className="block text-xs text-grey-2">{plural(organization.employeeCount, "employee")}</span>

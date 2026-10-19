@@ -120,7 +120,7 @@ export default function EventsPage() {
         {canCreate && (
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="px-4 py-2 bg-[#C45700] text-white font-medium text-sm rounded-lg hover:bg-[#C45700]/90 transition-colors flex items-center justify-between gap-2"
+            className="px-4 py-2 bg-[#C45700] text-white font-medium text-sm rounded-lg hover:bg-[#C45700]/90 transition-colors flex items-center justify-center gap-2"
           >
             <Plus className="w-4 h-4" />
             Create Event
@@ -192,11 +192,11 @@ export default function EventsPage() {
                     <div className="flex flex-col gap-1">
                       <h3 className="font-medium text-[#4D4D4D] text-[14px] leading-[20px] line-clamp-1">{event.title}</h3>
                       <div className="flex flex-col gap-2">
-                        <div className="flex items-center justify-between gap-1 text-[12px] leading-[18px] text-[#999999]">
+                        <div className="flex items-center justify-start gap-2 text-[12px] leading-[18px] text-[#999999]">
                           <Calendar className="w-3.5 h-3.5" />
                           {new Date(event.startDate).toLocaleDateString()}
                         </div>
-                        <div className="flex items-center justify-between gap-1 text-[12px] leading-[18px] text-[#999999]">
+                        <div className="flex items-center justify-start gap-2 text-[12px] leading-[18px] text-[#999999]">
                           <Clock className="w-3.5 h-3.5" />
                           {event.time}
                         </div>
@@ -236,10 +236,10 @@ export default function EventsPage() {
                   Showing {(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, total)} of {total} events
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1} className="px-3 py-2 rounded bg-[#FAFAFA] text-[14px] leading-[20px] text-[#1A1A1A] hover:bg-grey-5 flex items-center justify-between gap-1 h-[36px] disabled:opacity-50">
+                  <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1} className="px-3 py-2 rounded bg-[#FAFAFA] text-[14px] leading-[20px] text-[#1A1A1A] hover:bg-grey-5 flex items-center justify-center gap-2 h-[36px] disabled:opacity-50">
                     <ChevronsLeft className="w-4 h-4 text-[#626262]" /> First
                   </button>
-                  <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1} className="px-3 py-2 rounded bg-[#FAFAFA] text-[14px] leading-[20px] text-[#1A1A1A] hover:bg-grey-5 flex items-center justify-between gap-1 h-[36px] disabled:opacity-50">
+                  <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1} className="px-3 py-2 rounded bg-[#FAFAFA] text-[14px] leading-[20px] text-[#1A1A1A] hover:bg-grey-5 flex items-center justify-center gap-2 h-[36px] disabled:opacity-50">
                     <ChevronLeft className="w-4 h-4 text-[#626262]" /> Back
                   </button>
                   <div className="flex items-center gap-1.5 hidden sm:flex">
@@ -255,10 +255,10 @@ export default function EventsPage() {
                       </button>
                     ))}
                   </div>
-                  <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="px-3 py-2 rounded bg-[#FAFAFA] text-[14px] leading-[20px] text-[#1A1A1A] hover:bg-grey-5 flex items-center justify-between gap-1 h-[36px] disabled:opacity-50">
+                  <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="px-3 py-2 rounded bg-[#FAFAFA] text-[14px] leading-[20px] text-[#1A1A1A] hover:bg-grey-5 flex items-center justify-center gap-2 h-[36px] disabled:opacity-50">
                     Next <ChevronRight className="w-4 h-4 text-[#626262]" />
                   </button>
-                  <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} className="px-3 py-2 rounded bg-[#FAFAFA] text-[14px] leading-[20px] text-[#1A1A1A] hover:bg-grey-5 flex items-center justify-between gap-1 h-[36px] disabled:opacity-50">
+                  <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} className="px-3 py-2 rounded bg-[#FAFAFA] text-[14px] leading-[20px] text-[#1A1A1A] hover:bg-grey-5 flex items-center justify-center gap-2 h-[36px] disabled:opacity-50">
                     Last <ChevronsRight className="w-4 h-4 text-[#626262]" />
                   </button>
                 </div>

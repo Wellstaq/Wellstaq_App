@@ -37,11 +37,11 @@ export function EventCard({ title, imageUrl, startDate, time, status, participan
       <div className="flex flex-1 flex-col gap-3 px-1 pb-1">
         <div className="flex flex-col gap-1">
           <h3 className="line-clamp-1 font-sans text-sm font-medium leading-5 text-grey-2">{title}</h3>
-          <p className="flex items-center justify-between gap-1 text-xs leading-[18px] text-grey-2">
+          <p className="flex items-center justify-start gap-2 text-xs leading-[18px] text-grey-2">
             <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
             {formatDate(startDate)}
           </p>
-          <p className="flex items-center justify-between gap-1 text-xs leading-[18px] text-grey-2">
+          <p className="flex items-center justify-start gap-2 text-xs leading-[18px] text-grey-2">
             <Clock className="h-3.5 w-3.5" aria-hidden="true" />
             {formatTime(time)}
           </p>

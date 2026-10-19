@@ -15,7 +15,7 @@ function pageWindow(current: number, total: number): (number | "gap")[] {
   return result;
 }
 
-const navButton = "flex h-10 items-center justify-center gap-1 rounded-[8px] bg-grey-5 px-3 text-sm text-grey-1 transition-colors hover:bg-grey-4 disabled:cursor-not-allowed disabled:opacity-50";
+const navButton = "flex h-10 items-center justify-center gap-2 rounded-[8px] bg-grey-5 px-3 text-sm text-grey-1 transition-colors hover:bg-grey-4 disabled:cursor-not-allowed disabled:opacity-50";
 
 export function Pagination({
   page,

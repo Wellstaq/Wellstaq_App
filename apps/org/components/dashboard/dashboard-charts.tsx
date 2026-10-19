@@ -116,7 +116,7 @@ export function EngagementChart({
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-[16px] font-bold font-sans text-grey-1">Engagement & Wellbeing Trends</h3>
         <div ref={engagementFilterRef} className="relative">
-          <button
+          <button data-control="select"
             onClick={() => setIsEngagementFilterOpen(!isEngagementFilterOpen)}
             className="flex items-center justify-between gap-1 text-sm text-grey-2 hover:text-grey-1"
           >
@@ -222,7 +222,7 @@ export function Leaderboard({data}: {data?: LeaderboardRow[]}) {
                     <p className="text-[10px] sm:text-xs text-grey-3 truncate">{leaderboardMetric === 'Steps' ? user.steps : leaderboardMetric === 'Distance' ? '12.5 km' : leaderboardMetric === 'Run' ? '45 mins' : '15 mins'}</p>
                   </div>
                 </div>
-                <div className="flex items-center justify-between gap-1 sm:gap-2 shrink-0">
+                <div className="flex items-center justify-start gap-2 shrink-0">
                   <span className="text-xs sm:text-sm font-bold text-grey-1">{user.rank}</span>
                   {user.trend === 'up' ? (
                     <ArrowUpRight className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />

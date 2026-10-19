@@ -34,7 +34,7 @@ export function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
         type="button"
         onClick={signOut}
         disabled={isSigningOut}
-        className="flex h-10 shrink-0 items-center justify-between gap-2 rounded-[10px] px-3 text-[15px] font-medium text-error-1 transition-colors hover:bg-error-5 disabled:opacity-60"
+        className="flex h-10 shrink-0 items-center justify-center gap-2 rounded-[10px] px-3 text-[15px] font-medium text-error-1 transition-colors hover:bg-error-5 disabled:opacity-60"
       >
         <LogOut className="h-5 w-5" strokeWidth={1.7} aria-hidden="true" />
         <span className="hidden sm:inline">{isSigningOut ? "Logging out..." : "Log out"}</span>

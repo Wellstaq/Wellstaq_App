@@ -13,7 +13,7 @@ export default function RouteError({ reset }: { error: Error & { digest?: string
         <h1 className="mt-5 text-xl font-bold text-grey-1">This page hit a problem</h1>
         <p className="mt-2 text-sm leading-6 text-grey-2">Try again. If it keeps happening, reload the console.</p>
         <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-          <button type="button" onClick={reset} className="inline-flex h-10 items-center justify-between gap-2 rounded-[12px] bg-primary-hover px-6 text-sm font-medium text-white hover:bg-[#A84A00]">
+          <button type="button" onClick={reset} className="inline-flex h-10 items-center justify-center gap-2 rounded-[12px] bg-primary-hover px-6 text-sm font-medium text-white hover:bg-[#A84A00]">
             <RefreshCw className="h-4 w-4" aria-hidden="true" />
             Try again
           </button>

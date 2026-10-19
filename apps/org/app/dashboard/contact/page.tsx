@@ -176,7 +176,7 @@ export default function ContactPage() {
                 <button
                   type="submit"
                   disabled={!isFormComplete}
-                  className="flex w-full items-center justify-between gap-2 rounded-[12px] bg-[#EA6A05] px-4 py-[14px] text-lg font-bold text-white transition-all hover:bg-[#C45700] disabled:cursor-not-allowed disabled:bg-grey-4 disabled:text-grey-3 disabled:hover:bg-grey-4"
+                  className="flex w-full items-center justify-center gap-2 rounded-[12px] bg-[#EA6A05] px-4 py-[14px] text-lg font-bold text-white transition-all hover:bg-[#C45700] disabled:cursor-not-allowed disabled:bg-grey-4 disabled:text-grey-3 disabled:hover:bg-grey-4"
                 >
                   <Send size={20} />
                   Send Message
@@ -185,14 +185,14 @@ export default function ContactPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-[12px]">
-              <div className="flex items-center justify-between gap-3 p-4 bg-white rounded-[12px] border border-grey-4">
+              <div className="flex items-center justify-start gap-2 p-4 bg-white rounded-[12px] border border-grey-4">
                 <Clock className="text-grey-2" size={20} />
                 <div className="text-xs">
                   <p className="font-bold text-grey-1">Response Time</p>
                   <p className="text-grey-2">Under 24 hours</p>
                 </div>
               </div>
-              <div className="flex items-center justify-between gap-3 p-4 bg-white rounded-[12px] border border-grey-4">
+              <div className="flex items-center justify-start gap-2 p-4 bg-white rounded-[12px] border border-grey-4">
                 <Globe className="text-grey-2" size={20} />
                 <div className="text-xs">
                   <p className="font-bold text-grey-1">Global Support</p>

@@ -68,14 +68,14 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         aria-label={isCollapsed ? item.name : undefined}
         title={isCollapsed ? item.name : undefined}
         className={cn(
-          "admin-nav-item relative flex h-11 items-center gap-3 rounded-[8px] px-3 text-[15px] transition-colors",
-          isCollapsed ? "justify-center px-0" : "justify-between",
+          "admin-nav-item relative flex h-11 items-center gap-2 rounded-[8px] px-3 text-[15px] transition-colors",
+          isCollapsed ? "justify-center px-0" : "justify-start",
           active ? "bg-primary-5 font-semibold text-primary-hover" : "text-grey-2 hover:bg-grey-5 hover:text-grey-1",
         )}
       >
         {active && <span aria-hidden="true" className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-primary-1" />}
         <item.icon className="h-[19px] w-[19px] shrink-0" strokeWidth={1.6} aria-hidden="true" />
-        {!isCollapsed && <span className="flex-1 truncate">{item.name}</span>}
+        {!isCollapsed && <span className="min-w-0 truncate">{item.name}</span>}
         {!isCollapsed && badge !== undefined && (
           <span className={cn("text-[13px] font-semibold tabular-nums", badge > 0 ? "text-primary-hover" : "text-grey-3")}>
             {formatNumber(badge)}

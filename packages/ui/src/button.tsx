@@ -8,11 +8,6 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "default", size = "default", ...props }, ref) => {
-    const content = React.Children.toArray(props.children).filter(
-      (child) => typeof child !== "string" || child.trim().length > 0,
-    );
-    const splitContent = size !== "icon" && content.length > 1;
-
     return (
       <button
         ref={ref}
@@ -26,7 +21,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           size === "lg" && "h-12 px-6",
           size === "icon" && "h-10 w-10",
           className,
-          splitContent && "justify-between",
         )}
         {...props}
       />

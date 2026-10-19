@@ -114,7 +114,7 @@ function ClubSidebar({
                   </button>
                 </div>
                 <p className="text-xs text-grey-2 mb-3 leading-relaxed">{club.description}</p>
-                <div className="flex items-center justify-between gap-1 text-[11px] text-grey-3">
+                <div className="flex items-center justify-start gap-2 text-[11px] text-grey-3">
                   <Users className="w-3 h-3" />
                   {club.memberCount} members
                 </div>
@@ -137,7 +137,7 @@ function ClubSidebar({
                   </div>
                 </div>
                 <p className="text-xs text-grey-2 mb-3 leading-relaxed">{club.description}</p>
-                <div className="flex items-center justify-between gap-1 text-[11px] text-grey-3">
+                <div className="flex items-center justify-start gap-2 text-[11px] text-grey-3">
                   <Users className="w-3 h-3" />
                   {club.memberCount} members
                 </div>
@@ -158,7 +158,7 @@ function ClubSidebar({
               type="button"
               disabled={!canCreate}
               onClick={() => { setSearchQuery(""); onOpenCreate(); }}
-              className="flex min-h-10 w-full items-center justify-between gap-2 rounded-lg border border-primary-1 px-3 py-2 text-sm font-medium text-primary-1 hover:bg-primary-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-1 disabled:cursor-not-allowed disabled:border-grey-4 disabled:text-grey-3"
+              className="flex min-h-10 w-full items-center justify-center gap-2 rounded-lg border border-primary-1 px-3 py-2 text-sm font-medium text-primary-1 hover:bg-primary-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-1 disabled:cursor-not-allowed disabled:border-grey-4 disabled:text-grey-3"
             >
               <Plus className="h-4 w-4" aria-hidden="true" /> Create club
             </button>
@@ -225,7 +225,7 @@ function ClubChatView({
   return (
     <div className="flex-1 flex min-h-0 min-w-0 w-full flex-col h-full overflow-hidden bg-[#FAFAFA] relative">
       <div className="p-5 shrink-0 bg-white border-b border-grey-4 flex items-center gap-2 sticky top-0 z-20 w-full">
-        <button onClick={onBack} className="flex items-center justify-between gap-2 text-sm font-bold text-grey-1 hover:text-primary-1 transition-colors">
+        <button onClick={onBack} className="flex items-center justify-center gap-2 text-sm font-bold text-grey-1 hover:text-primary-1 transition-colors">
           <ChevronLeft className="w-5 h-5" /> Go back to Feed
         </button>
       </div>
@@ -234,7 +234,7 @@ function ClubChatView({
         <div className="sticky top-0 z-10 w-full self-start bg-white border-b border-grey-4 pb-[12px] pt-[20px] px-[20px]">
           <div className="flex items-center justify-between mb-2">
             <h1 className="page-title">{club?.name}</h1>
-            <div className="flex items-center justify-between gap-1 text-xs text-grey-3">
+            <div className="flex items-center justify-start gap-2 text-xs text-grey-3">
               <Users className="w-3 h-3" /> {club?.memberCount ?? 0} members
             </div>
           </div>
@@ -257,7 +257,7 @@ function ClubChatView({
                     <Avatar url={sender?.avatarUrl} seed={msg.userId} firstName={sender?.firstName} lastName={sender?.lastName} size={40} showPlaceholderBadge />
                     <div className={`w-fit max-w-[78%] ${isMe ? "ml-auto" : "mr-auto"}`}>
                       <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center justify-start gap-2">
                           <span className="text-sm font-bold text-grey-1">{isMe ? "You" : sender ? `${sender.firstName} ${sender.lastName}` : "Member"}</span>
                           {msg.isPinned && <Pin className="w-3 h-3 text-primary-1 fill-primary-1" />}
                         </div>
@@ -322,13 +322,13 @@ function ClubChatView({
                 </button>
                 {showAttachmentMenu && (
                   <div className="absolute bottom-full left-0 mb-2 bg-white border border-grey-4 rounded-xl shadow-lg p-2 flex flex-col gap-1 min-w-[150px]">
-                    <button className="flex items-center justify-between gap-2 px-3 py-2 text-sm text-grey-1 hover:bg-grey-5 rounded-lg text-left" onClick={() => { setShowAttachmentMenu(false); chatFileInputRef.current?.click(); }}>
+                    <button className="flex items-center justify-start gap-2 px-3 py-2 text-sm text-grey-1 hover:bg-grey-5 rounded-lg text-left" onClick={() => { setShowAttachmentMenu(false); chatFileInputRef.current?.click(); }}>
                       <Paperclip className="w-4 h-4" /> Attachment
                     </button>
-                    <button className="flex items-center justify-between gap-2 px-3 py-2 text-sm text-grey-1 hover:bg-grey-5 rounded-lg text-left" onClick={() => { setShowAttachmentMenu(false); chatFileInputRef.current?.click(); }}>
+                    <button className="flex items-center justify-start gap-2 px-3 py-2 text-sm text-grey-1 hover:bg-grey-5 rounded-lg text-left" onClick={() => { setShowAttachmentMenu(false); chatFileInputRef.current?.click(); }}>
                       <ImageIcon className="w-4 h-4" /> Image
                     </button>
-                    <button className="flex items-center justify-between gap-2 px-3 py-2 text-sm text-grey-1 hover:bg-grey-5 rounded-lg text-left" onClick={() => { setShowAttachmentMenu(false); chatFileInputRef.current?.click(); }}>
+                    <button className="flex items-center justify-start gap-2 px-3 py-2 text-sm text-grey-1 hover:bg-grey-5 rounded-lg text-left" onClick={() => { setShowAttachmentMenu(false); chatFileInputRef.current?.click(); }}>
                       <Video className="w-4 h-4" /> Video
                     </button>
                   </div>
@@ -360,7 +360,7 @@ function ClubChatView({
             </div>
             <h3 className="text-lg font-bold text-grey-1 mb-2">Join to Chat</h3>
             <p className="text-sm text-grey-2 mb-6 max-w-sm">You need to join this club to see the messages and participate in the conversation.</p>
-            <button onClick={onJoin} className="px-6 py-2 bg-primary-1 text-white font-medium text-sm rounded-lg hover:bg-primary-2 transition-colors flex items-center justify-between gap-2">
+            <button onClick={onJoin} className="px-6 py-2 bg-primary-1 text-white font-medium text-sm rounded-lg hover:bg-primary-2 transition-colors flex items-center justify-center gap-2">
               <Plus className="w-4 h-4" /> Join Club
             </button>
           </div>

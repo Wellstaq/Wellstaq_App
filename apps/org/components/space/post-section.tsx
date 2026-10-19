@@ -121,9 +121,9 @@ function CreatePostBox({
             </div>
           )}
           {postLocation && (
-            <div className="flex items-center justify-between gap-1 text-xs text-primary-1 mt-2 bg-primary-5 px-2 py-1 rounded-md w-fit">
+            <div className="flex items-center justify-start gap-2 text-xs text-primary-1 mt-2 bg-primary-5 px-2 py-1 rounded-md w-fit">
               <MapPin className="w-3 h-3" /> {postLocation}
-              <button onClick={onClearLocation} className="ml-1 hover:text-primary-2"><X className="w-3 h-3" /></button>
+              <button onClick={onClearLocation} className="hover:text-primary-2"><X className="w-3 h-3" /></button>
             </div>
           )}
         </div>
@@ -176,7 +176,7 @@ function CreatePostBox({
           <button
             onClick={onSubmit}
             disabled={!canSubmit}
-            className="px-6 py-2 bg-primary-5 text-primary-1 font-medium text-sm rounded-lg hover:bg-primary-1 hover:text-white transition-colors flex items-center justify-between gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 bg-primary-5 text-primary-1 font-medium text-sm rounded-lg hover:bg-primary-1 hover:text-white transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Send className="w-4 h-4" /> Post
           </button>
@@ -327,7 +327,7 @@ function PostCard({
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-bold text-grey-1">{author ? `${author.firstName} ${author.lastName}` : "Member"}</h3>
                 {badge && (
-                  <span className="text-[10px] font-medium text-primary-1 bg-primary-5 px-2 py-0.5 rounded-full flex items-center justify-between gap-1">
+                  <span className="text-[10px] font-medium text-primary-1 bg-primary-5 px-2 py-0.5 rounded-full flex items-center justify-start gap-2">
                     <badge.icon className="inline-block h-3 w-3 shrink-0" aria-hidden="true" /> #{badge.rank} {badge.label}
                   </span>
                 )}
@@ -387,13 +387,13 @@ function PostCard({
         </div>
 
         <div className="flex items-center justify-between py-1 border-t border-b border-grey-4 mb-4">
-          <button onClick={onToggleLike} className={`flex-1 flex items-center justify-between gap-2 px-3 py-2 text-sm font-medium transition-colors ${isLiked ? "text-primary-1" : "text-grey-2 hover:bg-grey-5 rounded-lg"}`}>
+          <button onClick={onToggleLike} className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium transition-colors ${isLiked ? "text-primary-1" : "text-grey-2 hover:bg-grey-5 rounded-lg"}`}>
             <Heart className={`w-5 h-5 ${isLiked ? "fill-primary-1" : ""}`} /> Like
           </button>
-          <button onClick={onToggleComments} className="flex-1 flex items-center justify-between gap-2 px-3 py-2 text-sm font-medium text-grey-2 hover:bg-grey-5 rounded-lg transition-colors">
+          <button onClick={onToggleComments} className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-grey-2 hover:bg-grey-5 rounded-lg transition-colors">
             <MessageCircle className="w-5 h-5" /> Comment
           </button>
-          <button type="button" onClick={onShare} aria-haspopup="dialog" className="flex-1 flex items-center justify-between gap-2 px-3 py-2 text-sm font-medium text-grey-2 hover:bg-grey-5 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-1">
+          <button type="button" onClick={onShare} aria-haspopup="dialog" className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-grey-2 hover:bg-grey-5 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-1">
             <Share2 className="w-5 h-5" /> Share
           </button>
         </div>
@@ -443,7 +443,7 @@ function PostCard({
 
         <div className="flex flex-col gap-2">
           {replyTo && (
-            <div className="flex w-fit items-center justify-between gap-2 rounded-full bg-primary-5 px-3 py-1 text-xs text-primary-1">
+            <div className="flex w-fit items-center justify-start gap-2 rounded-full bg-primary-5 px-3 py-1 text-xs text-primary-1">
               <CornerDownRight className="w-3 h-3" />
               Replying to {replyTo.name}
               <button type="button" aria-label="Cancel reply" onClick={() => setReplyTo(null)} className="hover:text-primary-2">

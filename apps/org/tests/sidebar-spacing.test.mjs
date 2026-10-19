@@ -100,11 +100,13 @@ test("expanded sidebar navigation keeps every icon and label 8px apart", () => {
   assert.equal(ui.link("Dashboard").props["aria-current"], "page");
 });
 
-test("challenge shortcut groups use 8px gaps while the trailing chevron stays separate", () => {
+test("challenge shortcuts and their trailing chevrons keep compact 8px gaps", () => {
   const ui = setup();
   assert.match(ui.link("Step challenge").props.className, /\bgap-2\b/);
   const more = ui.link("More Challenges");
-  assert.match(more.props.className, /\bjustify-between\b/);
+  assert.match(more.props.className, /\bjustify-start\b/);
+  assert.match(more.props.className, /\bgap-2\b/);
+  assert.doesNotMatch(more.props.className, /justify-between/);
   const group = walk(more.props.children, (node) => node.type === "div" && text(node.props.children) === "More Challenges")[0];
   assert.match(group.props.className, /\bgap-2\b/);
   assert.doesNotMatch(group.props.className, /justify-between|gap-3/);

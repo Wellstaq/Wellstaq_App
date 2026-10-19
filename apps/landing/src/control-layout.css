@@ -24,9 +24,9 @@ select:not([multiple])) {
   max-height: 40px;
 }
 
-/* Distribute icon and label across each control, retaining an 8px minimum gap. */
+/* Keep ordinary icon/text controls grouped; only fields distribute content. */
 :is(a, button):has(> .icon) {
-  justify-content: space-between;
+  justify-content: center;
   gap: 8px;
 }
 :is(a, button) > .icon {

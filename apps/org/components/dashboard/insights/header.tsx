@@ -31,7 +31,7 @@ export function InsightsHeader({
         <p className="page-description">Understand your team&apos;s wellbeing and engagement through weekly check-ins.</p>
       </div>
       <div ref={filterRef} className="relative">
-        <button 
+        <button data-control="select"
           onClick={() => setIsFilterOpen(!isFilterOpen)}
           className="flex items-center justify-between gap-2 px-4 py-2 bg-white border border-grey-4 rounded-lg text-sm font-medium text-grey-1 hover:bg-grey-5"
         >

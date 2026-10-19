@@ -56,7 +56,7 @@ export function TrendingSection({
   if (loading) {
     return (
       <div className="bg-white rounded-[12px] border border-grey-4 p-3">
-        <div className="flex items-center justify-between gap-2 mb-6">
+        <div className="flex items-center justify-start gap-2 mb-6">
           <TrendingUp className="w-5 h-5 text-primary-1" />
           <h3 className="text-[16px] font-bold text-grey-1">Trending across spaces</h3>
         </div>
@@ -71,7 +71,7 @@ export function TrendingSection({
 
   return (
     <div className="bg-white rounded-[12px] border border-grey-4 p-3">
-      <div className="flex items-center justify-between gap-2 mb-6">
+      <div className="flex items-center justify-start gap-2 mb-6">
         <TrendingUp className={`w-5 h-5 ${topics.length === 0 ? "text-grey-2" : "text-primary-1"}`} />
         <h3 className="text-[16px] font-bold text-grey-1">Trending across spaces</h3>
       </div>
@@ -84,7 +84,7 @@ export function TrendingSection({
             <div
               key={topic.tag}
               role="button"
-              className="flex items-start justify-between cursor-pointer group"
+              className="flex items-start justify-start gap-2 cursor-pointer group"
               onClick={() => handleClick(topic.tag)}
             >
               <div className="flex gap-3">

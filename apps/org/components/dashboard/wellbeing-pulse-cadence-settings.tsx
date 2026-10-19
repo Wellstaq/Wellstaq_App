@@ -206,7 +206,7 @@ export function WellbeingPulseCadenceSettings({ embedded = false }: { embedded?:
                   return (
                     <label
                       key={option.value}
-                      className={`flex min-h-24 cursor-pointer items-start gap-4 rounded-[10px] border p-4 transition-colors focus-within:ring-2 focus-within:ring-primary-1 focus-within:ring-offset-2 ${isSelected ? "border-primary-1 bg-primary-5" : "border-grey-4 bg-white hover:border-primary-2"}`}
+                      className={`flex min-h-24 cursor-pointer items-start gap-2 rounded-[10px] border p-4 transition-colors focus-within:ring-2 focus-within:ring-primary-1 focus-within:ring-offset-2 ${isSelected ? "border-primary-1 bg-primary-5" : "border-grey-4 bg-white hover:border-primary-2"}`}
                     >
                       <input
                         type="radio"

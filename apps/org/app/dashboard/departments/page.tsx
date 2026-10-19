@@ -305,7 +305,7 @@ export default function DepartmentsPage() {
         </div>
         {canCreateDepartment && scope.type === "branch" && <button
           onClick={() => setIsCreateModalOpen(true)}
-          className="flex items-center justify-between gap-2 px-4 py-2 bg-[#EA6A05] text-white rounded-lg text-sm font-medium hover:bg-[#C45700]"
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-[#EA6A05] text-white rounded-lg text-sm font-medium hover:bg-[#C45700]"
         >
           <Plus className="w-4 h-4" />
           Create Department
@@ -356,7 +356,7 @@ export default function DepartmentsPage() {
                 </p>
                 {canCreateDepartment && scope.type === "branch" && <button
                   onClick={() => setIsCreateModalOpen(true)}
-                  className="flex items-center justify-between gap-2 px-6 py-2 bg-white border border-[#EA6A05] text-[#EA6A05] rounded-lg text-sm font-medium hover:bg-orange-50"
+                  className="flex items-center justify-center gap-2 px-6 py-2 bg-white border border-[#EA6A05] text-[#EA6A05] rounded-lg text-sm font-medium hover:bg-orange-50"
                 >
                   <Plus className="w-4 h-4" />
                   Create Department
@@ -387,11 +387,11 @@ export default function DepartmentsPage() {
                     </div>
                   </div>
                   <div className={`flex items-center gap-4 text-xs mb-3 text-grey-2`}>
-                    <div className="flex items-center justify-between gap-1">
+                    <div className="flex items-center justify-start gap-2">
                       <Users className="w-3.5 h-3.5" />
                       {department.membersLoading ? "Loading members…" : department.members === null ? "Members unavailable" : `${department.members} members`}
                     </div>
-                    <div className="flex items-center justify-between gap-1">
+                    <div className="flex items-center justify-start gap-2">
                       <Activity className="w-3.5 h-3.5" />
                       {department.activities} activities
                     </div>
@@ -427,7 +427,7 @@ export default function DepartmentsPage() {
                 {/* Mobile Back Button */}
                 <button
                   onClick={() => setSelectedDepartment(null)}
-                  className="lg:hidden flex items-center justify-between gap-2 text-sm font-medium text-grey-2 mb-4 hover:text-grey-1"
+                  className="lg:hidden flex items-center justify-center gap-2 text-sm font-medium text-grey-2 mb-4 hover:text-grey-1"
                 >
                   <ChevronDown className="w-4 h-4 rotate-90" />
                   Back to List
@@ -672,7 +672,7 @@ export default function DepartmentsPage() {
               <div>
                 <label className="block text-sm font-medium text-grey-1 mb-1.5">Add Team Member <span className="text-red-500">*</span></label>
                 <div className="relative" ref={memberDropdownRef}>
-                  <div
+                  <div data-control="select"
                     onClick={() => setIsMemberDropdownOpen(!isMemberDropdownOpen)}
                     className="w-full min-h-[44px] px-4 py-2 rounded-lg border border-grey-4 text-sm text-grey-2 cursor-pointer flex items-center justify-between bg-white"
                   >
@@ -759,7 +759,7 @@ export default function DepartmentsPage() {
               <div>
                 <label className="block text-sm font-medium text-grey-1 mb-1.5">Add Team Member <span className="text-red-500">*</span></label>
                 <div className="relative" ref={memberDropdownRef}>
-                  <div
+                  <div data-control="select"
                     onClick={() => setIsMemberDropdownOpen(!isMemberDropdownOpen)}
                     className="w-full min-h-[44px] px-4 py-2 rounded-lg border border-grey-4 text-sm text-grey-2 cursor-pointer flex items-center justify-between bg-white"
                   >

@@ -108,7 +108,7 @@ export default function PlatformEventPage({ params }: { params: Promise<{ id: st
 
         <aside className="space-y-5">
           <section className="dashboard-card !p-5">
-            <h2 className="mb-1 flex items-center justify-between gap-2 font-sans text-sm font-semibold text-grey-1">
+            <h2 className="mb-1 flex items-center justify-start gap-2 font-sans text-sm font-semibold text-grey-1">
               <Globe2 className="h-4 w-4 text-grey-2" aria-hidden="true" /> Audience
             </h2>
             <p className="text-sm font-medium text-grey-1">{audience?.label ?? "Unknown audience"}</p>

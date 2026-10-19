@@ -369,7 +369,7 @@ export function TopNav({ onMenuClick }: { onMenuClick?: () => void }) {
           <div className="relative" ref={notificationsRef}>
             <button
               onClick={() => setIsNotificationsOpen((current) => !current)}
-              className="relative w-8 h-8 lg:w-10 lg:h-10 rounded-[12px] border border-grey-4 flex items-center justify-center text-grey-2 hover:bg-grey-5"
+              className="relative w-8 h-8 lg:w-10 lg:h-10 rounded-[12px] border border-grey-4 flex items-center gap-2 justify-center text-grey-2 hover:bg-grey-5"
               title="Notifications"
             >
               <Bell className="w-4 h-4 lg:w-5 lg:h-5" />
@@ -415,7 +415,7 @@ export function TopNav({ onMenuClick }: { onMenuClick?: () => void }) {
           </div>
           <button
             onClick={() => setIsChatOpen(true)}
-            className="h-8 lg:h-10 px-2 lg:px-4 rounded-[12px] border border-grey-4 flex items-center justify-between gap-2 text-xs lg:text-sm font-medium text-grey-1 hover:bg-grey-5 transition-colors"
+            className="h-8 lg:h-10 px-2 lg:px-4 rounded-[12px] border border-grey-4 flex items-center justify-center gap-2 text-xs lg:text-sm font-medium text-grey-1 hover:bg-grey-5 transition-colors"
           >
             <Sparkles className="w-3 h-3 lg:w-4 lg:h-4" />
             <span className="hidden sm:inline">Ask ws-AI</span>
@@ -423,7 +423,7 @@ export function TopNav({ onMenuClick }: { onMenuClick?: () => void }) {
 
           <div className="relative" ref={profileRef}>
             <button type="button" aria-label="Open profile menu" aria-expanded={isProfileOpen}
-              className="flex items-center justify-between gap-2 lg:gap-3 ml-1 lg:ml-2 cursor-pointer"
+              className="flex items-center justify-center gap-2 ml-1 lg:ml-2 cursor-pointer"
               onClick={() => setIsProfileOpen(!isProfileOpen)}
             >
               <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-primary-1 text-white flex items-center justify-center font-medium overflow-hidden relative border border-grey-4">
@@ -458,7 +458,7 @@ export function TopNav({ onMenuClick }: { onMenuClick?: () => void }) {
                   <Link
                     href={userData.id ? `/dashboard/profile/${userData.id}` : "/dashboard/settings"}
                     onClick={() => setIsProfileOpen(false)}
-                    className="w-full text-left px-4 py-2 text-sm text-grey-1 hover:bg-grey-5 flex items-center justify-between gap-2"
+                    className="w-full text-left px-4 py-2 text-sm text-grey-1 hover:bg-grey-5 flex items-center justify-start gap-2"
                   >
                     <UserPlus className="w-4 h-4" />
                     View profile
@@ -466,7 +466,7 @@ export function TopNav({ onMenuClick }: { onMenuClick?: () => void }) {
                   <Link
                     href="/dashboard/settings"
                     onClick={() => setIsProfileOpen(false)}
-                    className="w-full text-left px-4 py-2 text-sm text-grey-1 hover:bg-grey-5 flex items-center justify-between gap-2"
+                    className="w-full text-left px-4 py-2 text-sm text-grey-1 hover:bg-grey-5 flex items-center justify-start gap-2"
                   >
                     <Settings2 className="w-4 h-4" />
                     Settings
@@ -476,7 +476,7 @@ export function TopNav({ onMenuClick }: { onMenuClick?: () => void }) {
                       setIsProfileOpen(false);
                       setIsLogoutModalOpen(true);
                     }}
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center justify-between gap-2 border-t border-grey-4"
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center justify-start gap-2 border-t border-grey-4"
                   >
                     <LogOut className="w-4 h-4" />
                     Logout
@@ -558,15 +558,15 @@ export function TopNav({ onMenuClick }: { onMenuClick?: () => void }) {
                     <h2 className="text-2xl font-bold text-grey-1 mb-8">How can I help, {userData.firstName}?</h2>
 
                     <div className="w-full space-y-3 max-w-[380px]">
-                      <button onClick={() => handleSendMessage("Suggest a workout routine for today.")} className="w-full flex items-center justify-between gap-3 p-3 bg-white border border-grey-4 rounded-lg text-sm text-grey-1 hover:bg-grey-5 transition-colors text-left">
+                      <button onClick={() => handleSendMessage("Suggest a workout routine for today.")} className="w-full flex items-center justify-start gap-2 p-3 bg-white border border-grey-4 rounded-lg text-sm text-grey-1 hover:bg-grey-5 transition-colors text-left">
                         <MessageSquare className="w-4 h-4 text-grey-2" />
                         Suggest a workout routine for today.
                       </button>
-                      <button onClick={() => handleSendMessage("Find local wellness departments near me.")} className="w-full flex items-center justify-between gap-3 p-3 bg-white border border-grey-4 rounded-lg text-sm text-grey-1 hover:bg-grey-5 transition-colors text-left">
+                      <button onClick={() => handleSendMessage("Find local wellness departments near me.")} className="w-full flex items-center justify-start gap-2 p-3 bg-white border border-grey-4 rounded-lg text-sm text-grey-1 hover:bg-grey-5 transition-colors text-left">
                         <MessageSquare className="w-4 h-4 text-grey-2" />
                         Find local wellness departments near me.
                       </button>
-                      <button onClick={() => handleSendMessage("What should I work on next?")} className="w-full flex items-center justify-between gap-3 p-3 bg-white border border-grey-4 rounded-lg text-sm text-grey-1 hover:bg-grey-5 transition-colors text-left">
+                      <button onClick={() => handleSendMessage("What should I work on next?")} className="w-full flex items-center justify-start gap-2 p-3 bg-white border border-grey-4 rounded-lg text-sm text-grey-1 hover:bg-grey-5 transition-colors text-left">
                         <MessageSquare className="w-4 h-4 text-grey-2" />
                         What should I work on next?
                       </button>
@@ -618,7 +618,7 @@ export function TopNav({ onMenuClick }: { onMenuClick?: () => void }) {
                     <ArrowUp className="w-4 h-4" />
                   </button>
                 </div>
-                <div className="flex items-center justify-between gap-1 mt-3 text-[11px] text-grey-3">
+                <div className="flex items-center justify-center gap-2 mt-3 text-[11px] text-grey-3">
                   <AlertCircle className="h-3 w-3 shrink-0" aria-hidden="true" />
                   Uses AI. Verify results.
                   <ArrowUpRight className="w-3 h-3" />

@@ -16,8 +16,8 @@ export function ProgressTracker({ completedSteps }: ProgressTrackerProps) {
   return (
     <div className="flex flex-col gap-4 mb-6">
       {completedSteps.map((step) => (
-        <div key={step.id} className="flex items-center justify-between">
-          <div className="flex items-center gap-3 text-grey-1">
+        <div key={step.id} className="flex items-center gap-2 justify-start">
+          <div className="flex items-center gap-2 text-grey-1">
             <div className="w-5 h-5 flex items-center justify-center">
               {step.icon}
             </div>

@@ -132,7 +132,7 @@ export default function MessagesPage() {
                 <button
                   key={thread.id}
                   onClick={() => setActiveThreadId(thread.id)}
-                  className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left transition-colors ${isActive ? "bg-primary-5" : "hover:bg-grey-5"}`}
+                  className={`flex w-full items-center gap-2 rounded-lg px-3 py-3 text-left transition-colors ${isActive ? "bg-primary-5" : "hover:bg-grey-5"}`}
                 >
                   <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-grey-4 bg-white text-primary-1">
                     <Icon className="h-5 w-5" />

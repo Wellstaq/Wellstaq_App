@@ -28,7 +28,7 @@ interface MetricCardProps {
 export function MetricCard({ icon: Icon, label, value, footnote, footnoteTone = "neutral", aside, className }: MetricCardProps) {
   return (
     <div className={cn("admin-metric relative flex min-w-0 min-h-[152px] flex-col rounded-[16px] border border-line bg-white p-4 sm:min-h-[164px] sm:p-5", className)}>
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-2">
         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] border border-line bg-grey-5 text-grey-2" aria-hidden="true">
           <Icon className="h-4 w-4" strokeWidth={1.7} />
         </span>

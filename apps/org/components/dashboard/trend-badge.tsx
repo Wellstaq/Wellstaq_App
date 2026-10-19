@@ -11,8 +11,8 @@ export function TrendBadge({ trend }: { trend: StatTrend | null }) {
 
   if (trend.changePct === 0) {
     return (
-      <span className="hidden sm:flex items-center justify-between text-[10px] sm:text-xs font-medium text-grey-3">
-        <Minus className="w-3 h-3 mr-1" /> 0%
+      <span className="hidden sm:flex items-center gap-2 justify-start text-[10px] sm:text-xs font-medium text-grey-3">
+        <Minus className="w-3 h-3" /> 0%
       </span>
     );
   }
@@ -22,8 +22,8 @@ export function TrendBadge({ trend }: { trend: StatTrend | null }) {
   const colorClass = isPositive ? "text-green-600" : "text-red-600";
 
   return (
-    <span className={`hidden sm:flex items-center justify-between text-[10px] sm:text-xs font-medium ${colorClass}`}>
-      <Icon className="w-3 h-3 mr-1" /> {Math.abs(trend.changePct)}%
+    <span className={`hidden sm:flex items-center gap-2 justify-start text-[10px] sm:text-xs font-medium ${colorClass}`}>
+      <Icon className="w-3 h-3" /> {Math.abs(trend.changePct)}%
     </span>
   );
 }

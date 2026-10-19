@@ -79,7 +79,7 @@ export function CommandSearch() {
 
   return (
     <>
-      <button
+      <button data-control="input"
         type="button"
         onClick={() => setIsOpen(true)}
         className="hidden h-10 w-full max-w-[460px] items-center justify-between gap-3 rounded-[10px] border border-line bg-grey-5 px-4 text-left text-[13px] text-grey-2 transition-colors hover:border-grey-3 md:flex"
@@ -124,12 +124,12 @@ export function CommandSearch() {
                     type="button"
                     onMouseEnter={() => setActive(index)}
                     onClick={() => go(command)}
-                    className={cn("flex h-10 w-full items-center justify-between gap-3 rounded-[10px] px-3 text-left text-sm", index === active ? "bg-primary-5 text-grey-1" : "text-grey-2")}
+                    className={cn("flex h-10 w-full items-center justify-start gap-2 rounded-[10px] px-3 text-left text-sm", index === active ? "bg-primary-5 text-grey-1" : "text-grey-2")}
                   >
                     <span className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px]", index === active ? "bg-white text-primary-hover" : "bg-grey-5 text-grey-2")}>
                       <command.icon className="h-4 w-4" strokeWidth={1.7} aria-hidden="true" />
                     </span>
-                    <span className="flex-1 truncate font-medium">{command.label}</span>
+                    <span className="min-w-0 truncate font-medium">{command.label}</span>
                     {index === active ? <CornerDownLeft className="h-4 w-4 text-grey-3" strokeWidth={1.7} aria-hidden="true" /> : <span className="text-xs text-grey-3">{command.hint}</span>}
                   </button>
                 </li>

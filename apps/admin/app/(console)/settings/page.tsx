@@ -125,7 +125,7 @@ export default function SettingsPage() {
       </section>
 
       <section aria-labelledby="security-heading" className="rounded-[14px] border border-line bg-white p-5 sm:p-6">
-        <div className="flex items-start gap-3">
+        <div className="flex items-start gap-2">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-grey-5 text-grey-2" aria-hidden="true">
             <LockKeyhole className="h-5 w-5" />
           </span>

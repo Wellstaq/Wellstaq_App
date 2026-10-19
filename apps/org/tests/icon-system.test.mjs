@@ -42,16 +42,24 @@ test('search uses the Iconsax SearchNormal1 glyph',()=>{
  assert.equal(actual,expected);
 });
 
-test('icon-and-label buttons distribute content in either order',()=>{
+test('icon-and-label buttons stay grouped with an 8px gap in either order',()=>{
  for(const children of [
   [React.createElement(icons.Plus,{key:'icon'}),'Add branch'],
   ['Continue',React.createElement(icons.ArrowRight,{key:'icon'})],
  ]) {
   const html=renderToStaticMarkup(React.createElement(Button,{className:'w-full justify-center'},...children));
-  assert.match(html,/justify-between/);
-  assert.doesNotMatch(html,/justify-center/);
+  assert.match(html,/justify-center/);
+  assert.doesNotMatch(html,/justify-between/);
   assert.match(html,/gap-2/);
  }
+});
+
+test('full-width menu buttons preserve left alignment with an 8px icon-label gap',()=>{
+ const html=renderToStaticMarkup(React.createElement(Button,{className:'w-full justify-start'},
+  React.createElement(icons.User,{key:'icon'}),'View profile'));
+ assert.match(html,/justify-start/);
+ assert.match(html,/gap-2/);
+ assert.doesNotMatch(html,/justify-between|justify-center/);
 });
 
 test('text-only, icon-only and conditional buttons stay centered',()=>{
@@ -83,6 +91,35 @@ test('custom selectors enforce the same 40px classes and automatic spacing',()=>
  assert.match(html,/justify-between/);
  assert.doesNotMatch(html,/h-12|py-4/);
  assert.match(html,/aria-haspopup="listbox"/);
+});
+
+test('password hints keep each status icon 8px from its text without changing the input',()=>{
+ const {Label}=load('../../../packages/ui/src/label.tsx',{...imports,'./utils':{cn}});
+ const {FieldError}=load('../components/onboarding/field-error.tsx',imports);
+ const passwordValidation=load('../lib/password-validation.ts',{});
+ const {Step3Password}=load('../components/onboarding/step-3-password.tsx',{
+  ...imports,
+  '@/components/ui/button':{Button},
+  '@/components/ui/input':{Input},
+  '@/components/ui/label':{Label},
+  '@wellstaq/ui/icons':icons,
+  '@/components/onboarding/field-error':{FieldError},
+  '@/lib/password-validation':passwordValidation,
+ });
+ for(const password of ['', 'Password1!']) {
+  const html=renderToStaticMarkup(React.createElement(Step3Password,{
+   data:{password},updateData(){},onNext(){},isLoading:false,
+  }));
+  const hints=[...html.matchAll(/<li class="([^"]+)">/g)];
+  assert.equal(hints.length,passwordValidation.PASSWORD_RULES.length);
+  for(const [,className] of hints) {
+   assert.match(className,/justify-start/);
+   assert.match(className,/gap-2/);
+   assert.doesNotMatch(className,/justify-between/);
+  }
+  assert.match(html,/h-10 min-h-0 max-h-10 py-0/);
+  assert.match(html,/aria-label="Show password"/);
+ }
 });
 
 test('the shared stylesheet caps single-line controls without capping textareas',()=>{

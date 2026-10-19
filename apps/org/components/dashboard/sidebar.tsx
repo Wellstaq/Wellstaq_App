@@ -129,7 +129,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
           context for every navigation destination below it. */}
       {!isCollapsed && switchable && (
         <div ref={scopeMenuRef} className="relative mt-3 pl-3 pr-5">
-          <button
+          <button data-control="select"
             type="button"
             aria-label="Switch organization scope"
             aria-expanded={isScopeMenuOpen}
@@ -259,7 +259,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                   <span className="truncate">{challenge.title || "Untitled challenge"}</span>
                 </Link>
               ))}
-              <Link href={scopedHref("/dashboard/challenges")} onClick={onClose} className="flex items-center justify-between px-3 py-1.5 text-grey-2 font-medium hover:bg-grey-5 rounded-md cursor-pointer transition-colors text-sm">
+              <Link href={scopedHref("/dashboard/challenges")} onClick={onClose} className="flex items-center gap-2 justify-start px-3 py-1.5 text-grey-2 font-medium hover:bg-grey-5 rounded-md cursor-pointer transition-colors text-sm">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 flex items-center justify-center text-grey-3 flex-shrink-0">
                     <Layers size={14} strokeWidth={2} />

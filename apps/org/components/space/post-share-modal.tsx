@@ -70,13 +70,13 @@ export function PostShareModal({ link, onShared, onClose }: { link: string; onSh
         </div>
         {instagramSelected && <div className="space-y-2 rounded-lg bg-grey-5 p-3 text-sm text-grey-2">
           <p>Copy the link below, then paste it into an Instagram message.</p>
-          <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-between gap-2 font-medium underline underline-offset-4">Open Instagram<ExternalLink className="h-4 w-4" aria-hidden="true" /></a>
+          <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-start gap-2 font-medium underline underline-offset-4">Open Instagram<ExternalLink className="h-4 w-4" aria-hidden="true" /></a>
         </div>}
         <div>
           <label htmlFor={`${titleId}-link`} className="mb-2 block text-sm font-medium">Post link</label>
           <div className="flex gap-2">
             <input ref={inputRef} id={`${titleId}-link`} value={link} readOnly onFocus={(event) => event.currentTarget.select()} className="h-10 min-w-0 flex-1 rounded-lg border border-grey-4 bg-grey-5 px-3 text-sm text-grey-2 focus:outline-none focus:ring-2 focus:ring-primary-1" />
-            <button type="button" onClick={() => void copyLink()} disabled={copyState === "copying"} className="flex h-10 shrink-0 items-center justify-between gap-2 rounded-lg border border-grey-4 bg-white px-3 text-sm font-medium text-grey-1 hover:bg-grey-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-1 disabled:opacity-50">
+            <button type="button" onClick={() => void copyLink()} disabled={copyState === "copying"} className="flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-grey-4 bg-white px-3 text-sm font-medium text-grey-1 hover:bg-grey-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-1 disabled:opacity-50">
               {copyState === "copied" ? <Check className="h-4 w-4" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
               {copyState === "copied" ? "Copied" : "Copy link"}
             </button>

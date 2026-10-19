@@ -95,7 +95,7 @@ export function OrgClubsTab({ organizationId }: { organizationId: string }) {
         <>
           <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {clubs.data.items.map((club) => (
-              <li key={club.id} className="flex gap-3 rounded-[12px] border border-line p-3">
+              <li key={club.id} className="flex gap-2 rounded-[12px] border border-line p-3">
                 <span className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-grey-5 text-grey-3">
                   {club.imageUrl ? <Image src={club.imageUrl} alt="" fill sizes="64px" className="object-cover" referrerPolicy="no-referrer" /> : <UsersRound className="h-6 w-6" aria-hidden="true" />}
                 </span>

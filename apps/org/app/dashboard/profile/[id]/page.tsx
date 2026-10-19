@@ -45,7 +45,7 @@ export default function UserProfilePage() {
     </div>
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {details.map(([Icon, label, value]) => <div key={label} className="rounded-xl border border-grey-4 bg-white p-5">
-        <div className="flex items-center gap-3"><span className="rounded-lg bg-primary-1/10 p-2 text-primary-1"><Icon className="h-5 w-5" /></span>
+        <div className="flex items-center gap-2"><span className="rounded-lg bg-primary-1/10 p-2 text-primary-1"><Icon className="h-5 w-5" /></span>
           <div><p className="text-xs text-grey-3">{label}</p><p className="mt-1 font-medium capitalize text-grey-1">{value}</p></div>
         </div>
       </div>)}

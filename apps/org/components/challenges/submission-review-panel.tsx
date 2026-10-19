@@ -126,7 +126,7 @@ export function SubmissionReviewPanel({
                 {canReview && status === "pending" && (
                   <div className="flex items-center gap-2 pt-2">
                     <Button type="button" onClick={() => handleApprove(submission)} className="h-9 px-3">
-                      <Check className="w-4 h-4 mr-1" /> Approve
+                      <Check className="w-4 h-4" /> Approve
                     </Button>
                     <Button
                       type="button"
@@ -134,7 +134,7 @@ export function SubmissionReviewPanel({
                       className="h-9 px-3 border-grey-4 bg-white text-red-600 hover:bg-red-50"
                       onClick={() => { setRejectTarget(submission); setRejectionReason(""); }}
                     >
-                      <X className="w-4 h-4 mr-1" /> Reject
+                      <X className="w-4 h-4" /> Reject
                     </Button>
                   </div>
                 )}
