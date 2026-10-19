@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { ArrowLeft } from "@wellstaq/ui/icons";
 import { SplitLayout } from "@/components/layout/split-layout";
 import { OnboardingPane } from "@/components/layout/onboarding-pane";
 import { Button } from "@/components/ui/button";
@@ -37,7 +38,7 @@ export default function ForgotPasswordPage() {
       <OnboardingPane>
         <div className="flex flex-1 flex-col justify-start">
           <div className="flex w-full flex-col animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <Link href="/login" className="mb-8 text-sm font-medium text-grey-2 hover:text-primary-1">← Back to login</Link>
+            <Link href="/login" className="mb-8 flex w-fit items-center justify-between gap-2 text-sm font-medium text-grey-2 hover:text-primary-1"><ArrowLeft className="h-4 w-4" aria-hidden="true" />Back to login</Link>
             <h1 className="mb-3 text-[24px] font-bold md:text-[30px]">Reset your password.</h1>
             <p className="mb-8 text-sm text-grey-2">
               {isSent ? "If that account exists, we sent a secure reset link to your inbox." : "Enter the email attached to your employee account."}

@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { createCombinedFeedLoader } from "@/lib/combined-feed";
 import { loadFeedThroughPost } from "@/lib/post-sharing";
-import { PanelLeftOpen, X, Loader2, Lock } from "@wellstaq/ui/icons";
+import { PanelLeftOpen, X, Loader2, Lock, Activity, Ruler, Dumbbell, Route, Flame, type IconComponent } from "@wellstaq/ui/icons";
 import { motion, AnimatePresence } from "motion/react";
 import { toast } from "sonner";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
@@ -32,14 +32,14 @@ import { TrendingSection } from "@/components/space/trending-section";
 import { ActivitySection } from "@/components/space/activity-section";
 
 const METRIC_TYPES = ["steps", "distance", "squat", "run", "7min_workout"] as const;
-const METRIC_BADGE: Record<string, { emoji: string; label: string }> = {
-  steps: { emoji: "🏃", label: "Steps Leader" },
-  distance: { emoji: "📏", label: "Distance Leader" },
-  squat: { emoji: "🏋️", label: "Squat Leader" },
-  run: { emoji: "🏃‍♂️", label: "Running Leader" },
-  "7min_workout": { emoji: "💪", label: "7-Min Workout" },
+const METRIC_BADGE: Record<string, { icon: IconComponent; label: string }> = {
+  steps: { icon: Activity, label: "Steps Leader" },
+  distance: { icon: Ruler, label: "Distance Leader" },
+  squat: { icon: Dumbbell, label: "Squat Leader" },
+  run: { icon: Route, label: "Running Leader" },
+  "7min_workout": { icon: Flame, label: "7-Min Workout" },
 };
-interface Badge { emoji: string; label: string; rank: number; }
+interface Badge { icon: IconComponent; label: string; rank: number; }
 
 function RestrictedResource({ label }: { label: string }) {
   return (

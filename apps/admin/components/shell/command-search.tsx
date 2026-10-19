@@ -82,7 +82,7 @@ export function CommandSearch() {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="hidden h-10 w-full max-w-[460px] items-center gap-3 rounded-[10px] border border-line bg-grey-5 px-4 text-left text-[13px] text-grey-2 transition-colors hover:border-grey-3 md:flex"
+        className="hidden h-10 w-full max-w-[460px] items-center justify-between gap-3 rounded-[10px] border border-line bg-grey-5 px-4 text-left text-[13px] text-grey-2 transition-colors hover:border-grey-3 md:flex"
       >
         <Search className="h-[18px] w-[18px] text-grey-2" strokeWidth={1.7} aria-hidden="true" />
         <span className="flex-1 truncate">Search organizations, people, pages</span>
@@ -95,7 +95,7 @@ export function CommandSearch() {
       {isOpen && (
         <ModalLayer className="flex items-start justify-center bg-grey-1/30 px-4 pt-[12vh] backdrop-blur-[2px]" onMouseDown={(event) => event.target === event.currentTarget && setIsOpen(false)}>
           <div role="dialog" aria-modal="true" aria-label="Search" className="w-full max-w-[560px] overflow-hidden rounded-[16px] border border-line bg-white shadow-[0_24px_48px_-16px_rgba(26,26,26,0.25)]">
-            <div className="flex items-center gap-3 border-b border-line px-4">
+          <div data-control="input" className="flex h-10 items-center justify-between gap-3 border-b border-line px-4">
               <Search className="h-5 w-5 text-grey-3" strokeWidth={1.7} aria-hidden="true" />
               <input
                 ref={inputRef}
@@ -124,7 +124,7 @@ export function CommandSearch() {
                     type="button"
                     onMouseEnter={() => setActive(index)}
                     onClick={() => go(command)}
-                    className={cn("flex h-10 w-full items-center gap-3 rounded-[10px] px-3 text-left text-sm", index === active ? "bg-primary-5 text-grey-1" : "text-grey-2")}
+                    className={cn("flex h-10 w-full items-center justify-between gap-3 rounded-[10px] px-3 text-left text-sm", index === active ? "bg-primary-5 text-grey-1" : "text-grey-2")}
                   >
                     <span className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px]", index === active ? "bg-white text-primary-hover" : "bg-grey-5 text-grey-2")}>
                       <command.icon className="h-4 w-4" strokeWidth={1.7} aria-hidden="true" />

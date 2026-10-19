@@ -33,7 +33,7 @@ export function ScopeSwitcher() {
 
   if (!canSwitch) {
     return (
-      <div className="flex items-center gap-2 px-3 py-2 rounded-[12px] border border-grey-4 text-sm font-medium text-grey-1">
+      <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-[12px] border border-grey-4 text-sm font-medium text-grey-1">
         <Building2 className="w-4 h-4 text-grey-2" />
         {currentLabel}
       </div>
@@ -46,7 +46,7 @@ export function ScopeSwitcher() {
         onClick={() => setIsOpen((v) => !v)}
         disabled={isScopeChanging}
         aria-busy={isScopeChanging}
-        className="flex items-center gap-2 px-3 py-2 rounded-[12px] border border-grey-4 text-sm font-medium text-grey-1 hover:bg-grey-5 disabled:cursor-wait disabled:opacity-70"
+        className="flex items-center justify-between gap-2 px-3 py-2 rounded-[12px] border border-grey-4 text-sm font-medium text-grey-1 hover:bg-grey-5 disabled:cursor-wait disabled:opacity-70"
       >
         {isScopeChanging ? (
           <LoaderCircle className="w-4 h-4 animate-spin motion-reduce:animate-none" />
@@ -74,7 +74,7 @@ export function ScopeSwitcher() {
                   setScope({ type: "overview" }, "Overview");
                   setIsOpen(false);
                 }}
-                className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-grey-5 ${
+                className={`w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-grey-5 ${
                   scope.type === "overview" ? "text-primary-1 font-medium" : "text-grey-1"
                 }`}
               >
@@ -92,7 +92,7 @@ export function ScopeSwitcher() {
                   setScope({ type: "branch", branchId: branch.id }, branch.name);
                   setIsOpen(false);
                 }}
-                className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-grey-5 ${
+                className={`w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left hover:bg-grey-5 ${
                   scope.type === "branch" && scope.branchId === branch.id ? "text-primary-1 font-medium" : "text-grey-1"
                 }`}
               >

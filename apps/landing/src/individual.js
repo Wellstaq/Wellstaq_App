@@ -1,3 +1,5 @@
+import { iconSvg } from "./icon.js";
+
 /* Wellstaq for individuals: the waitlist page.
    Visual first: short headings, one line of copy, and product previews that do
    the explaining. Names, places and events inside previews are illustrative. */
@@ -28,8 +30,7 @@ function waitlistForm(icon, id, variant = "") {
 }
 
 /* ---------- Hero: scattered moments that settle into your feed ---------- */
-const moodFaces = (n) =>
-  `<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="11.5" cy="13" r="1.4" fill="currentColor"/><circle cx="20.5" cy="13" r="1.4" fill="currentColor"/><path d="${n === 0 ? "M10.5 22.5 Q16 17.5 21.5 22.5" : n === 1 ? "M11 21.5 Q16 19.5 21 21.5" : n === 2 ? "M11 20.5h10" : n === 3 ? "M11 19.5 Q16 23 21 19.5" : "M10 19 Q16 26 22 19"}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+const moodFaces = (n) => iconSvg(["emoji-sad", "emoji-sad", "emoji-normal", "emoji-happy", "emoji-happy"][n], 32);
 
 function feedCards(icon) {
   return [

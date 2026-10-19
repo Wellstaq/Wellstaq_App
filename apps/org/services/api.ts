@@ -250,6 +250,13 @@ export const api = {
       fromApi<DepartmentMembersListResponse>(
         `/organizations/${orgId}/departments/${departmentId}/members?limit=200`,
       ),
+    getDepartmentMemberCount: async (orgId: string, departmentId: string) => {
+      const response = await fromApi<DepartmentMembersListResponse>(
+        `/organizations/${orgId}/departments/${departmentId}/members?limit=1`,
+        { suppressErrorNotification: true },
+      );
+      return response.total;
+    },
     createDepartment: (orgId: string, branchId: string, name: string) =>
       fromApi<DepartmentItem>(`/organizations/${orgId}/departments`, {
         method: "POST", body: { name, branch_id: branchId, avatar_initial: name.slice(0, 2).toUpperCase() },

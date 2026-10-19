@@ -1,21 +1,21 @@
 /* Code-built product windows (Challenges dashboard, Events grid). Vector UI: sharp at any density. */
-const svg = (d, size = 14) =>
-  `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+import { iconSvg } from "./icon.js";
+
 const I = {
-  search: svg('<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4-4"/>'),
-  grid: svg('<rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/>'),
-  pulse: svg('<path d="M3 12h4l2.5-6 4 12 2.5-6H21"/>'),
-  users: svg('<circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><path d="M16 5.6a3 3 0 0 1 0 5.8M17.5 14.4c1.8.5 3 2.1 3.5 4.6"/>'),
-  pin: svg('<path d="M12 21s6.5-5.4 6.5-11A6.5 6.5 0 0 0 5.5 10c0 5.6 6.5 11 6.5 11Z"/><circle cx="12" cy="10" r="2.3"/>'),
-  cal: svg('<rect x="4" y="5.5" width="16" height="14" rx="3"/><path d="M8 3.5v4M16 3.5v4M4 10h16"/>'),
-  target: svg('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/>'),
-  chevD: svg('<path d="m6 9.5 6 6 6-6"/>', 12),
-  chevR: svg('<path d="m9.5 6 6 6-6 6"/>', 12),
-  clock: svg('<circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/>', 12),
-  user: svg('<circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c.8-3.6 3.5-5.5 7-5.5s6.2 1.9 7 5.5"/>', 12),
-  plus: svg('<path d="M12 5v14M5 12h14"/>', 12),
-  gear: svg('<circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8"/>'),
-  more: svg('<circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/>', 14),
+  search: iconSvg("search-normal", 14),
+  grid: iconSvg("category-2", 14),
+  pulse: iconSvg("activity", 14),
+  users: iconSvg("people", 14),
+  pin: iconSvg("location", 14),
+  cal: iconSvg("calendar", 14),
+  target: iconSvg("gps", 14),
+  chevD: iconSvg("arrow-down-02", 12),
+  chevR: iconSvg("arrow-right-03", 12),
+  clock: iconSvg("clock", 12),
+  user: iconSvg("user", 12),
+  plus: iconSvg("add", 12),
+  gear: iconSvg("setting-2", 14),
+  more: iconSvg("more", 14),
 };
 
 const wellstaqMark = `<svg viewBox="0 0 32 28" width="22" height="19" aria-hidden="true"><path d="M3 8c0-3 2-5 6-5 5 0 7 3 7 8 0 4-2 7-6 7-5 0-7-4-7-10Z" fill="#ea6a05"/><path d="M29 8c0-3-2-5-6-5-5 0-7 3-7 8 0 4 2 7 6 7 5 0 7-4 7-10Z" fill="#37b047"/></svg>`;
@@ -69,11 +69,11 @@ export const eventsWindow = () =>
 <div class="aw-grid3 aw-grid2">${eventCard(photos.sun, "Sunrise Yoga in the Park", "Oct 12, 2026", "Virtual", 24)}${eventCard(photos.trail, "Mindful Wellness Workshop", "Oct 14, 2026", "Lagos office", 36)}${eventCard(photos.bridge, "Weekly Cycling Tour", "Oct 16, 2026", "All branches", 19)}${eventCard(photos.wheel, "Quarterly Wellbeing Town Hall", "Oct 21, 2026", "Virtual", 118)}</div></div></section>`,
   );
 
-const heart = svg('<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10Z"/>', 13);
-const comment = svg('<path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4A8 8 0 1 1 20 12Z"/>', 13);
-const share = svg('<circle cx="6" cy="12" r="2.3"/><circle cx="17.5" cy="6" r="2.3"/><circle cx="17.5" cy="18" r="2.3"/><path d="m8 11 7.5-4M8 13l7.5 4"/>', 13);
-const send = svg('<path d="m21 3-9.5 18-2.2-7.8L3 11l18-8Z"/>', 12);
-const bell = svg('<path d="M6 9.5a6 6 0 0 1 12 0c0 4.5 1.6 5.8 2 6.5H4c.4-.7 2-2 2-6.5Z"/><path d="M10 19a2.2 2.2 0 0 0 4 0"/>', 16);
+const heart = iconSvg("heart", 13);
+const comment = iconSvg("message-text", 13);
+const share = iconSvg("share", 13);
+const send = iconSvg("send", 12);
+const bell = iconSvg("notification", 16);
 
 const clubCard = (photoClass, name, tag, blurb, members) =>
   `<div class="aw-club"><div class="aw-club-top"><span class="aw-club-photo ${photoClass}"></span><div><b>${name}</b><span class="aw-tag">${tag}</span></div><span class="aw-plus">${I.plus}</span></div><p>${blurb}</p><small>${I.users}${members} members</small></div>`;

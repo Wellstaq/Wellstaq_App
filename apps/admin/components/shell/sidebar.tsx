@@ -69,7 +69,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         title={isCollapsed ? item.name : undefined}
         className={cn(
           "admin-nav-item relative flex h-11 items-center gap-3 rounded-[8px] px-3 text-[15px] transition-colors",
-          isCollapsed && "justify-center px-0",
+          isCollapsed ? "justify-center px-0" : "justify-between",
           active ? "bg-primary-5 font-semibold text-primary-hover" : "text-grey-2 hover:bg-grey-5 hover:text-grey-1",
         )}
       >

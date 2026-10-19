@@ -20,6 +20,7 @@ import { StatCard } from "@/components/dashboard/stat-card";
 import type { DepartmentItem, DepartmentMemberInfo, OrganizationMemberInfo, StatTrend } from "@/types/api";
 import { hasPermission } from "@/lib/permissions";
 import { getUserErrorMessage } from "@/lib/errors";
+import { loadDepartmentMemberCounts } from "@/lib/department-members";
 
 export default function DepartmentsPage() {
   const { organizationId, branches, currentUser } = useDashboardData();
@@ -29,7 +30,7 @@ export default function DepartmentsPage() {
   const canUpdateDepartment = currentUser ? hasPermission(currentUser.permissions, "department.update", permissionBranchId) : false;
   const canDeleteDepartment = currentUser ? hasPermission(currentUser.permissions, "department.delete", permissionBranchId) : false;
   type Department = {
-    id: string; name: string; members: number; activities: number; rank: number | null;
+    id: string; name: string; members: number | null; membersLoading: boolean; activities: number; rank: number | null;
     branch: string; branchId: string; avatars: string[]; healthScore?: number; avgDailySteps: number | null;
   };
   const [departmentsLoading, setDepartmentsLoading] = useState(true);
@@ -40,6 +41,8 @@ export default function DepartmentsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [organizationMembers, setOrganizationMembers] = useState<OrganizationMemberInfo[]>([]);
   const [departmentMembers, setDepartmentMembers] = useState<DepartmentMemberInfo[]>([]);
+  const [departmentMembersLoading, setDepartmentMembersLoading] = useState(false);
+  const [departmentMembersError, setDepartmentMembersError] = useState<string | null>(null);
   const [stats, setStats] = useState({
     totalStaff: null as number | null,
     activeStaff: 0,
@@ -75,17 +78,30 @@ export default function DepartmentsPage() {
         const activitySummary = activityResult.status === "fulfilled" ? activityResult.value : null;
         const ranks = new Map(rankResponse.items.map((item) => [item.departmentId, item]));
         const branchNames = new Map(branches.map((branch) => [branch.id, branch.name]));
-        setDepartments(departmentResponse.items.map((item: DepartmentItem) => {
+        const nextDepartments = departmentResponse.items.map((item: DepartmentItem): Department => {
           const rank = ranks.get(item.id);
           return {
-            id: item.id, name: item.name, members: item.memberCount,
+            id: item.id, name: item.name, members: null, membersLoading: true,
             activities: rank?.totalActivities ?? 0, rank: rank?.rank ?? null,
             branchId: item.branchId, branch: branchNames.get(item.branchId) ?? "Unknown branch",
             avatars: [], healthScore: rank?.performanceScore ? Number(rank.performanceScore) : undefined,
             avgDailySteps: rank?.avgDailySteps ? Number(rank.avgDailySteps) : null,
           };
-        }));
-        setSelectedDepartment((current) => current && departmentResponse.items.some((item) => item.id === current.id) ? current : null);
+        });
+        setDepartments(nextDepartments);
+        setSelectedDepartment((current) => nextDepartments.find((item) => item.id === current?.id) ?? null);
+        void loadDepartmentMemberCounts(
+          nextDepartments.map((department) => department.id),
+          (departmentId) => api.organization.getDepartmentMemberCount(organizationId, departmentId),
+          (departmentId, members) => {
+            if (cancelled) return;
+            setDepartments((current) => current.map((department) => department.id === departmentId
+              ? { ...department, members: members ?? department.members, membersLoading: false } : department));
+            setSelectedDepartment((current) => current?.id === departmentId
+              ? { ...current, members: members ?? current.members, membersLoading: false } : current);
+          },
+          () => cancelled,
+        );
         setStats({
           totalStaff: overallStats?.totalUsers ?? null,
           activeStaff: activeStats?.totalUsers ?? 0,
@@ -115,7 +131,7 @@ export default function DepartmentsPage() {
       if (!cancelled) setOrganizationMembers([]);
     });
     return () => { cancelled = true; };
-  }, [organizationId]);
+  }, [organizationId, reload]);
 
   const dashboardStats = [
     {
@@ -165,20 +181,34 @@ export default function DepartmentsPage() {
     : organizationMembers;
 
   const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
+  const selectedDepartmentId = selectedDepartment?.id;
 
   useEffect(() => {
-    if (!organizationId || !selectedDepartment) {
+    if (!organizationId || !selectedDepartmentId) {
       setDepartmentMembers([]);
+      setDepartmentMembersLoading(false);
+      setDepartmentMembersError(null);
       return;
     }
     let cancelled = false;
-    api.organization.getDepartmentMembers(organizationId, selectedDepartment.id).then((response) => {
-      if (!cancelled) setDepartmentMembers(response.items);
-    }).catch(() => {
-      if (!cancelled) setDepartmentMembers([]);
+    setDepartmentMembers([]);
+    setDepartmentMembersLoading(true);
+    setDepartmentMembersError(null);
+    api.organization.getDepartmentMembers(organizationId, selectedDepartmentId).then((response) => {
+      if (cancelled) return;
+      setDepartmentMembers(response.items);
+      const avatars = response.items.map((member) => member.avatarUrl).filter((avatar): avatar is string => Boolean(avatar));
+      setDepartments((current) => current.map((department) => department.id === selectedDepartmentId
+        ? { ...department, members: response.total, membersLoading: false, avatars } : department));
+      setSelectedDepartment((current) => current?.id === selectedDepartmentId
+        ? { ...current, members: response.total, membersLoading: false, avatars } : current);
+    }).catch((error) => {
+      if (!cancelled) setDepartmentMembersError(getUserErrorMessage(error, "We couldn't load department members. Try again."));
+    }).finally(() => {
+      if (!cancelled) setDepartmentMembersLoading(false);
     });
     return () => { cancelled = true; };
-  }, [organizationId, selectedDepartment]);
+  }, [organizationId, selectedDepartmentId, reload]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -201,7 +231,7 @@ export default function DepartmentsPage() {
       api.organization.assignDepartmentMember(organizationId, created.id, id),
     ));
     const newDepartment: Department = {
-      id: created.id, name: created.name, members: selectedMembers.length,
+      id: created.id, name: created.name, members: selectedMembers.length, membersLoading: false,
       activities: 0, rank: null, branch: selectedBranchName, branchId: created.branchId,
       avatars: selectedMembers.map(id => organizationMembers.find(m => m.id === id)?.avatarUrl).filter((avatar): avatar is string => Boolean(avatar)),
       avgDailySteps: null,
@@ -213,16 +243,24 @@ export default function DepartmentsPage() {
     // Reset form
     setNewDepartmentName("");
     setSelectedMembers([]);
+    setReload((value) => value + 1);
   };
 
   const handleAddMembers = async () => {
     if (!organizationId || !selectedDepartment) return;
-    await Promise.all(selectedMembers.map((id) =>
-      api.organization.assignDepartmentMember(organizationId, selectedDepartment.id, id),
-    ));
-    setIsAddMemberModalOpen(false);
-    toast.success("Members added successfully!");
-    setSelectedMembers([]);
+    try {
+      const results = await Promise.allSettled(selectedMembers.map((id) =>
+        api.organization.assignDepartmentMember(organizationId, selectedDepartment.id, id),
+      ));
+      const failure = results.find((result) => result.status === "rejected");
+      if (failure?.status === "rejected") throw failure.reason;
+      setIsAddMemberModalOpen(false);
+      toast.success("Members added successfully!");
+      setSelectedMembers([]);
+    } finally {
+      // A partially successful batch must also refresh the actual membership.
+      setReload((value) => value + 1);
+    }
   };
 
   const handleEditDepartment = async () => {
@@ -267,7 +305,7 @@ export default function DepartmentsPage() {
         </div>
         {canCreateDepartment && scope.type === "branch" && <button
           onClick={() => setIsCreateModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#EA6A05] text-white rounded-lg text-sm font-medium hover:bg-[#C45700]"
+          className="flex items-center justify-between gap-2 px-4 py-2 bg-[#EA6A05] text-white rounded-lg text-sm font-medium hover:bg-[#C45700]"
         >
           <Plus className="w-4 h-4" />
           Create Department
@@ -318,7 +356,7 @@ export default function DepartmentsPage() {
                 </p>
                 {canCreateDepartment && scope.type === "branch" && <button
                   onClick={() => setIsCreateModalOpen(true)}
-                  className="flex items-center gap-2 px-6 py-2 bg-white border border-[#EA6A05] text-[#EA6A05] rounded-lg text-sm font-medium hover:bg-orange-50"
+                  className="flex items-center justify-between gap-2 px-6 py-2 bg-white border border-[#EA6A05] text-[#EA6A05] rounded-lg text-sm font-medium hover:bg-orange-50"
                 >
                   <Plus className="w-4 h-4" />
                   Create Department
@@ -349,11 +387,11 @@ export default function DepartmentsPage() {
                     </div>
                   </div>
                   <div className={`flex items-center gap-4 text-xs mb-3 text-grey-2`}>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center justify-between gap-1">
                       <Users className="w-3.5 h-3.5" />
-                      {department.members} members
+                      {department.membersLoading ? "Loading members…" : department.members === null ? "Members unavailable" : `${department.members} members`}
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center justify-between gap-1">
                       <Activity className="w-3.5 h-3.5" />
                       {department.activities} activities
                     </div>
@@ -389,7 +427,7 @@ export default function DepartmentsPage() {
                 {/* Mobile Back Button */}
                 <button
                   onClick={() => setSelectedDepartment(null)}
-                  className="lg:hidden flex items-center gap-2 text-sm font-medium text-grey-2 mb-4 hover:text-grey-1"
+                  className="lg:hidden flex items-center justify-between gap-2 text-sm font-medium text-grey-2 mb-4 hover:text-grey-1"
                 >
                   <ChevronDown className="w-4 h-4 rotate-90" />
                   Back to List
@@ -431,7 +469,7 @@ export default function DepartmentsPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="p-4 rounded-[12px] border border-[#E6E6E6] bg-white">
-                    <h3 className="text-xl font-bold text-grey-1 mb-1">{selectedDepartment.members}</h3>
+                    <h3 className="text-xl font-bold text-grey-1 mb-1">{selectedDepartment.membersLoading ? "Loading…" : selectedDepartment.members ?? "Unavailable"}</h3>
                     <p className="text-xs text-grey-3">Members</p>
                   </div>
                   <div className="p-4 rounded-[12px] border border-[#E6E6E6] bg-white">
@@ -469,7 +507,7 @@ export default function DepartmentsPage() {
                         <ResponsiveContainer width="100%" height="100%">
                           <RadarChart cx="50%" cy="50%" outerRadius="80%" data={[
                             { subject: 'Performance', A: selectedDepartment.healthScore ?? 0, fullMark: 100 },
-                            { subject: 'Members', A: Math.min(selectedDepartment.members, 100), fullMark: 100 },
+                            ...(selectedDepartment.members === null ? [] : [{ subject: 'Members', A: Math.min(selectedDepartment.members, 100), fullMark: 100 }]),
                             { subject: 'Activities', A: Math.min(selectedDepartment.activities, 100), fullMark: 100 },
                           ]}>
                             <PolarGrid stroke="#F2F4F7" />
@@ -545,7 +583,7 @@ export default function DepartmentsPage() {
                 {activeTab === "Members" && (
                   <div>
                     <div className="space-y-4">
-                      {departmentMembers.length === 0 ? <p className="py-8 text-center text-sm text-grey-3">No members have been assigned to this department.</p> : departmentMembers.map((member) => (
+                      {departmentMembersLoading ? <p role="status" className="py-8 text-center text-sm text-grey-3">Loading members…</p> : departmentMembersError ? <p role="alert" className="py-8 text-center text-sm text-grey-3">{departmentMembersError}</p> : departmentMembers.length === 0 ? <p className="py-8 text-center text-sm text-grey-3">No members have been assigned to this department.</p> : departmentMembers.map((member) => (
                         <div key={member.id} className="flex items-center justify-between p-3 rounded-xl border border-[#E6E6E6] bg-white">
                           <div className="flex items-center gap-3">
                             <div className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-grey-4 text-xs font-bold text-grey-2">
@@ -627,7 +665,7 @@ export default function DepartmentsPage() {
                   value={newDepartmentName}
                   onChange={(e) => setNewDepartmentName(e.target.value)}
                   placeholder="e.g. Mongo Warriors"
-                  className="w-full h-11 px-4 rounded-lg border border-grey-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#EA6A05]"
+                  className="w-full h-10 px-4 rounded-lg border border-grey-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#EA6A05]"
                 />
               </div>
 
@@ -710,7 +748,7 @@ export default function DepartmentsPage() {
             <div className="h-[75px] shrink-0 px-6 border-b border-grey-4 flex justify-between items-center">
               <div>
                 <h2 className="text-base font-bold text-grey-1">Add a team member</h2>
-                <p className="text-sm text-grey-2">Adding to {selectedDepartment?.name} Â· {selectedDepartment?.members} current members</p>
+                <p className="text-sm text-grey-2">Adding to {selectedDepartment?.name}{selectedDepartment?.members != null && ` · ${selectedDepartment.members} current members`}</p>
               </div>
               <button type="button" aria-label="Close drawer" onClick={() => setIsAddMemberModalOpen(false)} className="text-grey-3 hover:text-grey-1">
                 <X className="w-5 h-5" />
@@ -815,7 +853,7 @@ export default function DepartmentsPage() {
                   value={editDepartmentName}
                   onChange={(e) => setEditDepartmentName(e.target.value)}
                   placeholder="e.g. Mongo Warriors"
-                  className="w-full h-11 px-4 rounded-lg border border-grey-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#EA6A05]"
+                  className="w-full h-10 px-4 rounded-lg border border-grey-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#EA6A05]"
                 />
               </div>
             </div>

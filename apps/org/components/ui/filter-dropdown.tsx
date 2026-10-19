@@ -65,6 +65,7 @@ export function FilterDropdown<T extends string>({
         ref={triggerRef}
         id={id}
         type="button"
+        data-control="select"
         aria-label={ariaLabel}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
@@ -80,6 +81,7 @@ export function FilterDropdown<T extends string>({
         className={cn(
           "flex h-10 items-center justify-between gap-2 rounded-[8px] border border-grey-4 bg-white px-4 text-sm font-medium text-grey-1 transition-colors hover:bg-grey-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-1 disabled:cursor-not-allowed disabled:bg-grey-5 disabled:text-grey-3",
           buttonClassName,
+          "h-10 min-h-0 max-h-10 py-0",
         )}
       >
         <span className="flex min-w-0 items-center gap-3">

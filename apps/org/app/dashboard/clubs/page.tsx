@@ -132,7 +132,7 @@ export default function ClubsPage() {
         {canCreateClub && (
           <button
             onClick={() => setIsCreateOpen(true)}
-            className="flex items-center justify-center gap-2 rounded-lg bg-primary-1 px-4 py-2 text-sm font-medium text-white hover:bg-[#C45700]"
+            className="flex items-center justify-between gap-2 rounded-lg bg-primary-1 px-4 py-2 text-sm font-medium text-white hover:bg-[#C45700]"
           >
             <Plus className="h-4 w-4" /> Create Club
           </button>
@@ -159,7 +159,7 @@ export default function ClubsPage() {
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.target.value)}
           placeholder="Search clubs"
-          className="h-11 w-full rounded-lg border border-grey-4 bg-white pl-9 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary-1"
+          className="h-10 w-full rounded-lg border border-grey-4 bg-white pl-9 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary-1"
         />
       </div>
 
@@ -259,7 +259,7 @@ export default function ClubsPage() {
             </div>
             <div className="min-h-0 flex-1 overflow-y-auto p-6 space-y-4">
               <label className="block text-sm font-medium text-grey-1">Club name
-                <input value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} className="mt-2 h-11 w-full rounded-lg border border-grey-4 px-3 font-normal focus:outline-none focus:ring-2 focus:ring-primary-1" />
+                <input value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} className="mt-2 h-10 w-full rounded-lg border border-grey-4 px-3 font-normal focus:outline-none focus:ring-2 focus:ring-primary-1" />
               </label>
               <label className="block text-sm font-medium text-grey-1">Description
                 <textarea value={form.description} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} rows={4} className="mt-2 w-full rounded-lg border border-grey-4 px-3 py-2 font-normal focus:outline-none focus:ring-2 focus:ring-primary-1" />
@@ -267,11 +267,11 @@ export default function ClubsPage() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="text-sm font-medium text-grey-1">
                   <label htmlFor="directory-club-category">Category</label>
-                  <FilterDropdown id="directory-club-category" ariaLabel="Category" value={form.category} options={CLUB_CATEGORIES} onValueChange={(category) => setForm((current) => ({ ...current, category }))} buttonClassName="mt-2 h-11 w-full font-normal" menuClassName="w-full" />
+                  <FilterDropdown id="directory-club-category" ariaLabel="Category" value={form.category} options={CLUB_CATEGORIES} onValueChange={(category) => setForm((current) => ({ ...current, category }))} buttonClassName="mt-2 h-10 w-full font-normal" menuClassName="w-full" />
                 </div>
                 <div className="text-sm font-medium text-grey-1">
                   <label htmlFor="directory-club-privacy">Privacy</label>
-                  <FilterDropdown id="directory-club-privacy" ariaLabel="Privacy" value={form.privacy} options={[{ value: "public", label: "Public" }, { value: "private", label: "Private" }]} onValueChange={(privacy) => setForm((current) => ({ ...current, privacy }))} buttonClassName="mt-2 h-11 w-full font-normal" menuClassName="w-full" />
+                  <FilterDropdown id="directory-club-privacy" ariaLabel="Privacy" value={form.privacy} options={[{ value: "public", label: "Public" }, { value: "private", label: "Private" }]} onValueChange={(privacy) => setForm((current) => ({ ...current, privacy }))} buttonClassName="mt-2 h-10 w-full font-normal" menuClassName="w-full" />
                 </div>
               </div>
             </div>

@@ -151,7 +151,7 @@ export function EditChallengeModal({
             id="editTrackingMethod"
             value={trackingMethod}
             onChange={(e) => setTrackingMethod(e.target.value as ChallengeTrackingMethod)}
-            className="w-full h-[44px] rounded-[8px] border border-grey-4 bg-white px-3 text-sm"
+            className="w-full h-10 rounded-[8px] border border-grey-4 bg-white px-3 text-sm"
           >
             <option value="automatic">Automatic — phone or wearable health data</option>
             <option value="self_reported">Self-reported — mark the activity complete</option>

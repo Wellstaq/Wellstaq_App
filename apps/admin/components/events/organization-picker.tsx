@@ -53,7 +53,7 @@ export function OrganizationPicker({ value, onChange, invalid }: { value: Picked
         </div>
         <div className="max-h-52 overflow-y-auto" aria-live="polite">
           {results.isLoading ? (
-            <p className="flex items-center gap-2 px-3 py-3 text-sm text-grey-2">
+            <p className="flex items-center justify-between gap-2 px-3 py-3 text-sm text-grey-2">
               <LoaderCircle className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
               Loading organizations...
             </p>

@@ -28,7 +28,7 @@ export const PUBLIC_ROUTES = new Set([
   "auth/signup/otp/request",
   "auth/signup/otp/verify",
   "auth/signup/check/business-name",
-  "auth/signup/check/phone-number",
+  "auth/signup/check/phone",
   "auth/invite/otp/request",
   "auth/invite/otp/verify",
   "auth/register/invite",

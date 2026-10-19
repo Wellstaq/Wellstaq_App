@@ -1,0 +1,62 @@
+/* Single-line fields share the app's 40px cap. Textareas stay multiline. */
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="hidden"]):not([type="color"]),
+select:not([multiple])) {
+  box-sizing: border-box;
+  height: 40px !important;
+  min-height: 0 !important;
+  max-height: 40px !important;
+  padding-block: 0 !important;
+}
+
+.waitlist-field {
+  height: 40px;
+  box-sizing: border-box;
+  padding-block: 0;
+  padding-inline-end: 0;
+}
+.waitlist-field input {
+  height: 100% !important;
+  max-height: 100% !important;
+}
+.waitlist-submit {
+  align-self: stretch;
+  min-height: 0;
+  max-height: 40px;
+}
+
+/* Distribute icon and label across each control, retaining an 8px minimum gap. */
+:is(a, button):has(> .icon) {
+  justify-content: space-between;
+  gap: 8px;
+}
+:is(a, button) > .icon {
+  flex-shrink: 0;
+}
+.ai-top-icons .icon {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 760px) {
+  /* Stacked email and submit controls remain separate 40px rows on mobile. */
+  .waitlist-field {
+    height: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+  .waitlist-field input {
+    flex: none;
+    width: 100%;
+    height: 40px !important;
+    max-height: 40px !important;
+    padding-inline: 16px;
+    border: 1px solid #dfe1dc;
+    border-radius: 999px;
+    background: #fff;
+  }
+  .waitlist-submit {
+    height: 40px;
+    min-height: 40px;
+  }
+}

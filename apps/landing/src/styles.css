@@ -324,28 +324,12 @@ h2 {
   padding: 9px 14px;
   font-size: 14px;
 }
-.menu-toggle span,
-.menu-toggle span::before {
+.menu-toggle .menu-close,
+.menu-toggle[aria-expanded="true"] .menu-open {
+  display: none;
+}
+.menu-toggle[aria-expanded="true"] .menu-close {
   display: block;
-  width: 16px;
-  height: 1.5px;
-  background: currentColor;
-  position: relative;
-  transition: transform 0.3s var(--ease);
-}
-.menu-toggle span {
-  transform: translateY(-3px);
-}
-.menu-toggle span::before {
-  content: "";
-  top: 5px;
-}
-.menu-toggle[aria-expanded="true"] span {
-  transform: rotate(45deg);
-}
-.menu-toggle[aria-expanded="true"] span::before {
-  top: 0;
-  transform: rotate(-90deg);
 }
 
 /* ---------- Hero ---------- */

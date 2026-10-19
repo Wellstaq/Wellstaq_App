@@ -324,7 +324,7 @@ export default function TeamsPage() {
       <div className="flex items-start justify-between gap-4">
         <div><h1 className="page-title">My Teams</h1>
         <p className="page-description">{scope.type === "branch" ? "Everyone assigned to this branch, including its manager." : "Everyone in the organization, including the super admin."}</p></div>
-        {canInvite && <button type="button" onClick={openInvite} className="flex items-center gap-2 rounded-lg bg-[#C45700] px-4 py-2 text-sm font-medium text-white"><Plus className="h-4 w-4" /> Add Team Member</button>}
+        {canInvite && <button type="button" onClick={openInvite} className="flex items-center justify-between gap-2 rounded-lg bg-[#C45700] px-4 py-2 text-sm font-medium text-white"><Plus className="h-4 w-4" /> Add Team Member</button>}
       </div>
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
@@ -482,7 +482,7 @@ export default function TeamsPage() {
                         .map((role) => ({ value: role.id, label: humanizeIdentifier(role.name) })),
                       ...(canRevokeRole && selectedMemberRoleName && selectedMemberRoleName !== "member" ? [{ value: REVOKE_ROLE_OPTION, label: "Revoke role (return to Member)" }] : []),
                     ]}
-                    buttonClassName="h-12 w-full font-normal" menuClassName="max-h-36 w-full"
+                    buttonClassName="h-10 w-full font-normal" menuClassName="max-h-36 w-full"
                   />
                   {scope.type === "branch" && occupiedBranchManagerId && occupiedBranchManagerId !== selectedMember.id && (
                     <p className="mt-2 text-xs text-grey-2">
@@ -507,7 +507,7 @@ export default function TeamsPage() {
                     value={memberChanges.departmentId}
                     onValueChange={(departmentId) => setMemberChanges({ ...memberChanges, departmentId })}
                     options={[{ value: "", label: "Select department" }, ...manageDepartments.filter((department) => department.branchId === selectedMember.branchId).map((department) => ({ value: department.id, label: department.name }))]}
-                    buttonClassName="h-12 w-full font-normal" menuClassName="max-h-36 w-full"
+                    buttonClassName="h-10 w-full font-normal" menuClassName="max-h-36 w-full"
                   />
                 </div>
                 <div className="mt-6">
@@ -528,7 +528,7 @@ export default function TeamsPage() {
                       value={memberChanges.branchId}
                       onValueChange={(branchId) => setMemberChanges({ ...memberChanges, branchId, branchDepartmentId: "" })}
                       options={[{ value: "", label: "Select branch" }, ...branches.map((branch) => ({ value: branch.id, label: branch.name }))]}
-                      buttonClassName="h-12 w-full font-normal" menuClassName="max-h-36 w-full"
+                      buttonClassName="h-10 w-full font-normal" menuClassName="max-h-36 w-full"
                     />
                   </div>
                   <div className="min-w-0">
@@ -538,7 +538,7 @@ export default function TeamsPage() {
                       value={memberChanges.branchDepartmentId}
                       onValueChange={(branchDepartmentId) => setMemberChanges({ ...memberChanges, branchDepartmentId })}
                       options={[{ value: "", label: "Select destination department" }, ...manageDepartments.filter((department) => department.branchId === memberChanges.branchId).map((department) => ({ value: department.id, label: department.name }))]}
-                      buttonClassName="h-12 w-full font-normal" menuClassName="max-h-36 w-full"
+                      buttonClassName="h-10 w-full font-normal" menuClassName="max-h-36 w-full"
                     />
                   </div>
                 </div>
@@ -569,15 +569,15 @@ export default function TeamsPage() {
           </label>
           <div className="text-sm font-medium text-grey-1">
             <span>Branch</span>
-            <FilterDropdown value={invite.branchId} options={inviteBranchOptions} onValueChange={(branchId) => setInvite({ ...invite, branchId, departmentId: "" })} ariaLabel="Branch" disabled={scope.type === "branch"} leadingIcon={<Building2 className="h-4 w-4" />} buttonClassName="mt-1 h-12 w-full rounded-[8px] font-normal" menuClassName="w-full" />
+            <FilterDropdown value={invite.branchId} options={inviteBranchOptions} onValueChange={(branchId) => setInvite({ ...invite, branchId, departmentId: "" })} ariaLabel="Branch" disabled={scope.type === "branch"} leadingIcon={<Building2 className="h-4 w-4" />} buttonClassName="mt-1 h-10 w-full rounded-[8px] font-normal" menuClassName="w-full" />
           </div>
           <div className="text-sm font-medium text-grey-1">
             <span>Department</span>
-            <FilterDropdown value={invite.departmentId} options={inviteDepartmentOptions} onValueChange={(departmentId) => setInvite({ ...invite, departmentId })} ariaLabel="Department" disabled={!invite.branchId} leadingIcon={<Network className="h-4 w-4" />} buttonClassName="mt-1 h-12 w-full rounded-[8px] font-normal" menuClassName="w-full" />
+            <FilterDropdown value={invite.departmentId} options={inviteDepartmentOptions} onValueChange={(departmentId) => setInvite({ ...invite, departmentId })} ariaLabel="Department" disabled={!invite.branchId} leadingIcon={<Network className="h-4 w-4" />} buttonClassName="mt-1 h-10 w-full rounded-[8px] font-normal" menuClassName="w-full" />
           </div>
           <div className="text-sm font-medium text-grey-1">
             <span>Role</span>
-            <FilterDropdown value={invite.roleId} options={inviteRoleOptions} onValueChange={(roleId) => setInvite({ ...invite, roleId })} ariaLabel="Role" disabled={!invite.branchId || inviteRolesLoading} leadingIcon={<UserRound className="h-4 w-4" />} buttonClassName="mt-1 h-12 w-full rounded-[8px] font-normal" menuClassName="w-full" />
+            <FilterDropdown value={invite.roleId} options={inviteRoleOptions} onValueChange={(roleId) => setInvite({ ...invite, roleId })} ariaLabel="Role" disabled={!invite.branchId || inviteRolesLoading} leadingIcon={<UserRound className="h-4 w-4" />} buttonClassName="mt-1 h-10 w-full rounded-[8px] font-normal" menuClassName="w-full" />
           </div>
           <Button type="submit" disabled={!canSendInvite} className="w-full">{isInviting ? "Sending..." : "Send Invitation"}</Button>
           </div>

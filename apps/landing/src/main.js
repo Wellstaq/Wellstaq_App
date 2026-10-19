@@ -11,6 +11,7 @@ import { rewardsSection } from "./rewards.js";
 import { individualPage, initIndividual } from "./individual.js";
 import { getAppSection } from "./get-app.js";
 import "./get-app.css";
+import "./control-layout.css";
 
 const APP_URL = "https://appwellstaq.vercel.app/";
 const EMPLOYEE_APP_URL = "https://wellstaqemployee.vercel.app/";
@@ -70,6 +71,9 @@ const icons = {
   care: "lovely",
   voice: "microphone-2",
   online: "global",
+  clock: "clock",
+  close: "close-square",
+  menu: "menu",
 };
 const icon = (name, className = "icon") => {
   return iconsaxSvg[icons[name]].replace(
@@ -125,7 +129,7 @@ function header() {
   const headerAction = isIndividual
     ? button("Join the waitlist", "#waitlist", "small")
     : button("Get Started", APP_URL, "small");
-  return `<a class="skip-link" href="#main">Skip to content</a><header class="site-header"><div class="header-inner"><div class="header-brand"><a class="logo" href="/" aria-label="Wellstaq home"><img src="${photo("logo")}" alt="Wellstaq" width="150" height="36"></a><div class="audience-switch" role="group" aria-label="Wellstaq for"><a href="/" ${isIndividual ? "" : 'class="active"'} ${isHome ? 'aria-current="page"' : ""}>Business</a><a href="/individual" ${isIndividual ? 'class="active" aria-current="page"' : ""}>Individual</a></div></div><button class="menu-toggle" aria-controls="navigation" aria-expanded="false"><span></span>Menu</button><nav id="navigation" aria-label="Main navigation"><div class="nav-links">${links.map(([label, href]) => `<a href="${href}">${label}</a>`).join("")}<a href="/contact" ${isContact ? 'aria-current="page"' : ""}>Contact</a></div>${headerAction}</nav></div></header>`;
+  return `<a class="skip-link" href="#main">Skip to content</a><header class="site-header"><div class="header-inner"><div class="header-brand"><a class="logo" href="/" aria-label="Wellstaq home"><img src="${photo("logo")}" alt="Wellstaq" width="150" height="36"></a><div class="audience-switch" role="group" aria-label="Wellstaq for"><a href="/" ${isIndividual ? "" : 'class="active"'} ${isHome ? 'aria-current="page"' : ""}>Business</a><a href="/individual" ${isIndividual ? 'class="active" aria-current="page"' : ""}>Individual</a></div></div><button class="menu-toggle" aria-controls="navigation" aria-expanded="false">${icon("menu", "icon menu-open")}${icon("close", "icon menu-close")}Menu</button><nav id="navigation" aria-label="Main navigation"><div class="nav-links">${links.map(([label, href]) => `<a href="${href}">${label}</a>`).join("")}<a href="/contact" ${isContact ? 'aria-current="page"' : ""}>Contact</a></div>${headerAction}</nav></div></header>`;
 }
 
 function hero() {
@@ -380,7 +384,7 @@ const chats = [
   ],
 ];
 function assistant() {
-  return `<section class="section dark assistant" id="ws-ai"><div class="frame"><div class="sticky-run ai-run"><div class="sticky-stage"><div class="section-head center" data-reveal>${eyebrow("ws-AI")}<h2>Ask Anything. Feel Supported. Act Sooner.</h2><p>ws-AI is Wellstaq's workplace wellness assistant. It gives concise, practical wellbeing information whenever your people need it.</p></div><div class="ai-grid" data-reveal><div class="ai-list" role="tablist" aria-label="ws-AI capabilities">${chats.map(([title, text], i) => `<button role="tab" id="ai-tab-${i}" aria-controls="ai-conversation" aria-selected="${i === 0}" data-chat="${i}" tabindex="${i === 0 ? 0 : -1}"><strong>${title}</strong><span>${text}</span></button>`).join("")}</div><div class="ai-window" id="ai-conversation" role="tabpanel" aria-labelledby="ai-tab-0" tabindex="0"><div class="ai-dash" aria-hidden="true"><div class="ai-dash-side"><b>Wellstaq</b><span class="ai-dash-org">Overview</span><ul><li class="on">Dashboard</li><li>Insights</li><li>Department</li><li>Space</li><li>Events</li></ul><small>CHALLENGES</small><ul><li>Sleep Reset</li><li>September 10K a Day</li><li>Mindful Mornings</li></ul></div><div class="ai-dash-main"><h5>Good evening, Yemi</h5><p>Here is how Yemi Inc is doing today.</p><div class="ai-dash-card"><small>Total Staff</small><b>184</b></div><div class="ai-dash-card"><small>Total Activity</small><b>2,316</b></div></div></div><div class="ai-panel"><div class="ai-top"><strong>Ask ws-AI</strong><span class="ai-top-icons" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 8.5v7M8.5 12h7"/></svg><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 12 12M18 6 6 18"/></svg></span></div><div class="ai-body"><p class="bubble user">${chats[0][2]}</p><p class="bubble bot">${chats[0][3]}</p></div><div class="ai-input"><span>Ask anything…</span><i>${icon("send")}</i></div><small class="ai-note">Uses AI. Verify results.</small></div></div></div></div></div></div></section>`;
+  return `<section class="section dark assistant" id="ws-ai"><div class="frame"><div class="sticky-run ai-run"><div class="sticky-stage"><div class="section-head center" data-reveal>${eyebrow("ws-AI")}<h2>Ask Anything. Feel Supported. Act Sooner.</h2><p>ws-AI is Wellstaq's workplace wellness assistant. It gives concise, practical wellbeing information whenever your people need it.</p></div><div class="ai-grid" data-reveal><div class="ai-list" role="tablist" aria-label="ws-AI capabilities">${chats.map(([title, text], i) => `<button role="tab" id="ai-tab-${i}" aria-controls="ai-conversation" aria-selected="${i === 0}" data-chat="${i}" tabindex="${i === 0 ? 0 : -1}"><strong>${title}</strong><span>${text}</span></button>`).join("")}</div><div class="ai-window" id="ai-conversation" role="tabpanel" aria-labelledby="ai-tab-0" tabindex="0"><div class="ai-dash" aria-hidden="true"><div class="ai-dash-side"><b>Wellstaq</b><span class="ai-dash-org">Overview</span><ul><li class="on">Dashboard</li><li>Insights</li><li>Department</li><li>Space</li><li>Events</li></ul><small>CHALLENGES</small><ul><li>Sleep Reset</li><li>September 10K a Day</li><li>Mindful Mornings</li></ul></div><div class="ai-dash-main"><h5>Good evening, Yemi</h5><p>Here is how Yemi Inc is doing today.</p><div class="ai-dash-card"><small>Total Staff</small><b>184</b></div><div class="ai-dash-card"><small>Total Activity</small><b>2,316</b></div></div></div><div class="ai-panel"><div class="ai-top"><strong>Ask ws-AI</strong><span class="ai-top-icons" aria-hidden="true">${icon("clock")}${icon("plus")}${icon("close")}</span></div><div class="ai-body"><p class="bubble user">${chats[0][2]}</p><p class="bubble bot">${chats[0][3]}</p></div><div class="ai-input"><span>Ask anything…</span><i>${icon("send")}</i></div><small class="ai-note">Uses AI. Verify results.</small></div></div></div></div></div></div></section>`;
 }
 
 function stories() {

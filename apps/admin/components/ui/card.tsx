@@ -25,7 +25,7 @@ export function CardHeader({ title, subtitle, action, id, className }: { title: 
 
 export function ViewAllLink({ href, children = "View all" }: { href: string; children?: ReactNode }) {
   return (
-    <Link href={href} className="group inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-primary-hover hover:text-[#A84A00]">
+    <Link href={href} className="group inline-flex min-h-9 items-center justify-between gap-1.5 rounded-lg px-2 text-sm font-medium text-primary-hover hover:text-[#A84A00]">
       {children}
       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={1.8} aria-hidden="true" />
     </Link>

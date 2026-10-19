@@ -247,7 +247,7 @@ export function CreateChallengeModal({
             value={selectedWellbeingChallengeId}
             onValueChange={setSelectedWellbeingChallengeId}
             options={[{ value: "", label: "None, custom challenge" }, ...wellbeingChallenges.map((wc) => ({ value: wc.id, label: wc.name }))]}
-            buttonClassName="h-11 w-full font-normal"
+            buttonClassName="h-10 w-full font-normal"
             menuClassName="w-full"
           />
         </div>
@@ -336,7 +336,7 @@ export function CreateChallengeModal({
             { value: "self_reported", label: "Self-reported, mark the activity complete" },
             { value: "evidence_based", label: "Evidence-based, photo and optional notes" },
             { value: "platform_recorded", label: "Platform recorded, event, club or in-app activity" },
-          ]} buttonClassName="h-11 w-full font-normal" menuClassName="w-full" />
+          ]} buttonClassName="h-10 w-full font-normal" menuClassName="w-full" />
           <p className="text-xs text-grey-3">Automatic metrics cannot be typed by participants; they must arrive from a connected device.</p>
         </div>
 
@@ -370,7 +370,7 @@ export function CreateChallengeModal({
               value={metricType}
               onValueChange={(value) => { setMetricType(value); clearErrors(); }}
               options={METRIC_TYPES.map((value) => ({ value, label: value.replace(/_/g, " ") }))}
-              buttonClassName="h-11 w-full font-normal" menuClassName="w-full"
+              buttonClassName="h-10 w-full font-normal" menuClassName="w-full"
             />
             <FieldError errors={fieldErrors} field="metric_type" />
           </div>
@@ -382,7 +382,7 @@ export function CreateChallengeModal({
               value={targetType}
               onValueChange={(value) => { setTargetType(value); clearErrors(); }}
               options={TARGET_TYPES.map((value) => ({ value, label: value.replace(/_/g, " ") }))}
-              buttonClassName="h-11 w-full font-normal" menuClassName="w-full"
+              buttonClassName="h-10 w-full font-normal" menuClassName="w-full"
             />
             <FieldError errors={fieldErrors} field="target_type" />
           </div>
@@ -413,7 +413,7 @@ export function CreateChallengeModal({
               value={selectedBranchId}
               onValueChange={(value) => { setSelectedBranchId(value); clearErrors(); }}
               options={[{ value: "", label: "Select a branch" }, ...branchOptions.map((branch) => ({ value: branch.id, label: branch.name }))]}
-              buttonClassName="h-11 w-full font-normal" menuClassName="w-full"
+              buttonClassName="h-10 w-full font-normal" menuClassName="w-full"
             />
             <FieldError errors={fieldErrors} field="branch_id" />
           </div>
@@ -428,7 +428,7 @@ export function CreateChallengeModal({
               value={selectedBranchId}
               onValueChange={(value) => { setSelectedBranchId(value); clearErrors(); }}
               options={[{ value: "", label: "General" }, ...branchOptions.map((branch) => ({ value: branch.id, label: branch.name }))]}
-              buttonClassName="h-11 w-full font-normal" menuClassName="w-full"
+              buttonClassName="h-10 w-full font-normal" menuClassName="w-full"
             />
             <FieldError errors={fieldErrors} field="branch_id" />
           </div>

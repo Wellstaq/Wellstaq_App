@@ -25,6 +25,7 @@ const imports = {
  '@/components/dashboard/stat-card': { StatCard: ({title,value}) => React.createElement('div', null, title, ': ', value) },
  '@/lib/permissions': { hasPermission: () => false },
  '@/lib/errors': { getUserErrorMessage: () => 'Unavailable' },
+ '@/lib/department-members': { loadDepartmentMemberCounts() {} },
 };
 const compiled = ts.transpileModule(fs.readFileSync(new URL('../app/dashboard/departments/page.tsx', import.meta.url), 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, target: ts.ScriptTarget.ES2020 } }).outputText;
 const loaded = {exports:{}};

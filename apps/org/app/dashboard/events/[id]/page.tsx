@@ -223,7 +223,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="max-w-7xl mx-auto space-y-6 rounded-[12px] p-[12px]">
-      <Link href="/dashboard/events" className="flex items-center gap-2 text-sm text-grey-2 hover:text-grey-1 transition-colors w-fit">
+      <Link href="/dashboard/events" className="flex items-center justify-between gap-2 text-sm text-grey-2 hover:text-grey-1 transition-colors w-fit">
         <ChevronLeft className="w-4 h-4" />
         Go back
       </Link>
@@ -242,7 +242,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
             <div className="p-6 space-y-4">
               <div className="flex items-start justify-between">
                 <h1 className="page-title">{event.title}</h1>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between gap-2">
                   {!hasJoined && (
                     <Button onClick={handleJoinEvent} disabled={isJoining}>
                       <Plus className="mr-2 h-4 w-4" />
@@ -266,11 +266,11 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
               {event.description && <p className="text-sm text-grey-2 leading-relaxed">{event.description}</p>}
 
               <div className="flex flex-wrap items-center gap-6 text-sm text-grey-2">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between gap-2">
                   <Users className="w-4 h-4" />
                   <span>{participantsTotal} participants</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between gap-2">
                   <Calendar className="w-4 h-4" />
                   <span>{new Date(event.startDate).toLocaleDateString()}</span>
                 </div>
@@ -286,7 +286,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
           <div className="bg-white rounded-[12px] border border-grey-4 flex flex-col h-[600px]">
             <div className="p-4 border-b border-grey-4 flex items-center justify-between">
               <h2 className="font-bold text-grey-1">Chat</h2>
-              <div className="flex items-center gap-1 text-xs text-grey-3">
+              <div className="flex items-center justify-between gap-1 text-xs text-grey-3">
                 <Users className="w-3 h-3" />
                 {participantsTotal} members
               </div>
@@ -314,7 +314,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                       {sender?.avatarUrl && <Image src={sender.avatarUrl} alt={senderName} fill className="object-cover" />}
                     </div>
                     <div className={`w-fit max-w-[78%] space-y-1 ${isMe ? "ml-auto" : "mr-auto"}`}>
-                      <div className={`flex items-center gap-2 ${isMe ? "justify-end" : ""}`}>
+                      <div className={`flex items-center gap-2 ${isMe ? "justify-between" : ""}`}>
                         <span className="font-bold text-sm text-grey-1">{senderName}</span>
                         <span className="text-xs text-grey-3">› {formatRelativeTime(msg.createdAt)}</span>
                         {msg.isPinned && <Pin className="w-3 h-3 text-primary-1" />}
@@ -345,7 +345,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   aria-label="Event message" name="message" placeholder="Type a message…"
-                  className="flex-1 h-11 px-4 rounded-xl border border-grey-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary-1 bg-grey-5/30"
+                  className="flex-1 h-10 px-4 rounded-xl border border-grey-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary-1 bg-grey-5/30"
                 />
                 <button
                   type="submit"
@@ -364,7 +364,7 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
           <div className="bg-white rounded-[12px] border border-grey-4 p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-bold text-grey-1">Participants</h2>
-              <button onClick={() => setIsInviteModalOpen(true)} className="text-xs font-bold text-primary-1 hover:text-primary-2 flex items-center gap-1">
+              <button onClick={() => setIsInviteModalOpen(true)} className="text-xs font-bold text-primary-1 hover:text-primary-2 flex items-center justify-between gap-1">
                 <Plus className="w-3 h-3" />
                 Invite Employee
               </button>

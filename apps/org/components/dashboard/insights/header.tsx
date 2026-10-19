@@ -33,7 +33,7 @@ export function InsightsHeader({
       <div ref={filterRef} className="relative">
         <button 
           onClick={() => setIsFilterOpen(!isFilterOpen)}
-          className="flex items-center gap-2 px-4 py-2 bg-white border border-grey-4 rounded-lg text-sm font-medium text-grey-1 hover:bg-grey-5"
+          className="flex items-center justify-between gap-2 px-4 py-2 bg-white border border-grey-4 rounded-lg text-sm font-medium text-grey-1 hover:bg-grey-5"
         >
           {PERIOD_OPTIONS.find((option) => option.value === period)?.label ?? "Select period"}
           <ChevronDown className="w-4 h-4" />

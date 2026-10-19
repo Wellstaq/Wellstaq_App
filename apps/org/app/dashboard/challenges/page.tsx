@@ -251,7 +251,7 @@ export default function ChallengesPage() {
           {canCreate && (
             <button
               onClick={() => setIsCreateModalOpen(true)}
-              className="px-4 py-2 bg-[#C45700] text-white font-medium text-sm rounded-lg hover:bg-[#C45700]/90 transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-[#C45700] text-white font-medium text-sm rounded-lg hover:bg-[#C45700]/90 transition-colors flex items-center justify-between gap-2"
             >
               <Plus className="w-4 h-4" />
               Create Challenge
@@ -410,12 +410,12 @@ export default function ChallengesPage() {
 
                     <div className="flex flex-col gap-2 mt-auto">
                       <div className="flex items-center justify-between text-[12px] leading-[18px] text-[#999999]">
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center justify-between gap-1">
                           <Users className="w-3.5 h-3.5" />
                           <span>{challenge.participantCount} joined</span>
                           
                         </div>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center justify-between gap-1">
                           <Calendar className="w-3.5 h-3.5" />
                           <span>{daysLeft(challenge.endDate)} days left</span>
                         </div>
@@ -457,11 +457,11 @@ export default function ChallengesPage() {
             </div>
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar max-w-full">
               <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}
-                className="px-3 py-2 rounded bg-[#FAFAFA] text-[14px] text-[#1A1A1A] hover:bg-grey-5 flex items-center gap-1 h-[36px] disabled:opacity-50 shrink-0">
+                className="px-3 py-2 rounded bg-[#FAFAFA] text-[14px] text-[#1A1A1A] hover:bg-grey-5 flex items-center justify-between gap-1 h-[36px] disabled:opacity-50 shrink-0">
                 <ChevronsLeft className="w-4 h-4 text-[#626262]" /> <span className="hidden sm:inline">First</span>
               </button>
               <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}
-                className="px-3 py-2 rounded bg-[#FAFAFA] text-[14px] text-[#1A1A1A] hover:bg-grey-5 flex items-center gap-1 h-[36px] disabled:opacity-50 shrink-0">
+                className="px-3 py-2 rounded bg-[#FAFAFA] text-[14px] text-[#1A1A1A] hover:bg-grey-5 flex items-center justify-between gap-1 h-[36px] disabled:opacity-50 shrink-0">
                 <ChevronLeft className="w-4 h-4 text-[#626262]" /> <span className="hidden sm:inline">Prev</span>
               </button>
               <div className="flex items-center gap-1 px-2 shrink-0">
@@ -475,11 +475,11 @@ export default function ChallengesPage() {
                 ))}
               </div>
               <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}
-                className="px-3 py-2 rounded bg-[#FAFAFA] text-[14px] text-[#1A1A1A] hover:bg-grey-5 flex items-center gap-1 h-[36px] disabled:opacity-50 shrink-0">
+                className="px-3 py-2 rounded bg-[#FAFAFA] text-[14px] text-[#1A1A1A] hover:bg-grey-5 flex items-center justify-between gap-1 h-[36px] disabled:opacity-50 shrink-0">
                 <span className="hidden sm:inline">Next</span> <ChevronRight className="w-4 h-4 text-[#626262]" />
               </button>
               <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}
-                className="px-3 py-2 rounded bg-[#FAFAFA] text-[14px] text-[#1A1A1A] hover:bg-grey-5 flex items-center gap-1 h-[36px] disabled:opacity-50 shrink-0">
+                className="px-3 py-2 rounded bg-[#FAFAFA] text-[14px] text-[#1A1A1A] hover:bg-grey-5 flex items-center justify-between gap-1 h-[36px] disabled:opacity-50 shrink-0">
                 <span className="hidden sm:inline">Last</span> <ChevronsRight className="w-4 h-4 text-[#626262]" />
               </button>
             </div>

@@ -159,7 +159,7 @@ function AdminTeamView() {
       header: "Actions",
       render: (item) =>
         item.id === me.id ? null : (
-          <button type="button" onClick={() => setRemoving(item)} className="inline-flex h-10 items-center gap-1.5 rounded-[8px] px-2 text-sm font-medium text-error-1 hover:bg-error-5">
+          <button type="button" onClick={() => setRemoving(item)} className="inline-flex h-10 items-center justify-between gap-1.5 rounded-[8px] px-2 text-sm font-medium text-error-1 hover:bg-error-5">
             <Trash2 className="h-4 w-4" aria-hidden="true" /> Remove
           </button>
         ),

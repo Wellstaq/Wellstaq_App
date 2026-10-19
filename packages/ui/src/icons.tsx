@@ -39,6 +39,8 @@ import {
   DocumentText as SaxDocumentText,
   Edit2 as SaxEdit2,
   EmojiHappy as SaxEmojiHappy,
+  EmojiNormal as SaxEmojiNormal,
+  EmojiSad as SaxEmojiSad,
   ExportSquare as SaxExportSquare,
   Eye as SaxEye,
   EyeSlash as SaxEyeSlash,
@@ -85,6 +87,8 @@ import {
   People as SaxPeople,
   Profile2User as SaxProfile2User,
   Refresh as SaxRefresh,
+  Ruler as SaxRuler,
+  Routing as SaxRouting,
   SearchNormal1 as SaxSearchNormal1,
   SearchStatus as SaxSearchStatus,
   Send2 as SaxSend2,
@@ -110,6 +114,7 @@ import {
   Verify as SaxVerify,
   Video as SaxVideo,
   Warning2 as SaxWarning2,
+  Weight as SaxWeight,
   type Icon, type IconProps,
 } from "iconsax-react";
 
@@ -230,6 +235,11 @@ export const ShieldAlert = adapt(SaxShieldSearch, "ShieldAlert");
 export const ShieldCheck = adapt(SaxShieldTick, "ShieldCheck");
 export const ShieldOff = adapt(SaxShieldCross, "ShieldOff");
 export const Smile = adapt(SaxEmojiHappy, "Smile");
+export const SmileNeutral = adapt(SaxEmojiNormal, "SmileNeutral");
+export const SmileSad = adapt(SaxEmojiSad, "SmileSad");
+export const Ruler = adapt(SaxRuler, "Ruler");
+export const Route = adapt(SaxRouting, "Route");
+export const Dumbbell = adapt(SaxWeight, "Dumbbell");
 export const Sparkles = adapt(SaxMagicStar, "Sparkles");
 export const Sticker = adapt(SaxSticker, "Sticker");
 export const Target = adapt(SaxGps, "Target");

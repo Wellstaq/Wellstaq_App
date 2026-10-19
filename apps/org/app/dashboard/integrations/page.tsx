@@ -147,7 +147,7 @@ export default function IntegrationsPage() {
           <h1 className="page-title">Integrations</h1>
           <p className="page-description">Connect your favorite tools to streamline your wellness journey.</p>
         </div>
-        <button disabled className="px-4 py-2 bg-[#C45700] text-white font-medium text-sm rounded-lg transition-colors flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
+        <button disabled className="px-4 py-2 bg-[#C45700] text-white font-medium text-sm rounded-lg transition-colors flex items-center justify-between gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
           <Plus className="w-4 h-4" />
           Add Integration
         </button>
@@ -192,11 +192,11 @@ export default function IntegrationsPage() {
                     <h3 className="font-bold text-grey-1 text-base">{integration.name}</h3>
                     <div className="flex items-center gap-1 mt-1">
                       {integration.status === "connected" ? (
-                        <span className="flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+                        <span className="flex items-center justify-between gap-1 text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
                           <CheckCircle2 className="w-3 h-3" /> Connected
                         </span>
                       ) : (
-                        <span className="flex items-center gap-1 text-xs font-medium text-grey-3 bg-grey-5 px-2 py-0.5 rounded-full">
+                        <span className="flex items-center justify-between gap-1 text-xs font-medium text-grey-3 bg-grey-5 px-2 py-0.5 rounded-full">
                           <XCircle className="w-3 h-3" /> Disconnected
                         </span>
                       )}
@@ -231,7 +231,7 @@ export default function IntegrationsPage() {
                 <button 
                   disabled
                   onClick={() => handleConnect(integration.id)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-between gap-2 disabled:opacity-40 disabled:cursor-not-allowed ${
                     integration.status === "connected" 
                       ? "bg-white border border-grey-4 text-grey-1 hover:bg-grey-5 hover:text-red-600" 
                       : "bg-primary-1 text-white hover:bg-primary-1/90"

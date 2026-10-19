@@ -128,7 +128,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
             aria-busy={isScopeChanging}
             className="flex h-[42px] w-full items-center justify-between rounded-[8px] border border-grey-4 bg-grey-5 px-3 text-xs font-medium text-grey-2 transition-colors hover:border-primary-1 hover:text-primary-1 disabled:cursor-wait disabled:opacity-70"
           >
-            <span className="flex items-center gap-2 truncate">
+            <span className="flex items-center justify-between gap-2 truncate">
               {isScopeChanging ? (
                 <LoaderCircle size={14} strokeWidth={2} className="shrink-0 animate-spin motion-reduce:animate-none" />
               ) : scope.type === "overview" ? (
@@ -148,7 +148,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                 <button
                   type="button"
                   onClick={() => changeScope({ type: "overview" }, "Overview")}
-                  className={`mx-1 flex w-[calc(100%-8px)] items-center gap-2 px-2 py-2 text-left text-sm ${scope.type === "overview" ? "rounded-[1px] border border-[#ABABAB] bg-grey-4 font-semibold text-grey-2" : "font-medium text-grey-2 hover:bg-grey-5"}`}
+                  className={`mx-1 flex w-[calc(100%-8px)] items-center justify-between gap-2 px-2 py-2 text-left text-sm ${scope.type === "overview" ? "rounded-[1px] border border-[#ABABAB] bg-grey-4 font-semibold text-grey-2" : "font-medium text-grey-2 hover:bg-grey-5"}`}
                 >
                   <Globe size={14} strokeWidth={2} />
                   Overview
@@ -159,7 +159,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                   key={branch.id}
                   type="button"
                   onClick={() => changeScope({ type: "branch", branchId: branch.id }, branch.name)}
-                  className={`mx-1 flex w-[calc(100%-8px)] items-center gap-2 px-2 py-2 text-left text-sm ${scope.type === "branch" && scope.branchId === branch.id ? "rounded-[1px] border border-[#ABABAB] bg-grey-4 font-semibold text-grey-2" : "font-medium text-grey-2 hover:bg-grey-5"}`}
+                  className={`mx-1 flex w-[calc(100%-8px)] items-center justify-between gap-2 px-2 py-2 text-left text-sm ${scope.type === "branch" && scope.branchId === branch.id ? "rounded-[1px] border border-[#ABABAB] bg-grey-4 font-semibold text-grey-2" : "font-medium text-grey-2 hover:bg-grey-5"}`}
                 >
                   <Building2 size={14} strokeWidth={2} />
                   {branch.name}
@@ -172,7 +172,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                     setIsScopeMenuOpen(false);
                     window.dispatchEvent(new Event("wellstaq:open-add-branch"));
                   }}
-                  className="mx-1 flex w-[calc(100%-8px)] items-center gap-2 border-t border-grey-4 px-2 py-2 text-sm font-medium text-primary-1 hover:bg-primary-5"
+                  className="mx-1 flex w-[calc(100%-8px)] items-center justify-between gap-2 border-t border-grey-4 px-2 py-2 text-sm font-medium text-primary-1 hover:bg-primary-5"
                 >
                   <Plus size={14} strokeWidth={2} />
                   Add branch
@@ -195,7 +195,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                 href={scopedHref(item.href)} 
                 onClick={onClose}
                 aria-current={isActive ? "page" : undefined}
-                className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${isCollapsed ? 'justify-center' : ''} ${isActive ? 'bg-primary-5 text-primary-1 font-bold' : 'text-grey-2 font-medium hover:bg-grey-5'}`}
+                className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${isCollapsed ? 'justify-center' : 'justify-between'} ${isActive ? 'bg-primary-5 text-primary-1 font-bold' : 'text-grey-2 font-medium hover:bg-grey-5'}`}
               >
                 <item.icon size={18} strokeWidth={2} className="flex-shrink-0" />
                 {!isCollapsed && <span className="text-sm whitespace-nowrap">{item.name}</span>}
@@ -277,7 +277,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                 href={scopedHref("/dashboard/integrations")}
                 onClick={onClose}
                 aria-current={isIntegrationsActive ? "page" : undefined}
-                className={`relative flex items-center gap-3 px-3 py-1.5 font-medium rounded-md cursor-pointer transition-colors text-sm ${isIntegrationsActive ? "bg-primary-5 text-primary-1 font-bold" : "text-grey-2 hover:bg-grey-5"}`}
+                className={`relative flex items-center justify-between gap-3 px-3 py-1.5 font-medium rounded-md cursor-pointer transition-colors text-sm ${isIntegrationsActive ? "bg-primary-5 text-primary-1 font-bold" : "text-grey-2 hover:bg-grey-5"}`}
               >
                 <Plus size={14} strokeWidth={2} className="flex-shrink-0" />
                 <span className="whitespace-nowrap">Add Integration</span>
@@ -294,7 +294,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
             href={scopedHref("/dashboard/teams")} 
             onClick={onClose}
             aria-current={pathname === '/dashboard/teams' ? "page" : undefined}
-            className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${isCollapsed ? 'justify-center' : ''} ${pathname === '/dashboard/teams' ? 'bg-primary-5 text-primary-1 font-bold' : 'text-grey-2 font-medium hover:bg-grey-5'}`}
+            className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${isCollapsed ? 'justify-center' : 'justify-between'} ${pathname === '/dashboard/teams' ? 'bg-primary-5 text-primary-1 font-bold' : 'text-grey-2 font-medium hover:bg-grey-5'}`}
           >
             <Users size={18} strokeWidth={2} className="flex-shrink-0" />
             {!isCollapsed && <span className="text-sm whitespace-nowrap">Team</span>}
@@ -304,7 +304,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
             href={scopedHref("/dashboard/invites")}
             onClick={onClose}
             aria-current={pathname === '/dashboard/invites' ? "page" : undefined}
-            className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${isCollapsed ? 'justify-center' : ''} ${pathname === '/dashboard/invites' ? 'bg-primary-5 text-primary-1 font-bold' : 'text-grey-2 font-medium hover:bg-grey-5'}`}
+            className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${isCollapsed ? 'justify-center' : 'justify-between'} ${pathname === '/dashboard/invites' ? 'bg-primary-5 text-primary-1 font-bold' : 'text-grey-2 font-medium hover:bg-grey-5'}`}
           >
             <MailPlus size={18} strokeWidth={2} className="flex-shrink-0" />
             {!isCollapsed && <span className="text-sm whitespace-nowrap">Pending Invites</span>}
@@ -314,7 +314,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
             href={scopedHref("/dashboard/settings")} 
             onClick={onClose}
             aria-current={pathname === '/dashboard/settings' ? "page" : undefined}
-            className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${isCollapsed ? 'justify-center' : ''} ${pathname === '/dashboard/settings' ? 'bg-primary-5 text-primary-1 font-bold' : 'text-grey-2 font-medium hover:bg-grey-5'}`}
+            className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${isCollapsed ? 'justify-center' : 'justify-between'} ${pathname === '/dashboard/settings' ? 'bg-primary-5 text-primary-1 font-bold' : 'text-grey-2 font-medium hover:bg-grey-5'}`}
           >
             <Settings size={18} strokeWidth={2} className="flex-shrink-0" />
             {!isCollapsed && <span className="text-sm whitespace-nowrap">Settings</span>}
@@ -324,7 +324,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
             href={scopedHref("/dashboard/contact")} 
             onClick={onClose}
             aria-current={pathname === '/dashboard/contact' ? "page" : undefined}
-            className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${isCollapsed ? 'justify-center' : ''} ${pathname === '/dashboard/contact' ? 'bg-[#F7F7F7] text-[#6B6B6B] font-bold' : 'text-grey-2 font-medium hover:bg-grey-5'}`}
+            className={`relative flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors ${isCollapsed ? 'justify-center' : 'justify-between'} ${pathname === '/dashboard/contact' ? 'bg-[#F7F7F7] text-[#6B6B6B] font-bold' : 'text-grey-2 font-medium hover:bg-grey-5'}`}
           >
             <MessageSquare size={18} strokeWidth={2} className="flex-shrink-0" />
             {!isCollapsed && <span className="text-sm whitespace-nowrap">Contact Support</span>}

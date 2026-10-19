@@ -180,7 +180,7 @@ export default function MessagesPage() {
               </div>
 
               <div className="border-t border-grey-4 bg-white p-4">
-                <div className="flex items-center gap-3 rounded-xl border border-grey-4 bg-white px-4 py-2 focus-within:ring-2 focus-within:ring-primary-1">
+                <div data-control="input" className="flex h-10 items-center justify-between gap-3 rounded-xl border border-grey-4 bg-white px-4 focus-within:ring-2 focus-within:ring-primary-1">
                   <input
                     value={draft}
                     onChange={(event) => setDraft(event.target.value)}

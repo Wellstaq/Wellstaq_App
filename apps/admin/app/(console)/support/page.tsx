@@ -121,7 +121,7 @@ export default function SupportPage() {
                 <div><StatusBadge status={selected.status} /></div>
               )}
             </div>
-            <a href={`mailto:${selected.email}?subject=${encodeURIComponent(`Re: ${selected.subject}`)}`} className="inline-flex h-10 items-center gap-2 rounded-[12px] border border-line px-4 text-sm font-medium text-grey-1 hover:bg-grey-5">
+            <a href={`mailto:${selected.email}?subject=${encodeURIComponent(`Re: ${selected.subject}`)}`} className="inline-flex h-10 items-center justify-between gap-2 rounded-[12px] border border-line px-4 text-sm font-medium text-grey-1 hover:bg-grey-5">
               <Mail className="h-4 w-4" aria-hidden="true" /> Reply by email
             </a>
           </div>

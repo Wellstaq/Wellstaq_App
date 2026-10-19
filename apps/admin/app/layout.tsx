@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Funnel_Display } from "next/font/google";
 import { Toaster } from "sonner";
+import { AlertCircle, AlertTriangle, CheckCircle2, LoaderCircle, XCircle } from "@wellstaq/ui/icons";
 import { ApiErrorNotifier } from "@/components/providers/api-error-notifier";
 import "./globals.css";
 
@@ -20,7 +21,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${inter.variable} ${funnelDisplay.variable}`} suppressHydrationWarning>
         {children}
         <ApiErrorNotifier />
-        <Toaster position="top-center" />
+        <Toaster position="top-center" icons={{
+          success: <CheckCircle2 size={20} aria-hidden="true" />,
+          info: <AlertCircle size={20} aria-hidden="true" />,
+          warning: <AlertTriangle size={20} aria-hidden="true" />,
+          error: <XCircle size={20} aria-hidden="true" />,
+          close: <XCircle size={16} aria-hidden="true" />,
+          loading: <LoaderCircle size={20} className="animate-spin motion-reduce:animate-none" aria-hidden="true" />,
+        }} />
       </body>
     </html>
   );

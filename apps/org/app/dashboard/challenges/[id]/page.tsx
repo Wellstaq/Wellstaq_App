@@ -137,7 +137,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
 
   return (
     <div className="max-w-7xl mx-auto space-y-6 pb-12">
-      <Link href="/dashboard/challenges" className="flex items-center gap-2 text-sm text-grey-2 hover:text-grey-1 transition-colors w-fit">
+      <Link href="/dashboard/challenges" className="flex items-center justify-between gap-2 text-sm text-grey-2 hover:text-grey-1 transition-colors w-fit">
         <ChevronLeft className="w-4 h-4" />
         Go back
       </Link>
@@ -219,7 +219,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
 
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <div className="p-4 bg-grey-5 rounded-[8px] border border-grey-4">
-                  <div className="flex items-center gap-2 text-grey-3 mb-1">
+                  <div className="flex items-center justify-between gap-2 text-grey-3 mb-1">
                     <Calendar className="w-4 h-4" />
                     <span className="text-[10px] font-bold uppercase tracking-wider">Duration</span>
                   </div>
@@ -228,7 +228,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
                   </p>
                 </div>
                 <div className="p-4 bg-grey-5 rounded-[8px] border border-grey-4">
-                  <div className="flex items-center gap-2 text-grey-3 mb-1">
+                  <div className="flex items-center justify-between gap-2 text-grey-3 mb-1">
                     <Target className="w-4 h-4" />
                     <span className="text-[10px] font-bold uppercase tracking-wider">Target</span>
                   </div>
@@ -237,21 +237,21 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
                   </p>
                 </div>
                 <div className="p-4 bg-grey-5 rounded-[8px] border border-grey-4">
-                  <div className="flex items-center gap-2 text-grey-3 mb-1">
+                  <div className="flex items-center justify-between gap-2 text-grey-3 mb-1">
                     <Users className="w-4 h-4" />
                     <span className="text-[10px] font-bold uppercase tracking-wider">Participants</span>
                   </div>
                   <p className="text-xs font-bold text-grey-1">{participantsTotal}</p>
                 </div>
                 <div className="p-4 bg-grey-5 rounded-[8px] border border-grey-4">
-                  <div className="flex items-center gap-2 text-grey-3 mb-1">
+                  <div className="flex items-center justify-between gap-2 text-grey-3 mb-1">
                     <Trophy className="w-4 h-4" />
                     <span className="text-[10px] font-bold uppercase tracking-wider">Scope</span>
                   </div>
                   <p className="text-xs font-bold text-grey-1">{challenge.branchId ? "Branch" : "Organization-wide"}</p>
                 </div>
                 <div className="p-4 bg-grey-5 rounded-[8px] border border-grey-4">
-                  <div className="flex items-center gap-2 text-grey-3 mb-1">
+                  <div className="flex items-center justify-between gap-2 text-grey-3 mb-1">
                     <Target className="w-4 h-4" />
                     <span className="text-[10px] font-bold uppercase tracking-wider">Tracking</span>
                   </div>
@@ -265,7 +265,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
                 <button
                   onClick={handleJoinToggle}
                   disabled={isJoinBusy || (isParticipant && isCompleted)}
-                  className={`w-full py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 ${
+                  className={`w-full px-4 py-3 rounded-xl font-bold text-sm flex items-center justify-between gap-2 transition-colors disabled:opacity-50 ${
                     isParticipant
                       ? "border border-red-500 text-red-500 hover:bg-red-50"
                       : "bg-primary-1 text-white hover:bg-primary-2"
@@ -282,7 +282,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
         {/* Sidebar */}
         <div className="flex flex-col">
           <div className="flex-1 bg-white rounded-[12px] border border-grey-4 p-3">
-            <h2 className="font-bold text-grey-1 mb-6 flex items-center gap-2">
+            <h2 className="font-bold text-grey-1 mb-6 flex items-center justify-between gap-2">
               <Trophy className="w-5 h-5 text-yellow-500" />
               Participants ({participantsTotal})
             </h2>

@@ -68,7 +68,7 @@ export function Step2OTP({ data, updateData, onNext, isLoading, fieldErrors }: S
             value={digit}
             onChange={(e) => handleChange(index, e.target.value.replace(/\D/g, ""))}
             onKeyDown={(e) => handleKeyDown(index, e)}
-            className="h-12 w-full min-w-0 rounded-xl border border-grey-4 text-center text-lg font-medium transition-all focus:outline-none focus:ring-2 focus:ring-primary-1"
+            className="h-10 w-full min-w-0 rounded-xl border border-grey-4 text-center text-lg font-medium transition-all focus:outline-none focus:ring-2 focus:ring-primary-1"
             maxLength={1}
           />
         ))}

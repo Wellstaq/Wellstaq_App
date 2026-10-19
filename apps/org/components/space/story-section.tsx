@@ -355,7 +355,7 @@ export function StoriesSection({
                   onClick={(e) => { e.stopPropagation(); onToggleLike(currentStory.id, isLiked); }}
                   aria-pressed={isLiked}
                   aria-label={isLiked ? "Unlike story" : "Like story"}
-                  className="flex items-center gap-2 rounded-full bg-black/50 px-3 py-2 text-white hover:bg-black/70"
+                  className="flex items-center justify-between gap-2 rounded-full bg-black/50 px-3 py-2 text-white hover:bg-black/70"
                 >
                   <Heart className={`w-5 h-5 ${isLiked ? "fill-red-500 text-red-500" : ""}`} />
                   <span className="text-xs font-medium">{likeCount}</span>

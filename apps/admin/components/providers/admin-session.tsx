@@ -22,9 +22,11 @@ export function AdminSessionProvider({ children }: { children: ReactNode }) {
 
   if (session.isLoading && !session.data) {
     return (
-      <div className="flex h-dvh items-center justify-center gap-2 text-sm text-grey-2" role="status">
-        <LoaderCircle className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
-        Checking your session...
+      <div className="flex h-dvh items-center justify-center text-sm text-grey-2" role="status">
+        <span className="flex items-center justify-between gap-2">
+          <LoaderCircle className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+          Checking your session...
+        </span>
       </div>
     );
   }

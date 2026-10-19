@@ -1,5 +1,6 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { createRequire } from "node:module";
 
 const names = [
   "arrow-right-01",
@@ -43,10 +44,25 @@ const names = [
   "lovely",
   "microphone-2",
   "global",
+  "category-2",
+  "arrow-right-03",
+  "arrow-down-02",
+  "clock",
+  "user",
+  "setting-2",
+  "more",
+  "flash",
+  "gps",
+  "emoji-normal",
+  "emoji-sad",
+  "close-square",
+  "share",
+  "menu",
 ];
-const linearIcons = new Set(["arrow-right-01", "add"]);
+const linearIcons = new Set(["arrow-right-01", "add", "arrow-right-03", "arrow-down-02"]);
 
-const iconsaxDir = path.resolve("node_modules/iconsax/dist");
+const require = createRequire(import.meta.url);
+const iconsaxDir = path.dirname(require.resolve("iconsax/manifest.json"));
 const manifest = JSON.parse(
   await readFile(path.join(iconsaxDir, "manifest.json"), "utf8"),
 );
