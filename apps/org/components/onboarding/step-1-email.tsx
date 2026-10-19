@@ -1,4 +1,5 @@
 // path: components/onboarding/step-1-email.tsx
+import { ActionForm } from "@/components/ui/action-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +19,7 @@ export function Step1Email({ data, updateData, onNext, isLoading, error }: Step1
   const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email.trim());
 
   return (
-    <div className="flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <ActionForm onAction={onNext} canSubmit={Boolean(isValid)} pending={isLoading} className="flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
       <h2 className="mb-2 text-[24px] md:text-[30px] font-bold">Let&apos;s get you started</h2>
       <p className="mb-8 text-sm text-grey-2">Enter your email address to get started.</p>
 
@@ -45,7 +46,7 @@ export function Step1Email({ data, updateData, onNext, isLoading, error }: Step1
         </div>
       </div>
 
-      <Button onClick={onNext} disabled={!isValid || isLoading} size="lg" className="w-full">
+      <Button type="submit" disabled={!isValid || isLoading} size="lg" className="w-full">
         {isLoading ? "Sending OTP..." : "Continue"}
       </Button>
       <p className="text-sm text-grey-3 text-center mt-6">
@@ -61,6 +62,6 @@ export function Step1Email({ data, updateData, onNext, isLoading, error }: Step1
         <ChevronLeft aria-hidden="true" className="h-4 w-4" />
         Go back to landing page
       </a>
-    </div>
+    </ActionForm>
   );
 }

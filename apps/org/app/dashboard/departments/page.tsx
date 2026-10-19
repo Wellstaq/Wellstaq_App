@@ -2,6 +2,7 @@
 
 import { AnimatePresence } from "motion/react";
 import { DrawerLayer } from "@/components/ui/drawer";
+import { ActionForm } from "@/components/ui/action-form";
 
 import React, { useState, useRef, useEffect } from "react";
 import { Search, Plus, X, Users, Activity, Calendar, ChevronDown, Check, UserPlus, Edit2, Trash2 } from "@wellstaq/ui/icons";
@@ -304,6 +305,7 @@ export default function DepartmentsPage() {
           <p className="page-description">Manage and track your organization&apos;s departments.</p>
         </div>
         {canCreateDepartment && scope.type === "branch" && <button
+          data-tour="create-department"
           onClick={() => setIsCreateModalOpen(true)}
           className="flex items-center justify-center gap-2 px-4 py-2 bg-[#EA6A05] text-white rounded-lg text-sm font-medium hover:bg-[#C45700]"
         >
@@ -646,7 +648,7 @@ export default function DepartmentsPage() {
       {/* Create Department Modal */}
       <AnimatePresence>{isCreateModalOpen && (
         <DrawerLayer onClose={() => setIsCreateModalOpen(false)} label="Create New Department" >
-          <div className="flex h-full w-full flex-col overflow-hidden bg-white">
+          <ActionForm onAction={handleCreateDepartment} canSubmit={Boolean(newDepartmentName.trim())} className="flex h-full w-full flex-col overflow-hidden bg-white">
             <div className="h-[75px] shrink-0 px-6 border-b border-grey-4 flex justify-between items-center">
               <div>
                 <h2 className="text-base font-bold text-grey-1">Create New Department</h2>
@@ -712,7 +714,7 @@ export default function DepartmentsPage() {
                             {member.avatarUrl ? <Image src={member.avatarUrl} alt={`${member.firstName} ${member.lastName}`} fill className="object-cover" /> : member.firstName?.[0]}
                           </div>
                           <span className="text-xs font-medium text-grey-1">{member.firstName} {member.lastName}</span>
-                          <button onClick={() => toggleMemberSelection(id)} className="text-red-400 hover:text-red-600 ml-1">
+                          <button type="button" onClick={() => toggleMemberSelection(id)} className="text-red-400 hover:text-red-600 ml-1">
                             <X className="w-3 h-3" />
                           </button>
                         </div>
@@ -725,19 +727,21 @@ export default function DepartmentsPage() {
 
             <div className="h-[75px] shrink-0 px-6 border-t border-grey-4 flex justify-end items-center gap-3 bg-grey-5">
               <button
+                type="button"
                 onClick={() => setIsCreateModalOpen(false)}
                 className="px-6 py-2 rounded-lg border border-grey-4 text-sm font-medium text-grey-1 bg-white hover:bg-grey-5"
               >
                 Cancel
               </button>
               <button
-                onClick={handleCreateDepartment}
+                type="submit"
+                disabled={!newDepartmentName.trim()}
                 className="px-6 py-2 rounded-lg bg-[#EA6A05] text-white text-sm font-medium hover:bg-[#C45700]"
               >
                 Create Department
               </button>
             </div>
-          </div>
+          </ActionForm>
         </DrawerLayer>
       )}</AnimatePresence>
 

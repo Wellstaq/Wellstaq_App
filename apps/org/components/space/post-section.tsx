@@ -83,7 +83,7 @@ function CreatePostBox({
 }) {
   const atAttachmentLimit = attachments.length >= MAX_POST_ATTACHMENTS;
   return (
-    <div className="bg-white p-4 rounded-[8px] border border-grey-4">
+    <div data-tour="post-composer" className="bg-white p-4 rounded-[8px] border border-grey-4">
       <div className="flex gap-3 mb-4">
         <Avatar url={user.avatarUrl} seed={user.id} firstName={user.firstName} lastName={user.lastName} size={40} showPlaceholderBadge />
         <div className="flex-1">

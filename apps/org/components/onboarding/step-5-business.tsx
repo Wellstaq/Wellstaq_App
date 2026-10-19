@@ -1,4 +1,5 @@
 // path: components/onboarding/step-4-business.tsx
+import { ActionForm } from "@/components/ui/action-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,7 +27,7 @@ export function Step5Business({ data, updateData, onNext, isLoading, fieldErrors
   const isValid = data.businessName && data.employeeCount && businessNameStatus === "available";
 
   return (
-    <div className="flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <ActionForm onAction={onNext} canSubmit={Boolean(isValid)} pending={isLoading} className="flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
       <h2 className="mb-8 text-[24px] md:text-[30px] font-bold">Business Information</h2>
 
       <div className="mb-2 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
@@ -84,9 +85,9 @@ export function Step5Business({ data, updateData, onNext, isLoading, fieldErrors
         <FieldError errors={fieldErrors} field="employee_count" />
       </div>
 
-      <Button onClick={onNext} disabled={!isValid || isLoading} size="lg" className="w-full">
+      <Button type="submit" disabled={!isValid || isLoading} size="lg" className="w-full">
         {isLoading ? "Saving..." : "Continue"}
       </Button>
-    </div>
+    </ActionForm>
   );
 }

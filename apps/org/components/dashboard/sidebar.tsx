@@ -44,10 +44,11 @@ function ActivePageStroke() {
   );
 }
 
-export function Sidebar({ onClose }: { onClose?: () => void }) {
+export function Sidebar({ onClose, forceExpanded = false }: { onClose?: () => void; forceExpanded?: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [collapsed, setIsCollapsed] = useState(false);
+  const isCollapsed = forceExpanded ? false : collapsed;
   const [isScopeMenuOpen, setIsScopeMenuOpen] = useState(false);
   const scopeMenuRef = useRef<HTMLDivElement>(null);
   const { challenges: CHALLENGES, currentUser, branches: orgBranches } = useDashboardData();
@@ -129,7 +130,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
           context for every navigation destination below it. */}
       {!isCollapsed && switchable && (
         <div ref={scopeMenuRef} className="relative mt-3 pl-3 pr-5">
-          <button data-control="select"
+          <button data-control="select" data-tour="scope"
             type="button"
             aria-label="Switch organization scope"
             aria-expanded={isScopeMenuOpen}
@@ -196,12 +197,13 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
       <div className="flex flex-1 flex-col overflow-y-auto pl-3 pr-5 pb-2 pt-3 space-y-6 overflow-x-hidden no-scrollbar">
         
         {/* Main Nav */}
-        <div className="space-y-1">
+        <div className="space-y-1" data-tour="main-navigation">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
             return (
               <Link 
                 key={item.name}
+                data-tour={`nav-${item.href.split("/").pop()}`}
                 href={scopedHref(item.href)} 
                 onClick={onClose}
                 aria-current={isActive ? "page" : undefined}
@@ -219,6 +221,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         <div className="border-t border-grey-4 pt-4">
           <div className={`relative flex items-center px-3 mb-2 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
             <Link
+              data-tour="nav-challenges"
               href={scopedHref("/dashboard/challenges")}
               onClick={onClose}
               aria-current={isChallengesActive ? "page" : undefined}
@@ -301,6 +304,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         <div className="mt-auto pb-[60px]">
           <div className="border-t border-grey-4 pt-3 space-y-1">
           <Link 
+            data-tour="nav-team"
             href={scopedHref("/dashboard/teams")} 
             onClick={onClose}
             aria-current={pathname === '/dashboard/teams' ? "page" : undefined}
@@ -321,6 +325,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
             {pathname === '/dashboard/invites' && <ActivePageStroke />}
           </Link>}
           <Link 
+            data-tour="nav-settings"
             href={scopedHref("/dashboard/settings")} 
             onClick={onClose}
             aria-current={pathname === '/dashboard/settings' ? "page" : undefined}

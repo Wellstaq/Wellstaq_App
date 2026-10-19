@@ -10,6 +10,7 @@ import { getSwitchableScopes } from "@/lib/permissions";
 import { api } from "@/services/api";
 import { clearCachedCurrentUser } from "@/services/auth-token";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ProductTour } from "@/components/dashboard/product-tour";
 
 function AccessGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -58,6 +59,7 @@ function AccessGate({ children }: { children: React.ReactNode }) {
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isTourNavigationOpen, setIsTourNavigationOpen] = useState(false);
   const pathname = usePathname();
   const isSpacePage = pathname === "/dashboard/space";
 
@@ -70,15 +72,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <Suspense fallback={<div className="flex h-screen items-center justify-center text-grey-3">Loading...</div>}>
         <AccessGate>
           <div className="flex h-dvh bg-grey-5 overflow-hidden">
-            {isSidebarOpen && (
+            {isSidebarOpen && !isTourNavigationOpen && (
               <div
                 className="fixed inset-0 bg-black/50 z-40 lg:hidden"
                 onClick={() => setIsSidebarOpen(false)}
               />
             )}
 
-            <div className={`fixed lg:relative z-50 transition-transform duration-300 lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-              <Sidebar onClose={() => setIsSidebarOpen(false)} />
+            <div className={`fixed lg:relative z-50 lg:translate-x-0 ${isTourNavigationOpen ? 'transition-none' : 'transition-transform duration-300 motion-reduce:transition-none'} ${isSidebarOpen || isTourNavigationOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+              <Sidebar onClose={() => setIsSidebarOpen(false)} forceExpanded={isSidebarOpen || isTourNavigationOpen} />
             </div>
 
             <div className="flex-1 flex flex-col overflow-hidden w-full">
@@ -88,6 +90,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </main>
             </div>
           </div>
+          <ProductTour onNavigationChange={setIsTourNavigationOpen} />
         </AccessGate>
       </Suspense>
     </DashboardDataProvider>

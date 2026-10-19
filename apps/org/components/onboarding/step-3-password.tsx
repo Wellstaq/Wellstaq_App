@@ -1,5 +1,6 @@
 // path: components/onboarding/step-3-password.tsx
 import { useState } from "react";
+import { ActionForm } from "@/components/ui/action-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,7 +22,7 @@ export function Step3Password({ data, updateData, onNext, isLoading, fieldErrors
   const isValid = isPasswordValid(data.password);
 
   return (
-    <div className="flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <ActionForm onAction={onNext} canSubmit={Boolean(isValid)} pending={isLoading} className="flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
       <h2 className="mb-8 text-[24px] md:text-[30px] font-bold">Set Password</h2>
 
       <div className="flex flex-col gap-2 mb-4">
@@ -67,9 +68,9 @@ export function Step3Password({ data, updateData, onNext, isLoading, fieldErrors
         })}
       </ul>
 
-      <Button onClick={onNext} disabled={!isValid || isLoading} size="lg" className="w-full">
+      <Button type="submit" disabled={!isValid || isLoading} size="lg" className="w-full">
         {isLoading ? "Saving..." : "Continue"}
       </Button>
-    </div>
+    </ActionForm>
   );
 }

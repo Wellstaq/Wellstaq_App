@@ -1,3 +1,4 @@
+import { ActionForm } from "@/components/ui/action-form";
 import { Button } from "@/components/ui/button";
 import { SelectablePill } from "@/components/ui/selectable-pill";
 import { OnboardingData } from "@/types";
@@ -19,7 +20,7 @@ export function Step6Organization({ data, updateData, onNext, isLoading }: Step6
   const isValid = !!data.organizationType;
 
   return (
-    <div className="flex flex-col w-full items-start text-left animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <ActionForm onAction={onNext} canSubmit={Boolean(isValid)} pending={isLoading} className="flex flex-col w-full items-start text-left animate-in fade-in slide-in-from-bottom-4 duration-500">
       <h3 className="mb-3 text-[24px] md:text-[30px] font-bold">What best describes your organization?</h3>
       <p className="text-sm text-grey-2 mb-10 max-w-md">
         Your ideas and input shapes the experience at wellstaq, this helps us tailor wellbeing insights and recommendations.
@@ -38,13 +39,13 @@ export function Step6Organization({ data, updateData, onNext, isLoading }: Step6
       </div>
 
       <Button 
-        onClick={onNext} 
+        type="submit"
         disabled={!isValid || isLoading}
         size="lg"
         className="w-full"
       >
         {isLoading ? "Saving..." : "Continue"}
       </Button>
-    </div>
+    </ActionForm>
   );
 }

@@ -4,6 +4,7 @@ import { FilterDropdown } from "@/components/ui/filter-dropdown";
 import { ModalLayer } from "@/components/ui/modal-layer";
 import { AnimatePresence } from "motion/react";
 import { DrawerLayer } from "@/components/ui/drawer";
+import { ActionForm } from "@/components/ui/action-form";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
@@ -252,10 +253,10 @@ export default function ClubsPage() {
 
       <AnimatePresence>{isCreateOpen && (
         <DrawerLayer onClose={() => { if (!isCreating) setIsCreateOpen(false); }} label="Create Club" >
-          <div className="flex h-full w-full flex-col overflow-hidden bg-white">
+          <ActionForm onAction={createClub} canSubmit={Boolean(form.name.trim() && branchId)} pending={isCreating} className="flex h-full w-full flex-col overflow-hidden bg-white">
             <div className="shrink-0 border-b border-grey-4 p-6 flex items-center justify-between">
               <h2 className="text-xl font-bold text-grey-1">Create Club</h2>
-              <button onClick={() => setIsCreateOpen(false)} className="rounded-lg p-2 text-grey-3 hover:bg-grey-5" aria-label="Close create club form"><X className="h-5 w-5" /></button>
+              <button type="button" onClick={() => setIsCreateOpen(false)} className="rounded-lg p-2 text-grey-3 hover:bg-grey-5" aria-label="Close create club form"><X className="h-5 w-5" /></button>
             </div>
             <div className="min-h-0 flex-1 overflow-y-auto p-6 space-y-4">
               <label className="block text-sm font-medium text-grey-1">Club name
@@ -276,10 +277,10 @@ export default function ClubsPage() {
               </div>
             </div>
             <div className="shrink-0 border-t border-grey-4 p-6 flex justify-end gap-3">
-              <button onClick={() => setIsCreateOpen(false)} className="rounded-lg border border-grey-4 px-4 py-2 text-sm font-medium text-grey-2">Cancel</button>
-              <button onClick={() => void createClub()} disabled={!form.name.trim() || isCreating || !branchId} className="rounded-lg bg-primary-1 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">{isCreating ? "Creating..." : "Create Club"}</button>
+              <button type="button" onClick={() => setIsCreateOpen(false)} className="rounded-lg border border-grey-4 px-4 py-2 text-sm font-medium text-grey-2">Cancel</button>
+              <button type="submit" disabled={!form.name.trim() || isCreating || !branchId} className="rounded-lg bg-primary-1 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">{isCreating ? "Creating..." : "Create Club"}</button>
             </div>
-          </div>
+          </ActionForm>
         </DrawerLayer>
       )}</AnimatePresence>
     </div>

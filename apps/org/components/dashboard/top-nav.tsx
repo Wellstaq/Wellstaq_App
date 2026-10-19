@@ -12,6 +12,7 @@ import { ModalLayer } from "@/components/ui/modal-layer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { ActionForm } from "@/components/ui/action-form";
 import { FilterDropdown } from "@/components/ui/filter-dropdown";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
@@ -22,6 +23,8 @@ import { getUserErrorMessage } from "@/lib/errors";
 import { useDashboardScope } from "@/lib/scope";
 import { humanizeIdentifier } from "@/lib/format";
 import type { Branch, NotificationItem, OrganizationMemberInfo } from "@/types/api";
+import { TourLauncher, openProductTour } from "@/components/dashboard/product-tour";
+import { Compass } from "@wellstaq/ui/icons";
 
 type SearchEntry = { label: string; href: string; detail: string; keywords: string };
 const normalizeSearch = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -320,7 +323,7 @@ export function TopNav({ onMenuClick }: { onMenuClick?: () => void }) {
 
   return (
     <>
-      <header className="h-[72px] bg-white border-b border-grey-4 flex items-center justify-between px-4 lg:px-5 relative z-40">
+      <header data-tour="top-bar" className="h-[72px] bg-white border-b border-grey-4 flex items-center justify-between px-4 lg:px-5 relative z-40">
         <div className="flex-1 flex items-center gap-2 lg:gap-4">
           {/* Mobile Menu Button */}
           <button
@@ -366,6 +369,7 @@ export function TopNav({ onMenuClick }: { onMenuClick?: () => void }) {
         </div>
 
         <div className="flex items-center gap-2 lg:gap-4 ml-2 lg:ml-4">
+          <TourLauncher />
           <div className="relative" ref={notificationsRef}>
             <button
               onClick={() => setIsNotificationsOpen((current) => !current)}
@@ -471,6 +475,10 @@ export function TopNav({ onMenuClick }: { onMenuClick?: () => void }) {
                     <Settings2 className="w-4 h-4" />
                     Settings
                   </Link>
+                  <button type="button" onClick={() => { setIsProfileOpen(false); openProductTour("dashboard"); }} className="flex w-full items-center justify-start gap-2 px-4 py-2 text-left text-sm text-grey-1 hover:bg-grey-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-1">
+                    <Compass className="h-4 w-4" aria-hidden="true" />
+                    Dashboard tour
+                  </button>
                   <button
                     onClick={() => {
                       setIsProfileOpen(false);
@@ -650,13 +658,14 @@ export function TopNav({ onMenuClick }: { onMenuClick?: () => void }) {
           : "Create another branch for your organization. Team members can be invited later."}
         footer={
           <>
-            <Button variant="outline" className="border-grey-4 bg-white text-grey-2 hover:bg-grey-5" onClick={closeBranchModal}>{createdBranch ? "Skip for now" : "Cancel"}</Button>
+            <Button type="button" variant="outline" className="border-grey-4 bg-white text-grey-2 hover:bg-grey-5" onClick={closeBranchModal}>{createdBranch ? "Skip for now" : "Cancel"}</Button>
             {createdBranch
-              ? <Button disabled={!selectedManagerId || isAssigningManager} onClick={handleAssignManager}>{isAssigningManager ? "Assigning..." : "Assign Manager"}</Button>
-              : <Button onClick={handleAddBranch}>Add Branch</Button>}
+              ? <Button type="submit" form="branch-action-form" disabled={!selectedManagerId || isAssigningManager}>{isAssigningManager ? "Assigning..." : "Assign Manager"}</Button>
+              : <Button type="submit" form="branch-action-form" disabled={!newBranchName.trim()}>Add Branch</Button>}
           </>
         }
       >
+        <ActionForm id="branch-action-form" onAction={createdBranch ? handleAssignManager : handleAddBranch} canSubmit={createdBranch ? Boolean(selectedManagerId) : Boolean(newBranchName.trim())} pending={isAssigningManager}>
         {createdBranch ? (
           <div className="space-y-2">
             <Label htmlFor="branchManager">Organization member</Label>
@@ -678,9 +687,10 @@ export function TopNav({ onMenuClick }: { onMenuClick?: () => void }) {
         ) : (
           <div className="space-y-2">
             <Label htmlFor="branchName">Branch Name</Label>
-            <Input id="branchName" autoFocus placeholder="e.g. Abuja Office" value={newBranchName} onChange={(e) => setNewBranchName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") void handleAddBranch(); }} />
+            <Input id="branchName" autoFocus placeholder="e.g. Abuja Office" value={newBranchName} onChange={(e) => setNewBranchName(e.target.value)} />
           </div>
         )}
+        </ActionForm>
       </Modal>
     </>
   );

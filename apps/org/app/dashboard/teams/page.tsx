@@ -324,7 +324,7 @@ export default function TeamsPage() {
       <div className="flex items-start justify-between gap-4">
         <div><h1 className="page-title">My Teams</h1>
         <p className="page-description">{scope.type === "branch" ? "Everyone assigned to this branch, including its manager." : "Everyone in the organization, including the super admin."}</p></div>
-        {canInvite && <button type="button" onClick={openInvite} className="flex items-center justify-center gap-2 rounded-lg bg-[#C45700] px-4 py-2 text-sm font-medium text-white"><Plus className="h-4 w-4" /> Add Team Member</button>}
+        {canInvite && <button type="button" data-tour="invite-member" onClick={openInvite} className="flex items-center justify-center gap-2 rounded-lg bg-[#C45700] px-4 py-2 text-sm font-medium text-white"><Plus className="h-4 w-4" /> Add Team Member</button>}
       </div>
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3">

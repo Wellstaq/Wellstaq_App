@@ -87,6 +87,7 @@ async function setup({ unavailable = false, pendingCount = false, partialFailure
     "react/jsx-runtime": jsx,
     "motion/react": { AnimatePresence: "AnimatePresence" },
     "@/components/ui/drawer": { DrawerLayer: "DrawerLayer" },
+    "@/components/ui/action-form": { ActionForm: "ActionForm" },
     "@wellstaq/ui/icons": new Proxy({}, { get: (_, name) => `Icon${name}` }),
     "next/image": "Image",
     "@/hooks/use-click-outside": { useClickOutside() {} },

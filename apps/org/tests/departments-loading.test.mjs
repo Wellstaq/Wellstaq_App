@@ -13,6 +13,7 @@ const imports = {
  'react/jsx-runtime': jsx,
  'motion/react': { AnimatePresence: ({children}) => children },
  '@/components/ui/drawer': { DrawerLayer: icon },
+ '@/components/ui/action-form': { ActionForm: icon },
  '@wellstaq/ui/icons': components,
  'next/image': { default: icon },
  '@/hooks/use-click-outside': { useClickOutside() {} },

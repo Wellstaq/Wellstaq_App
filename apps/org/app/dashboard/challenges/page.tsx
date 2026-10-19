@@ -250,6 +250,7 @@ export default function ChallengesPage() {
           )}
           {canCreate && (
             <button
+              data-tour="create-challenge"
               onClick={() => setIsCreateModalOpen(true)}
               className="px-4 py-2 bg-[#C45700] text-white font-medium text-sm rounded-lg hover:bg-[#C45700]/90 transition-colors flex items-center justify-center gap-2"
             >

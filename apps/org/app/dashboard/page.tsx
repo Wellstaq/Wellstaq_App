@@ -271,7 +271,7 @@ export default function DashboardPage() {
           )}
 
           {!statsLoading && !statsError && stats && (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-[12px]">
+            <div data-tour="dashboard-metrics" className="grid grid-cols-2 lg:grid-cols-4 gap-[12px]">
               <StatCard
                 href={scopedMetricHref("/dashboard/teams")}
                 title="Total Staff"

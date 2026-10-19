@@ -17,6 +17,7 @@ function load(file, imports) {
  return loaded.exports;
 }
 const imports={react:React,'react/jsx-runtime':jsx,'iconsax-react':iconsax};
+const {ActionForm}=load('../components/ui/action-form.tsx',imports);
 const icons=load('../../../packages/ui/src/icons.tsx',imports);
 const {cn}=load('../../../packages/ui/src/utils.ts',{'clsx':{clsx},'tailwind-merge':{twMerge}});
 const {Button}=load('../../../packages/ui/src/button.tsx',{...imports,'./utils':{cn}});
@@ -100,6 +101,7 @@ test('password hints keep each status icon 8px from its text without changing th
  const {Step3Password}=load('../components/onboarding/step-3-password.tsx',{
   ...imports,
   '@/components/ui/button':{Button},
+  '@/components/ui/action-form':{ActionForm},
   '@/components/ui/input':{Input},
   '@/components/ui/label':{Label},
   '@wellstaq/ui/icons':icons,

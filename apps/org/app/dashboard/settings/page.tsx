@@ -516,7 +516,7 @@ export default function SettingsPage() {
 
       <div className="flex flex-col gap-[12px] border-0 bg-transparent p-0 lg:flex-row">
         {/* Left Sidebar */}
-        <div className="w-full lg:w-[280px] flex flex-col gap-2 p-3 border border-grey-4 rounded-[8px] bg-white">
+        <div data-tour="settings-sections" className="w-full lg:w-[280px] flex flex-col gap-2 p-3 border border-grey-4 rounded-[8px] bg-white">
           {NAV_ITEMS.filter((item) => (item.id !== "billing" || canManageBilling) && (item.id !== "wellbeing-pulse" || canManagePulseCadence)).map((item) => (
             <button
               key={item.id}
@@ -892,7 +892,7 @@ export default function SettingsPage() {
 
           {["profile", "notifications", "privacy"].includes(activeTab) && <div className="mt-auto flex items-center justify-end gap-3 border-t border-grey-4 pt-6">
             <Button variant="outline" onClick={() => void discardChanges()}>Discard Changes</Button>
-            <Button disabled={profileSaving || preferencesSaving} onClick={handleSave}>{profileSaving || preferencesSaving ? "Saving..." : "Save Changes"}</Button>
+            <Button data-tour="settings-save" disabled={profileSaving || preferencesSaving} onClick={handleSave}>{profileSaving || preferencesSaving ? "Saving..." : "Save Changes"}</Button>
           </div>}
         </div>
       </div>

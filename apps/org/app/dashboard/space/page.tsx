@@ -1001,7 +1001,7 @@ export default function SpacePage() {
                 <h2 className="page-title">Feed</h2>
                 <div className="ml-auto flex items-center gap-2">
                   {(
-                    <div className="flex bg-grey-5 rounded-lg p-0.5">
+                    <div data-tour="feed-views" className="flex bg-grey-5 rounded-lg p-0.5">
                       <SelectablePill onClick={() => setFeedView("all")} selected={feedView === "all"} appearance="plain" className="px-3">All posts</SelectablePill>
                       {scope.type === "branch" && <SelectablePill onClick={() => setFeedView("branch")} selected={feedView === "branch"} appearance="plain" className="px-3">My Branch</SelectablePill>}
                       <SelectablePill onClick={() => setFeedView("org")} selected={feedView === "org"} appearance="plain" className="px-3">General</SelectablePill>

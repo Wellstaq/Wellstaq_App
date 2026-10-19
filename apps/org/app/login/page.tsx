@@ -7,6 +7,7 @@ import Link from "next/link";
 import { SplitLayout } from "@/components/layout/split-layout";
 import { OnboardingPane } from "@/components/layout/onboarding-pane";
 import { Button } from "@/components/ui/button";
+import { ActionForm } from "@/components/ui/action-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FieldError } from "@/components/onboarding/field-error";
@@ -131,7 +132,7 @@ function LoginPageContent() {
     <SplitLayout heroTagline="Beyond the everyday.">
       <OnboardingPane>
         <div className="flex-1 flex flex-col justify-center">
-          <div className="mx-auto flex w-full max-w-[560px] flex-col animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <ActionForm onAction={twoFaChallenge ? handleTwoFaSubmit : handleSubmit} canSubmit={twoFaChallenge ? twoFaCode.length >= 6 : isValid} pending={isLoading} className="mx-auto flex w-full max-w-[560px] flex-col animate-in fade-in slide-in-from-bottom-4 duration-500">
             <h2 className="mb-8 text-[24px] md:text-[30px] font-bold">{twoFaChallenge ? "Verify your login" : "Get back into your account"}</h2>
 
             {errorParam === "insufficient_permission" && (
@@ -235,7 +236,7 @@ function LoginPageContent() {
             )}
 
             <Button
-              onClick={twoFaChallenge ? handleTwoFaSubmit : handleSubmit}
+              type="submit"
               disabled={twoFaChallenge ? twoFaCode.length < 6 || isLoading : !isValid || isLoading}
               className="w-full"
             >
@@ -258,7 +259,7 @@ function LoginPageContent() {
                 Sign up
               </Link>
             </p>
-          </div>
+          </ActionForm>
         </div>
       </OnboardingPane>
     </SplitLayout>

@@ -1,5 +1,6 @@
 // path: components/onboarding/step-2-otp.tsx
 import { useState, useRef, useEffect } from "react";
+import { ActionForm } from "@/components/ui/action-form";
 import { Button } from "@/components/ui/button";
 import { OnboardingData } from "@/types";
 import { api } from "@/services/api";
@@ -52,7 +53,7 @@ export function Step2OTP({ data, updateData, onNext, isLoading, fieldErrors }: S
   const isValid = otp.every((digit) => digit !== "");
 
   return (
-    <div className="flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <ActionForm onAction={() => onNext(otp.join(""))} canSubmit={Boolean(isValid)} pending={isLoading} className="flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
       <h2 className="mb-2 text-[24px] md:text-[30px] font-bold">Email Address</h2>
       <p className="text-sm text-grey-1 mb-8">
         Input the OTP sent to <span className="text-primary-1 font-medium">{data.email}</span> below <span className="text-red-600">*</span>
@@ -80,7 +81,9 @@ export function Step2OTP({ data, updateData, onNext, isLoading, fieldErrors }: S
         {timeLeft > 0 ? (
           <span>0:{timeLeft.toString().padStart(2, '0')}</span>
         ) : (
-          <button 
+          <button
+            type="button"
+            disabled={isLoading}
             onClick={handleResend}
             className="text-primary-1 font-medium hover:underline focus:outline-none"
           >
@@ -90,13 +93,13 @@ export function Step2OTP({ data, updateData, onNext, isLoading, fieldErrors }: S
       </div>
 
       <Button 
-        onClick={() => onNext(otp.join(""))}
+        type="submit"
         disabled={!isValid || isLoading}
         size="lg"
         className="w-full"
       >
         {isLoading ? "Verifying..." : "Continue"}
       </Button>
-    </div>
+    </ActionForm>
   );
 }

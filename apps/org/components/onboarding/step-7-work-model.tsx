@@ -1,3 +1,4 @@
+import { ActionForm } from "@/components/ui/action-form";
 import { Button } from "@/components/ui/button";
 import { SelectablePill } from "@/components/ui/selectable-pill";
 import { OnboardingData } from "@/types";
@@ -15,7 +16,7 @@ export function Step7WorkModel({ data, updateData, onNext, isLoading }: Step7Pro
   const isValid = !!data.workModel;
 
   return (
-    <div className="flex flex-col w-full items-start text-left animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <ActionForm onAction={onNext} canSubmit={Boolean(isValid)} pending={isLoading} className="flex flex-col w-full items-start text-left animate-in fade-in slide-in-from-bottom-4 duration-500">
       <h3 className="mb-3 text-[24px] md:text-[30px] font-bold">Work model</h3>
       <p className="text-sm text-grey-2 mb-10">
         What work model do you operate at your organization?
@@ -35,13 +36,13 @@ export function Step7WorkModel({ data, updateData, onNext, isLoading }: Step7Pro
       </div>
 
       <Button 
-        onClick={onNext} 
+        type="submit"
         disabled={!isValid || isLoading}
         size="lg"
         className="w-full"
       >
         {isLoading ? "Saving..." : "Continue"}
       </Button>
-    </div>
+    </ActionForm>
   );
 }
