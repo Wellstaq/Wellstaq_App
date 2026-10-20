@@ -312,18 +312,14 @@ export function getRequestErrorMessage(path: string, method = "GET", status = 0)
 
   if (status === 404 && subject) return `We couldn't find this ${subject}.`;
   if (status === 409 && subject) {
-    if (["branch", "department", "club", "role"].includes(subject)) {
-      return `A ${subject} with these details already exists.`;
-    }
-    if (subject === "integration") return "This integration is already connected.";
-    return `This ${subject} already exists or has already been updated.`;
+    return "This action can't be completed in its current state. Refresh and try again.";
   }
   if (status === 408 || status === 504) return `We couldn't ${action} in time. Try again.`;
   if (status === 0) return `We couldn't ${action}. Check your internet and try again.`;
   return `We couldn't ${action}. Try again.`;
 }
 
-const TECHNICAL_MESSAGE = /(?:\b(?:api|backend|database|exception|stack|traceback|undefined|null|syntax|json|fetch|upstream|internal server|status code|request failed|econn|enotfound|etimedout)\b|[{}<>]|https?:\/\/|\w+Error\b|\b[A-Z][A-Z0-9_]{3,}\b)/i;
+const TECHNICAL_MESSAGE = /(?:\b(?:api|backend|database|exception|stack|traceback|undefined|null|syntax|json|fetch|upstream|internal server|status code|request failed|econn|enotfound|etimedout)\b|[{}<>]|https?:\/\/|\w+Error\b)/i;
 const USER_FACING_MESSAGE = /^(?:we couldn't|this |that |your |please |you don't|an? .+ already|too many|payment )/i;
 
 function normalizeCode(code?: string) {
@@ -336,11 +332,19 @@ function cleanMessage(message: string) {
 
 function isSafeMessage(message: string) {
   const clean = cleanMessage(message);
-  return clean.length >= 3 && clean.length <= 140 && !TECHNICAL_MESSAGE.test(clean);
+  return clean.length >= 3 && clean.length <= 240 && !TECHNICAL_MESSAGE.test(clean)
+    && !/\b[A-Z][A-Z0-9_]{3,}\b/.test(clean);
 }
 
 function messageFromKnownText(message: string): string | null {
   const text = message.toLowerCase();
+
+  if (/payment.*(already in progress|already.*pending)|pending.*payment/.test(text)) {
+    return "A payment is already pending. Check its status or cancel the unpaid checkout in Billing before trying again.";
+  }
+  if (/already has an active subscription/.test(text)) {
+    return "Your subscription is still active. You can make a new payment after it expires.";
+  }
 
   if (/current password.*(invalid|incorrect|wrong)|invalid current password/.test(text)) {
     return "Your current password is incorrect.";
@@ -360,7 +364,7 @@ function messageFromKnownText(message: string): string | null {
   if (/business name.*(already|exists|registered|in use|used)|already.*business name/.test(text)) {
     return "This business name is already in use.";
   }
-  if (/(email|account|user).*(already|exists|registered)|already.*(email|account|user)/.test(text)) {
+  if (/(email|account|user).*(already (exists|registered|in use)|already.*registered)|already.*(email|account).*(registered|in use)/.test(text)) {
     return "An account already uses this email.";
   }
   if (/(invalid|valid).*(phone|mobile|telephone)|(phone|mobile|telephone).*(invalid|not valid)/.test(text)) return "Enter a valid phone number.";
@@ -395,7 +399,7 @@ export function getApiErrorMessage(
     return permission ? permissionDeniedMessage(permission) : STATUS_MESSAGES[403];
   }
 
-  if (status === 400 || status === 422) {
+  if (status === 400 || status === 404 || status === 409 || status === 422) {
     const clean = cleanMessage(rawMessage);
     if (isSafeMessage(clean)) return clean;
   }

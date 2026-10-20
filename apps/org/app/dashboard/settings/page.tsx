@@ -118,6 +118,8 @@ export default function SettingsPage() {
   const [checkoutPlanId, setCheckoutPlanId] = useState<string | null>(null);
   const [verifyingReference, setVerifyingReference] = useState<string | null>(null);
   const [autoRenew, setAutoRenew] = useState(false);
+  const [pendingPayment, setPendingPayment] = useState<{ externalReference: string } | null>(null);
+  const [paymentActionBusy, setPaymentActionBusy] = useState(false);
   const [profileSaving, setProfileSaving] = useState(false);
   const [renewalSaving, setRenewalSaving] = useState(false);
   const [planPickerOpen, setPlanPickerOpen] = useState(false);
@@ -382,10 +384,12 @@ export default function SettingsPage() {
     if (!organizationId || !canManageBilling) return;
     setBillingLoading(true);
     try {
-      const [planResponse, currentSubscription] = await Promise.all([
+      const [planResponse, currentSubscription, transactions] = await Promise.all([
         api.billing.listPlans(),
         api.billing.getSubscription(organizationId),
+        api.billing.listTransactions(organizationId),
       ]);
+      setPendingPayment(transactions.items.find((payment) => payment.status === "pending") ?? null);
       const trialWasUsed = currentSubscription.trialEndsAt !== null;
       setPlans(planResponse.items.filter((plan) => !(trialWasUsed && plan.name.trim().toLowerCase() === "trial" && plan.id !== currentSubscription.planId)));
       setSubscription(currentSubscription);
@@ -431,6 +435,26 @@ export default function SettingsPage() {
     } catch (error) {
       toast.error(getUserErrorMessage(error, "We couldn't start checkout. Try again."));
       setCheckoutPlanId(null);
+      void loadBilling();
+    }
+  };
+
+  const resolvePendingPayment = async (cancel: boolean) => {
+    if (!organizationId || !pendingPayment || paymentActionBusy) return;
+    setPaymentActionBusy(true);
+    try {
+      const transaction = cancel
+        ? await api.billing.cancelPendingCheckout(organizationId, pendingPayment.externalReference)
+        : (await api.billing.verifyTransaction(organizationId, pendingPayment.externalReference)).transaction;
+      if (transaction.status === "succeeded") toast.success("Payment received. Your subscription is active.");
+      else if (transaction.status === "cancelled" || transaction.status === "failed") {
+        toast.success("Unpaid checkout cleared. You can choose a plan and pay again.");
+      } else toast.info("Payment is still pending. If you have already paid, wait for confirmation before trying again.");
+    } catch (error) {
+      toast.error(getUserErrorMessage(error, "We couldn't check this payment. Try again."));
+    } finally {
+      await loadBilling();
+      setPaymentActionBusy(false);
     }
   };
 
@@ -880,6 +904,14 @@ export default function SettingsPage() {
             <>
               <h2 className="text-[18px] font-bold text-grey-1 mb-0 leading-[32px]">Billing & Subscription</h2>
               <p className="text-[14px] text-grey-2 pb-[12px]">Manage your subscription plan and billing details.</p>
+              {pendingPayment && <div className="mb-5 rounded-xl border border-amber-300 bg-amber-50 p-5" role="status">
+                <h3 className="font-semibold text-grey-1">You have a pending payment</h3>
+                <p className="mt-2 text-sm text-grey-2">Check whether it completed, or cancel the unpaid checkout to try again. If money has left your account, check its status before paying again. Payments still being processed cannot be cancelled here.</p>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <Button disabled={paymentActionBusy} variant="outline" onClick={() => void resolvePendingPayment(false)}>{paymentActionBusy ? "Checking..." : "Check payment status"}</Button>
+                  <Button disabled={paymentActionBusy} variant="outline" onClick={() => void resolvePendingPayment(true)}>Cancel unpaid checkout</Button>
+                </div>
+              </div>}
               {canManageBilling && billingLoading && <div className="flex items-center justify-start gap-2 py-16 text-sm text-grey-3"><LoaderCircle className="h-5 w-5 animate-spin" /> Loading billing information...</div>}
               {canManageBilling && !billingLoading && subscription && <>
                 <div className="mb-8 rounded-[12px] border border-grey-4 bg-grey-5 p-6">

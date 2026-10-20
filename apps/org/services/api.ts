@@ -1133,6 +1133,10 @@ story: {
     cancelAutoRenew: (orgId: string) => fromApi<OrganizationSubscriptionInfo>(
       `/organizations/${orgId}/subscription/cancel-auto-renew`, { method: "POST" },
     ),
+    cancelPendingCheckout: (orgId: string, reference: string) => fromApi<PaymentTransactionItem>(
+      `/organizations/${orgId}/transactions/${encodeURIComponent(reference)}/cancel`,
+      { method: "POST", suppressErrorNotification: true },
+    ),
     updateAutoRenew: (orgId: string, enabled: boolean) => fromApi<OrganizationSubscriptionInfo>(
       `/organizations/${orgId}/subscription/auto-renew`,
       { method: "PATCH", body: { enabled } },
