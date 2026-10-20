@@ -633,6 +633,7 @@ export interface OrganizationMemberInfo {
   branchId: string | null;
   departmentId?: string | null;
   publicProfile?: boolean;
+  isOwner?: boolean;
 }
 export interface OrganizationMembersListResponse {
   items: OrganizationMemberInfo[]; total: number; offset: number; limit: number;

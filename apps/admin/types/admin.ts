@@ -124,6 +124,7 @@ export interface OrganizationMember {
   role: string | null;
   status: AccountStatus;
   joinedAt: string | null;
+  isOwner: boolean;
 }
 
 /** A cross-organization match from GET /app-admin/users/search. */
@@ -137,6 +138,7 @@ export interface UserSearchResult {
   organizationId: string;
   organizationName: string | null;
   joinedAt: string | null;
+  isOwner: boolean;
 }
 
 /** A row from GET /app-admin/organizations/{id}/transactions or /app-admin/payments/search. */

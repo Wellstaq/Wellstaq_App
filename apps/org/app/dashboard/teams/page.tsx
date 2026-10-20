@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Activity, Building2, Mail, Network, Plus, Search, UserCheck, UserRound, Users, X } from "@wellstaq/ui/icons";
+import { Activity, AlertTriangle, Building2, Mail, Network, Plus, Search, ShieldCheck, ShieldOff, Trash2, UserCheck, UserRound, Users, X } from "@wellstaq/ui/icons";
 import { toast } from "sonner";
 import { api } from "@/services/api";
 import { useDashboardData } from "@/components/providers/dashboard-data-provider";
@@ -36,6 +36,7 @@ function normalizeRoleName(name: string | null | undefined) {
 }
 
 function getOrganizationRole(member: OrganizationMemberInfo, superAdminUserId?: string): MemberRole {
+  if (member.isOwner) return { id: member.organizationRoleId ?? null, name: SUPER_ADMIN_ROLE };
   if (member.organizationRoleName) {
     return { id: member.organizationRoleId ?? null, name: member.organizationRoleName };
   }
@@ -86,7 +87,7 @@ export default function TeamsPage() {
   const [manageRoles, setManageRoles] = useState<RoleItem[]>([]);
   const [manageDepartments, setManageDepartments] = useState<DepartmentItem[]>([]);
   const [memberChanges, setMemberChanges] = useState({ roleId: "", departmentId: "", branchId: "", branchDepartmentId: "" });
-  const [pendingChange, setPendingChange] = useState<"role" | "revoke_role" | "department" | "branch" | null>(null);
+  const [pendingChange, setPendingChange] = useState<"role" | "revoke_role" | "department" | "branch" | "suspend" | "reinstate" | "delete" | null>(null);
   const [isUpdatingMember, setIsUpdatingMember] = useState(false);
   const canInvite = currentUser ? hasPermission(currentUser.permissions, "member.invite", scope.type === "branch" ? scope.branchId : undefined) : false;
   const permissionBranchId = scope.type === "branch" ? scope.branchId : undefined;
@@ -94,6 +95,10 @@ export default function TeamsPage() {
   const canRevokeRole = currentUser ? hasPermission(currentUser.permissions, "member.role.revoke", permissionBranchId) : false;
   const canAssignDepartment = currentUser ? hasPermission(currentUser.permissions, "member.department.assign", permissionBranchId) : false;
   const canAssignBranch = currentUser ? hasPermission(currentUser.permissions, "member.branch.assign", permissionBranchId) : false;
+  const canSuspend = currentUser ? hasPermission(currentUser.permissions, "member.suspend", permissionBranchId) : false;
+  const canReinstate = currentUser ? hasPermission(currentUser.permissions, "member.reinstate", permissionBranchId) : false;
+  const canDelete = currentUser ? hasPermission(currentUser.permissions, "member.remove", permissionBranchId) : false;
+  const canManageLifecycle = canSuspend || canReinstate || canDelete;
   const managementTabs: { value: ManagementTab; label: string }[] = [
     ...(canAssignRole || canRevokeRole ? [{ value: "role" as const, label: "Role" }] : []),
     ...(canAssignDepartment ? [{ value: "department" as const, label: "Department" }] : []),
@@ -106,6 +111,7 @@ export default function TeamsPage() {
     : null;
   const selectedMemberRoleId = selectedMemberRole?.id ?? null;
   const selectedMemberRoleName = selectedMemberRole?.name ?? null;
+  const selectedMemberIsDeleted = selectedMember?.firstName === "Deleted" && selectedMember.lastName === "User";
 
   useEffect(() => {
     if (!selectedMember?.id) return;
@@ -212,25 +218,27 @@ export default function TeamsPage() {
   };
 
   const openMemberManagement = useCallback(async (member: OrganizationMemberInfo) => {
-    if (!organizationId || (!canAssignRole && !canRevokeRole && !canAssignDepartment && !canAssignBranch)) return;
+    if (!organizationId || (!canAssignRole && !canRevokeRole && !canAssignDepartment && !canAssignBranch && !canManageLifecycle)) return;
     const scopedRole = scope.type === "branch"
       ? getBranchRole(member, scope.branchId, branchManagers, superAdminUserId)
       : getOrganizationRole(member, superAdminUserId);
     const scopedRoleName = scopedRole.name;
-    if (scopedRoleName === "super_admin") {
+    if (member.isOwner || scopedRoleName === "super_admin") {
       toast.error("The Super Admin account cannot be reassigned or moved.");
       return;
     }
     setSelectedMember(member);
     setManagementTab(canAssignRole || canRevokeRole ? "role" : canAssignDepartment ? "department" : "branch");
     setMemberChanges({ roleId: scopedRole.id ?? "", departmentId: member.departmentId ?? "", branchId: member.branchId ?? "", branchDepartmentId: member.departmentId ?? "" });
-    const [roleResponse, departmentResponse] = await Promise.all([
-      api.roles.listOrganization(organizationId, permissionBranchId),
-      api.organization.getDepartments(organizationId),
-    ]);
-    setManageRoles(roleResponse.items.filter((role) => role.name !== "super_admin"));
-    setManageDepartments(departmentResponse.items);
-  }, [branchManagers, canAssignBranch, canAssignDepartment, canAssignRole, canRevokeRole, organizationId, permissionBranchId, scope, superAdminUserId]);
+    if (canAssignRole || canRevokeRole || canAssignDepartment || canAssignBranch) {
+      const [roleResponse, departmentResponse] = await Promise.all([
+        api.roles.listOrganization(organizationId, permissionBranchId),
+        api.organization.getDepartments(organizationId),
+      ]);
+      setManageRoles(roleResponse.items.filter((role) => role.name !== "super_admin"));
+      setManageDepartments(departmentResponse.items);
+    }
+  }, [branchManagers, canAssignBranch, canAssignDepartment, canAssignRole, canManageLifecycle, canRevokeRole, organizationId, permissionBranchId, scope, superAdminUserId]);
 
   useEffect(() => {
     if (!requestedMemberId) {
@@ -285,7 +293,7 @@ export default function TeamsPage() {
         setMembers((items) => items.map((item) => item.id === selectedMember.id ? { ...item, departmentId: department.id } : item));
         setSelectedMember({ ...selectedMember, departmentId: department.id });
         toast.success(`${selectedMember.firstName} was moved to ${department.name}.`);
-      } else {
+      } else if (pendingChange === "branch") {
         const branch = branches.find((item) => item.id === memberChanges.branchId);
         const department = manageDepartments.find((item) => item.id === memberChanges.branchDepartmentId);
         if (!branch || !department) return;
@@ -293,6 +301,21 @@ export default function TeamsPage() {
         setMembers((items) => items.map((item) => item.id === selectedMember.id ? { ...item, branchId: branch.id, departmentId: department.id } : item));
         setSelectedMember({ ...selectedMember, branchId: branch.id, departmentId: department.id });
         toast.success(`${selectedMember.firstName} was moved to ${branch.name}, ${department.name}.`);
+      } else if (pendingChange === "suspend") {
+        await api.teamMembers.suspend(organizationId, selectedMember.id);
+        setMembers((items) => items.map((item) => item.id === selectedMember.id ? { ...item, status: "suspended" } : item));
+        toast.success(`${selectedMember.firstName} was suspended.`);
+        closeMemberManagement();
+      } else if (pendingChange === "reinstate") {
+        await api.teamMembers.reinstate(organizationId, selectedMember.id);
+        setMembers((items) => items.map((item) => item.id === selectedMember.id ? { ...item, status: "active" } : item));
+        toast.success(`${selectedMember.firstName} was reinstated.`);
+        closeMemberManagement();
+      } else {
+        await api.teamMembers.delete(organizationId, selectedMember.id);
+        setMembers((items) => items.map((item) => item.id === selectedMember.id ? { ...item, firstName: "Deleted", lastName: "User", email: "—", avatarUrl: null, roleId: null, roleName: null, organizationRoleId: null, organizationRoleName: null, branchRoles: [], publicProfile: false, status: "inactive" } : item));
+        toast.success(`${selectedMember.firstName} was deleted.`);
+        closeMemberManagement();
       }
       if (pendingChange === "role" || pendingChange === "revoke_role") {
         const [refreshed] = await Promise.all([
@@ -345,7 +368,7 @@ export default function TeamsPage() {
               <tbody>
                 {filteredMembers.map((member) => {
                   const name = `${member.firstName ?? ""} ${member.lastName ?? ""}`.trim() || member.email;
-                  return <tr key={member.id} onClick={() => void openMemberManagement(member)} className={`border-b border-grey-4 ${(canAssignRole || canRevokeRole || canAssignDepartment || canAssignBranch) ? "cursor-pointer hover:bg-grey-5" : ""}`}>
+                  return <tr key={member.id} onClick={() => void openMemberManagement(member)} className={`border-b border-grey-4 ${(canAssignRole || canRevokeRole || canAssignDepartment || canAssignBranch || canManageLifecycle) ? "cursor-pointer hover:bg-grey-5" : ""}`}>
                     <td className="px-4 py-3"><div className="flex items-center gap-3"><div className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-grey-4 text-xs font-bold">{member.avatarUrl ? <Image src={member.avatarUrl} alt={name} fill className="object-cover" /> : name.slice(0, 1).toUpperCase()}</div>{member.publicProfile || member.id === currentUser?.userId ? <Link onClick={(event) => event.stopPropagation()} href={`/dashboard/profile/${member.id}`} className="text-sm font-medium text-grey-1 hover:text-primary-1 hover:underline">{name}</Link> : <span className="text-sm font-medium text-grey-1" title="This profile is private">{name}</span>}</div></td>
                     <td className="px-4 py-3 text-sm text-grey-2">{member.email}</td>
                     <td className="px-4 py-3 text-sm text-grey-2">{member.branchId ? branchNames.get(member.branchId) ?? "Assigned branch" : "General"}</td>
@@ -426,7 +449,10 @@ export default function TeamsPage() {
                   <p className="mt-1 break-all text-xs text-grey-2">{selectedMember.email}</p>
                 </div>
               </div>
-              <button type="button" disabled={isUpdatingMember} onClick={() => toast.info("Only a platform administrator can suspend this account. Contact one to request suspension.")} className="mt-4 min-h-9 rounded-lg border border-grey-3 px-4 text-sm font-medium text-grey-1 hover:border-grey-1 hover:bg-grey-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-1 disabled:opacity-50">Suspend</button>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {!selectedMemberIsDeleted && (selectedMember.status === "suspended" ? canReinstate && <button type="button" disabled={isUpdatingMember} onClick={() => setPendingChange("reinstate")} className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-grey-3 px-4 text-sm font-medium text-grey-1 hover:border-grey-1 hover:bg-grey-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-1 disabled:opacity-50"><ShieldCheck className="h-4 w-4" />Reinstate</button> : canSuspend && <button type="button" disabled={isUpdatingMember} onClick={() => setPendingChange("suspend")} className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-grey-3 px-4 text-sm font-medium text-grey-1 hover:border-grey-1 hover:bg-grey-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-1 disabled:opacity-50"><ShieldOff className="h-4 w-4" />Suspend</button>)}
+                {!selectedMemberIsDeleted && canDelete && <button type="button" disabled={isUpdatingMember} onClick={() => setPendingChange("delete")} className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-red-200 px-4 text-sm font-medium text-red-700 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:opacity-50"><AlertTriangle className="h-4 w-4" /><Trash2 className="h-4 w-4" />Delete user</button>}
+              </div>
             </div>
             <button type="button" aria-label="Close team management" disabled={isUpdatingMember} onClick={closeMemberManagement} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] text-grey-2 hover:bg-grey-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-1 disabled:opacity-40">
               <X className="h-5 w-5" />
@@ -555,7 +581,7 @@ export default function TeamsPage() {
       </DrawerLayer>}</AnimatePresence>
 
 
-      <ConfirmModal isOpen={pendingChange !== null} onClose={() => setPendingChange(null)} onConfirm={() => void confirmMemberChange()} title={pendingChange === "role" ? "Change user role?" : pendingChange === "revoke_role" ? "Revoke user role?" : pendingChange === "department" ? "Move user to another department?" : "Move user to another branch?"} description={pendingChange === "role" ? "This will replace the user's current role and its role-based access." : pendingChange === "revoke_role" ? "The current role will be removed and the user will return to the zero-permission Member role." : pendingChange === "department" ? "This will replace the user's current department assignment." : "This will change both the user's home branch and department."} confirmText={isUpdatingMember ? "Updating..." : "Confirm change"} isDestructive={pendingChange === "revoke_role"} />
+      <ConfirmModal isOpen={pendingChange !== null} onClose={() => setPendingChange(null)} onConfirm={() => void confirmMemberChange()} title={pendingChange === "role" ? "Change user role?" : pendingChange === "revoke_role" ? "Revoke user role?" : pendingChange === "department" ? "Move user to another department?" : pendingChange === "branch" ? "Move user to another branch?" : pendingChange === "suspend" ? "Suspend this user?" : pendingChange === "reinstate" ? "Reinstate this user?" : "Warning: delete this user?"} description={pendingChange === "role" ? "This will replace the user's current role and its role-based access." : pendingChange === "revoke_role" ? "The current role will be removed and the user will return to the zero-permission Member role." : pendingChange === "department" ? "This will replace the user's current department assignment." : pendingChange === "branch" ? "This will change both the user's home branch and department." : pendingChange === "suspend" ? "They will be signed out everywhere and unable to sign in until reinstated. Their data is kept." : pendingChange === "reinstate" ? "Their account will become active and they can sign in again." : "This permanently revokes access and removes personal account details. Historical records remain under the name Deleted User. This cannot be undone."} confirmText={isUpdatingMember ? "Updating..." : pendingChange === "suspend" ? "Suspend user" : pendingChange === "reinstate" ? "Reinstate user" : pendingChange === "delete" ? "Delete user" : "Confirm change"} isDestructive={pendingChange === "revoke_role" || pendingChange === "suspend" || pendingChange === "delete"} confirmDisabled={isUpdatingMember} />
 
       <AnimatePresence>{isInviteOpen && <DrawerLayer onClose={() => { if (!isInviting) setIsInviteOpen(false); }} label="Invite Team Member" >
         <form onSubmit={sendInvite} className="flex h-full w-full flex-col overflow-hidden bg-white">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useState, type ReactNode } from "react";
 import { Modal } from "@wellstaq/ui/modal";
 import { Button } from "@/components/ui/controls";
 import { Label } from "@wellstaq/ui/label";
@@ -17,11 +17,12 @@ export interface ActionDialogProps {
   /** When set, the admin must explain the action. The reason is stored in the audit log. */
   reasonLabel?: string;
   onConfirm: (reason: string) => Promise<unknown>;
+  warningIcon?: ReactNode;
 }
 
 const MIN_REASON_LENGTH = 10;
 
-export function ActionDialog({ isOpen, onClose, title, description, confirmLabel, pendingLabel, destructive, reasonLabel, onConfirm }: ActionDialogProps) {
+export function ActionDialog({ isOpen, onClose, title, description, confirmLabel, pendingLabel, destructive, reasonLabel, onConfirm, warningIcon }: ActionDialogProps) {
   const reasonId = useId();
   const [reason, setReason] = useState("");
   const [isPending, setIsPending] = useState(false);
@@ -67,7 +68,10 @@ export function ActionDialog({ isOpen, onClose, title, description, confirmLabel
         </>
       }
     >
-      <p className="text-sm leading-6 text-grey-2">{description}</p>
+      <div className={warningIcon ? "flex gap-3 rounded-[8px] border border-error-4 bg-error-5 p-3 text-error-1" : undefined}>
+        {warningIcon && <span className="mt-0.5 shrink-0">{warningIcon}</span>}
+        <p className="text-sm leading-6 text-grey-2">{description}</p>
+      </div>
       {needsReason && (
         <div className="mt-4 flex flex-col gap-2">
           <Label htmlFor={reasonId} className="text-sm font-medium text-grey-1">{reasonLabel}</Label>

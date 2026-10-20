@@ -601,6 +601,15 @@ export const api = {
     transferBranch: (orgId: string, branchId: string, userId: string, departmentId: string) => fromApi(
       `/organizations/${orgId}/branches/${branchId}/members/${userId}`, { method: "PUT", body: { departmentId } },
     ),
+    suspend: (orgId: string, userId: string) => fromApi<void>(
+      `/organizations/${orgId}/members/${encodeURIComponent(userId)}/suspend`, { method: "POST" },
+    ),
+    reinstate: (orgId: string, userId: string) => fromApi<void>(
+      `/organizations/${orgId}/members/${encodeURIComponent(userId)}/reinstate`, { method: "POST" },
+    ),
+    delete: (orgId: string, userId: string) => fromApi<void>(
+      `/organizations/${orgId}/members/${encodeURIComponent(userId)}`, { method: "DELETE" },
+    ),
   },
   permissions: {
     listCatalogue: (branchId?: string) => fromApi<PermissionCatalogueResponse>(

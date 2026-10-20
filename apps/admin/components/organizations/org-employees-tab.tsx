@@ -95,6 +95,9 @@ export function OrgEmployeesTab({ organizationId, canManage }: { organizationId:
         onStatusChange={(id, nextStatus) =>
           members.setData((current) => current && { ...current, items: current.items.map((member) => (member.id === id ? { ...member, status: nextStatus } : member)) })
         }
+        onDeleted={(id) =>
+          members.setData((current) => current && { ...current, items: current.items.map((member) => member.id === id ? { ...member, firstName: "Deleted", lastName: "User", email: "—", avatarUrl: null, role: null, status: "deactivated" } : member) })
+        }
       />
     </section>
   );

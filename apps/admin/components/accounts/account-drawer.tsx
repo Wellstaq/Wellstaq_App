@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { KeyRound, ShieldOff, ShieldCheck } from "@wellstaq/ui/icons";
+import { AlertTriangle, KeyRound, ShieldOff, ShieldCheck, Trash2 } from "@wellstaq/ui/icons";
 import { toast } from "sonner";
 import { Modal } from "@wellstaq/ui/modal";
 import { Button } from "@/components/ui/controls";
@@ -20,10 +20,11 @@ export interface ManagedAccount {
   email: string;
   avatarUrl: string | null;
   status: AccountStatus;
+  isOwner?: boolean;
   details: { label: string; value: string }[];
 }
 
-type Action = "suspend" | "reactivate" | "reset";
+type Action = "suspend" | "reactivate" | "reset" | "delete";
 
 /**
  * Account details and the account actions admins are allowed to take.
@@ -35,16 +36,19 @@ export function AccountDrawer({
   canManage,
   onClose,
   onStatusChange,
+  onDeleted,
 }: {
   account: ManagedAccount | null;
   context: string;
   canManage: boolean;
   onClose: () => void;
   onStatusChange: (id: string, status: AccountStatus) => void;
+  onDeleted?: (id: string) => void;
 }) {
   const [action, setAction] = useState<Action | null>(null);
   const name = account ? fullName(account) : "";
   const isSuspended = account?.status === "suspended";
+  const isDeleted = account?.firstName === "Deleted" && account.lastName === "User";
 
   return (
     <>
@@ -72,7 +76,7 @@ export function AccountDrawer({
               ))}
             </dl>
 
-            {canManage ? (
+            {canManage && !isDeleted ? (
               <section className="space-y-3" aria-labelledby="account-actions-title">
                 <h3 id="account-actions-title" className="font-sans text-sm font-semibold text-grey-1">Account actions</h3>
                 <div className="flex flex-col gap-2">
@@ -88,9 +92,15 @@ export function AccountDrawer({
                       <ShieldOff className="h-4 w-4" aria-hidden="true" /> Suspend account
                     </Button>
                   )}
+                  {onDeleted && !account.isOwner && <Button type="button" className={`h-11 justify-start ${dangerButton}`} onClick={() => setAction("delete")}>
+                    <Trash2 className="h-4 w-4" aria-hidden="true" /> Delete user
+                  </Button>}
                 </div>
+                {account.isOwner && <p className="rounded-[8px] border border-line bg-grey-5 p-3 text-xs leading-5 text-grey-2">The organization owner can be suspended by a platform administrator, but cannot be deleted.</p>}
                 <p className="text-xs leading-5 text-grey-2">Every action is recorded in the audit log with your name.</p>
               </section>
+            ) : isDeleted ? (
+              <p className="rounded-[8px] border border-line bg-grey-5 p-3 text-xs leading-5 text-grey-2">This user has been deleted. Historical records are retained under the name Deleted User.</p>
             ) : (
               <p className="rounded-[8px] border border-line bg-grey-5 p-3 text-xs leading-5 text-grey-2">Your role can view this account but can&apos;t change it.</p>
             )}
@@ -113,6 +123,23 @@ export function AccountDrawer({
               await adminApi.users.suspend(account.id, reason);
               onStatusChange(account.id, "suspended");
               toast.success(`${name} is suspended`);
+            }}
+          />
+          <ActionDialog
+            isOpen={action === "delete"}
+            onClose={() => setAction(null)}
+            title={`Delete ${name}?`}
+            description="Warning: this permanently revokes access and removes their personal account details. Historical records remain and will show the name Deleted User. This cannot be reinstated."
+            confirmLabel="Delete user"
+            pendingLabel="Deleting..."
+            destructive
+            reasonLabel="Reason for deleting"
+            warningIcon={<AlertTriangle className="h-5 w-5" aria-hidden="true" />}
+            onConfirm={async (reason) => {
+              await adminApi.users.delete(account.id, reason);
+              onDeleted?.(account.id);
+              toast.success(`${name} was deleted`);
+              onClose();
             }}
           />
           <ActionDialog

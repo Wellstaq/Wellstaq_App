@@ -436,6 +436,19 @@ export default function SettingsPage() {
 
   const updateRenewal = async (enabled: boolean) => {
     if (!organizationId) return;
+
+    // A cancelled/expired subscription no longer has a Paystack subscription
+    // code to re-enable. In that state, auto-renew is a choice for the next
+    // checkout rather than a mutation of the old subscription.
+    if (subscription?.status !== "active") {
+      setAutoRenew(enabled);
+      if (enabled) {
+        setPlanPickerOpen(true);
+        toast.info("Choose a plan and complete payment to enable automatic renewal.");
+      }
+      return;
+    }
+
     setRenewalSaving(true);
     try {
       const updated = await api.billing.updateAutoRenew(organizationId, enabled);
@@ -881,9 +894,9 @@ export default function SettingsPage() {
                       title={isCurrentPlanUnexpired(subscription) ? "Available after the current plan expires" : undefined}
                       className="bg-[#EA6A05] hover:bg-[#EA6A05]/90 disabled:cursor-not-allowed"
                     >
-                      Upgrade Plan
+                      {subscription.status === "cancelled" || subscription.status === "past_due" ? "Choose a Plan" : "Upgrade Plan"}
                     </Button>
-                    <div className="ml-auto flex items-center gap-3"><span className="text-sm font-medium text-grey-1">Auto renew</span><button disabled={renewalSaving} type="button" onClick={() => void updateRenewal(!autoRenew)} className={`relative h-6 w-11 rounded-full transition-colors disabled:opacity-50 ${autoRenew ? "bg-grey-2" : "bg-grey-4"}`}><span className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-all ${autoRenew ? "left-6" : "left-1"}`} /></button></div>
+                    <div className="ml-auto flex items-center gap-3"><span className="text-sm font-medium text-grey-1">{subscription.status === "active" ? "Auto renew" : "Auto renew next payment"}</span><button disabled={renewalSaving} type="button" onClick={() => void updateRenewal(!autoRenew)} className={`relative h-6 w-11 rounded-full transition-colors disabled:opacity-50 ${autoRenew ? "bg-grey-2" : "bg-grey-4"}`}><span className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-all ${autoRenew ? "left-6" : "left-1"}`} /></button></div>
                   </div>
                 </div>
               </>}

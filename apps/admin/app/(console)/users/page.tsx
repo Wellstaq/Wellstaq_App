@@ -88,6 +88,9 @@ function UsersView() {
         onStatusChange={(id, nextStatus) =>
           results.setData((current) => current && { ...current, items: current.items.map((person) => (person.id === id ? { ...person, status: nextStatus as AccountStatus } : person)) })
         }
+        onDeleted={(id) =>
+          results.setData((current) => current && { ...current, items: current.items.map((person) => person.id === id ? { ...person, firstName: "Deleted", lastName: "User", email: "—", avatarUrl: null, status: "deactivated" } : person) })
+        }
       />
     </>
   );

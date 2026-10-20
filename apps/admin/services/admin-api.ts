@@ -99,6 +99,7 @@ export const adminApi = {
       request<Paginated<UserSearchResult>>(`/users/search${toQueryString({ ...params })}`, { signal }),
     suspend: (userId: string, reason: string) => request<void>(`/users/${id(userId)}/suspend`, { method: "POST", body: { reason } }),
     reactivate: (userId: string) => request<void>(`/users/${id(userId)}/reactivate`, { method: "POST" }),
+    delete: (userId: string, reason: string) => request<void>(`/users/${id(userId)}`, { method: "DELETE", body: { reason } }),
     sendPasswordReset: (userId: string) => request<void>(`/users/${id(userId)}/password-reset`, { method: "POST" }),
   },
 
