@@ -354,6 +354,19 @@ export const api = {
         `/organizations/${orgId}/challenges?${query.toString()}`,
       );
     },
+    getAllChallenges: async (orgId: string, params: { branchId?: string; scope?: "organization" | "all" } = {}): Promise<ChallengeItem[]> => {
+      const items: ChallengeItem[] = [];
+      let offset = 0;
+      while (true) {
+        const page = await api.organization.getChallenges(orgId, { ...params, offset, limit: 100 });
+        items.push(...page.items);
+        const next = page.offset + page.items.length;
+        if (!page.items.length || next >= page.total) break;
+        if (next <= offset) throw new Error("Challenge pagination did not advance");
+        offset = next;
+      }
+      return Array.from(new Map(items.map((item) => [item.id, item])).values());
+    },
     getChallenge: (orgId: string, challengeId: string) =>
       fromApi<ChallengeItem>(`/organizations/${orgId}/challenges/${challengeId}`),
 

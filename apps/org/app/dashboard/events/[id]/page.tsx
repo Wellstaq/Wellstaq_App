@@ -17,8 +17,11 @@ import { Button } from "@/components/ui/button";
 import { EditEventModal } from "@/components/events/edit-event-modal";
 import { useRouter } from "next/navigation";
 import type { EventItem, EventParticipantInfo, MessageResponse, OrganizationMemberInfo } from "@/types/api";
+import { activitySchedule } from "@/lib/activity-schedule";
+import { useScheduleClock } from "@/hooks/use-schedule-clock";
 
 export default function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const now = useScheduleClock();
   const { organizationId, currentUser } = useDashboardData();
   const router = useRouter();
 
@@ -241,7 +244,10 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
 
             <div className="p-6 space-y-4">
               <div className="flex items-start justify-between">
-                <h1 className="page-title">{event.title}</h1>
+                  <div>
+                    <h1 className="page-title">{event.title}</h1>
+                    <p className="mt-1 text-sm text-grey-2"><span className="font-medium capitalize">{activitySchedule(event, now).status}</span> · {activitySchedule(event, now).countdown}</p>
+                  </div>
                 <div className="flex items-center justify-start gap-2">
                   {!hasJoined && (
                     <Button onClick={handleJoinEvent} disabled={isJoining}>

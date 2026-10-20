@@ -13,6 +13,8 @@ import { CreateChallengeModal } from "@/components/challenges/create-challenge-m
 import { FilterDropdown, type FilterDropdownOption } from "@/components/ui/filter-dropdown";
 import { SelectablePill } from "@/components/ui/selectable-pill";
 import type { ChallengeItem, ChallengeStatus, TrendData } from "@/types/api";
+import { activitySchedule } from "@/lib/activity-schedule";
+import { useScheduleClock } from "@/hooks/use-schedule-clock";
 
 const STATUS_TABS: { label: string; value: ChallengeStatus | "All" }[] = [
   { label: "All", value: "All" },
@@ -42,11 +44,6 @@ const PERIOD_OPTIONS: FilterDropdownOption<Period>[] = [
   { label: "Custom range", value: "custom" },
 ];
 
-function daysLeft(endDate: string): number {
-  const diff = new Date(endDate).getTime() - Date.now();
-  return Math.max(0, Math.ceil(diff / 86_400_000));
-}
-
 const TRACKING_METHOD_LABELS: Record<string, string> = {
   automatic: "Automatic",
   self_reported: "Self-reported",
@@ -65,6 +62,7 @@ function TrendLabel({ trend }: { trend: TrendData | null }) {
 }
 
 export default function ChallengesPage() {
+  const now = useScheduleClock();
   const { organizationId, currentUser, branches } = useDashboardData();
   const { scope } = useDashboardScope();
 
@@ -79,7 +77,6 @@ export default function ChallengesPage() {
   const [refreshKey, setRefreshKey] = useState(0);
 
   const [challenges, setChallenges] = useState<ChallengeItem[]>([]);
-  const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [wellbeingNames, setWellbeingNames] = useState<Record<string, string>>({});
   const [statsLoading, setStatsLoading] = useState(true);
@@ -129,7 +126,7 @@ export default function ChallengesPage() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [scope, activeTab, challengeFilter]);
+  }, [scope, activeTab, challengeFilter, searchQuery]);
 
   useEffect(() => {
     api.wellbeing.getChallenges().then((res) => {
@@ -160,24 +157,18 @@ export default function ChallengesPage() {
     async function load(orgId: string) {
       setIsLoading(true);
       try {
-        const response = await api.organization.getChallenges(orgId, {
-          offset: (currentPage - 1) * ITEMS_PER_PAGE,
-          limit: ITEMS_PER_PAGE,
-          status: activeTab === "All" ? undefined : activeTab,
-          ...scopeParams,
-        });
+        const items = await api.organization.getAllChallenges(orgId, scopeParams);
         if (cancelled) return;
-        setChallenges(response.items);
-        setTotal(response.total);
+        setChallenges(items);
       } catch {
-        if (!cancelled) { setChallenges([]); setTotal(0); }
+        if (!cancelled) setChallenges([]);
       } finally {
         if (!cancelled) setIsLoading(false);
       }
     }
     void load(organizationId);
     return () => { cancelled = true; };
-  }, [organizationId, scopeParams, activeTab, currentPage, refreshKey]);
+  }, [organizationId, scopeParams, refreshKey]);
 
   useEffect(() => {
     if (!organizationId) return;
@@ -206,12 +197,15 @@ export default function ChallengesPage() {
   }, [organizationId, scopeParams, period, customStart, customEnd, refreshKey]);
 
   const filteredChallenges = challenges.filter(
-    (c) =>
-      c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.description.toLowerCase().includes(searchQuery.toLowerCase()),
+    (c) => (activeTab === "All" || activitySchedule(c, now).status === activeTab)
+      && (c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.description.toLowerCase().includes(searchQuery.toLowerCase())),
   );
 
+  const total = filteredChallenges.length;
   const totalPages = Math.max(1, Math.ceil(total / ITEMS_PER_PAGE));
+  const visibleChallenges = filteredChallenges.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+  useEffect(() => { setCurrentPage((page) => Math.min(page, totalPages)); }, [totalPages]);
 
   return (
     <div className="max-w-7xl mx-auto flex flex-col gap-[20px] pb-12">
@@ -367,7 +361,8 @@ export default function ChallengesPage() {
 
         {!isLoading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-            {filteredChallenges.map((challenge) => {
+            {visibleChallenges.map((challenge) => {
+              const schedule = activitySchedule(challenge, now);
               const categoryLabel = challenge.wellbeingChallengeId ? wellbeingNames[challenge.wellbeingChallengeId] : null;
               const progress = challenge.completionRate ?? 0;
               const audienceLabel = challenge.branchId
@@ -386,8 +381,8 @@ export default function ChallengesPage() {
                       <Image src={challenge.imageUrl} alt={challenge.name} fill className="object-cover" referrerPolicy="no-referrer" />
                     )}
                     <div className="absolute top-2 left-2">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold backdrop-blur-md capitalize ${STATUS_BADGE_CLASS[challenge.status] ?? "bg-grey-500/80 text-white"}`}>
-                        {challenge.status}
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold backdrop-blur-md capitalize ${STATUS_BADGE_CLASS[schedule.status] ?? "bg-grey-500/80 text-white"}`}>
+                        {schedule.status}
                       </span>
                     </div>
                     {categoryLabel && (
@@ -418,13 +413,13 @@ export default function ChallengesPage() {
                         </div>
                         <div className="flex items-center justify-start gap-2">
                           <Calendar className="w-3.5 h-3.5" />
-                          <span>{daysLeft(challenge.endDate)} days left</span>
+                          <span>{schedule.countdown}</span>
                         </div>
                       </div>
 
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center justify-between text-[10px] leading-[14px]">
-                          <span className="font-medium text-[#999999]">Progress</span>
+                          <span className="font-medium text-[#999999]" title="Participants who completed the challenge divided by participants who joined.">Participants completed</span>
                           <span className="font-bold text-[#C45700]">{progress}%</span>
                         </div>
                         <div className="w-full bg-grey-4 rounded-full h-1">

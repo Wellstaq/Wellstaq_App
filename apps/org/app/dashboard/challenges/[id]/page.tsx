@@ -16,6 +16,8 @@ import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { SelectablePill } from "@/components/ui/selectable-pill";
 import type { ChallengeItem, ChallengeParticipant } from "@/types/api";
 import { useRouter } from "next/navigation";
+import { activitySchedule } from "@/lib/activity-schedule";
+import { useScheduleClock } from "@/hooks/use-schedule-clock";
 
 const TRACKING_METHOD_LABELS: Record<string, string> = {
   automatic: "Automatic",
@@ -27,6 +29,7 @@ const TRACKING_METHOD_LABELS: Record<string, string> = {
 type DetailTab = "overview" | "submissions" | "leaderboard";
 
 export default function ChallengeDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const now = useScheduleClock();
   const router = useRouter();
   const { organizationId, currentUser } = useDashboardData();
 
@@ -46,7 +49,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
   const canDelete = currentUser ? hasPermission(currentUser.permissions, "challenge.delete", challengeBranchId) : false;
 
   const isParticipant = currentUser ? participants.some((p) => p.userId === currentUser.userId) : false;
-  const isCompleted = challenge?.status === "completed";
+  const isCompleted = challenge ? activitySchedule(challenge, now).status === "completed" : false;
   const isCancelled = challenge?.status === "cancelled";
 
   useEffect(() => {
@@ -175,7 +178,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
               )}
               <div className="absolute top-4 right-4">
                 <span className="px-3 py-1 rounded-full text-xs font-medium shadow-lg bg-[#d4d4d4] text-black capitalize">
-                  {challenge.status}
+                  {activitySchedule(challenge, now).status}
                 </span>
               </div>
             </div>
@@ -184,6 +187,7 @@ export default function ChallengeDetailPage({ params }: { params: Promise<{ id: 
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <h1 className="page-title">{challenge.name}</h1>
+                  <p className="mt-1 text-sm text-grey-2">{activitySchedule(challenge, now).countdown}</p>
                   <p className="page-description">{challenge.description}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">

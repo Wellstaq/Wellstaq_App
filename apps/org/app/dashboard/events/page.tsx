@@ -14,17 +14,20 @@ import { toast } from "sonner";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { SelectablePill } from "@/components/ui/selectable-pill";
 import type { EventItem } from "@/types/api";
+import { activitySchedule } from "@/lib/activity-schedule";
+import { useScheduleClock } from "@/hooks/use-schedule-clock";
 
 const TABS = ["All Events", "scheduled", "ongoing", "completed", "cancelled"] as const;
 const TAB_LABELS: Record<string, string> = {
   "All Events": "All Events",
   scheduled: "Upcoming",
-  ongoing: "Ongoing",
+  ongoing: "Active",
   completed: "Completed",
   cancelled: "Canceled",
 };
 
 export default function EventsPage() {
+  const now = useScheduleClock();
   const { organizationId, currentUser } = useDashboardData();
   const { scope } = useDashboardScope();
 
@@ -74,7 +77,8 @@ export default function EventsPage() {
   // `status` and `q` query params instead of filtering client-side.
   const filteredEvents = events.filter((event) => {
     const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesTab = activeTab === "All Events" || event.status === activeTab;
+    const expectedStatus = activeTab === "scheduled" ? "upcoming" : activeTab === "ongoing" ? "active" : activeTab;
+    const matchesTab = activeTab === "All Events" || activitySchedule(event, now).status === expectedStatus;
     return matchesSearch && matchesTab;
   });
 
@@ -84,8 +88,8 @@ export default function EventsPage() {
 
   const stats = {
     totalEvents: events.length,
-    upcomingEvents: events.filter((e) => e.status === "scheduled").length,
-    completedEvents: events.filter((e) => e.status === "completed").length,
+    upcomingEvents: events.filter((e) => activitySchedule(e, now).status === "upcoming").length,
+    completedEvents: events.filter((e) => activitySchedule(e, now).status === "completed").length,
     totalParticipants: events.reduce((acc, e) => acc + (e.participantCount ?? 0), 0),
   };
 
@@ -183,15 +187,19 @@ export default function EventsPage() {
             {/* Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
               {visibleEvents.map((event) => (
-                <Link href={`/dashboard/events/${event.id}`} key={event.id} className="bg-[#FAFAFA] rounded-lg border border-[#F0F0F0] overflow-hidden flex flex-col p-2 gap-2 h-[220px] cursor-pointer relative">
+                <Link href={`/dashboard/events/${event.id}`} key={event.id} className="bg-[#FAFAFA] rounded-lg border border-[#F0F0F0] overflow-hidden flex flex-col p-2 gap-2 min-h-[250px] cursor-pointer relative">
                   <div className="relative h-[85px] w-full rounded-lg overflow-hidden shrink-0 bg-grey-4">
                     {event.imageUrl && (
                       <Image src={event.imageUrl} alt={event.title} fill className="object-cover" referrerPolicy="no-referrer" />
                     )}
+                    <span className={`absolute left-2 top-2 rounded px-2 py-0.5 text-[10px] font-bold capitalize text-white ${activitySchedule(event, now).status === "active" ? "bg-green-600" : activitySchedule(event, now).status === "upcoming" ? "bg-blue-600" : "bg-grey-2"}`}>
+                      {activitySchedule(event, now).status}
+                    </span>
                   </div>
                   <div className="flex flex-col flex-1 px-1 pb-2 pt-0 gap-[17px]">
                     <div className="flex flex-col gap-1">
                       <h3 className="font-medium text-[#4D4D4D] text-[14px] leading-[20px] line-clamp-1">{event.title}</h3>
+                      <p className="text-xs text-grey-2">{activitySchedule(event, now).countdown}</p>
                       <div className="flex flex-col gap-2">
                         <div className="flex items-center justify-start gap-2 text-[12px] leading-[18px] text-[#999999]">
                           <Calendar className="w-3.5 h-3.5" />
