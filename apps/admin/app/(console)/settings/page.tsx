@@ -18,8 +18,12 @@ export default function SettingsPage() {
   const { admin, setAdmin } = useAdminSession();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [firstName, setFirstName] = useState(admin.firstName);
-  const [lastName, setLastName] = useState(admin.lastName);
+  // Invited admins can have null names until they complete their profile.
+  // Keep inputs controlled and validation safe from the first edit.
+  const savedFirstName = admin.firstName ?? "";
+  const savedLastName = admin.lastName ?? "";
+  const [firstName, setFirstName] = useState(savedFirstName);
+  const [lastName, setLastName] = useState(savedLastName);
   const [avatarUrl, setAvatarUrl] = useState(admin.avatarUrl);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
@@ -29,7 +33,7 @@ export default function SettingsPage() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const isDirty = firstName !== admin.firstName || lastName !== admin.lastName || avatarUrl !== admin.avatarUrl;
+  const isDirty = firstName !== savedFirstName || lastName !== savedLastName || avatarUrl !== admin.avatarUrl;
   const canSave = isDirty && firstName.trim().length > 0 && lastName.trim().length > 0 && !isSavingProfile;
 
   const sendResetLink = async () => {
