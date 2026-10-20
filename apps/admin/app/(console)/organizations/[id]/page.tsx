@@ -166,7 +166,7 @@ function OrganizationDetail({ id }: { id: string }) {
         {tab === "departments" && <OrgDepartmentsTab organizationId={data.id} />}
         {tab === "clubs" && <OrgClubsTab organizationId={data.id} />}
         {tab === "events" && <OrgEventsTab organizationId={data.id} />}
-        {tab === "billing" && <OrgBillingTab organizationId={data.id} canManage={canManage} onSubscriptionActivated={(updated) => organization.setData(() => updated)} />}
+        {tab === "billing" && <OrgBillingTab organization={data} canManage={canManage} onSubscriptionChanged={(updated) => organization.setData(() => updated)} />}
       </div>
 
       <ActionDialog

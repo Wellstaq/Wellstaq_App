@@ -78,6 +78,9 @@ export const adminApi = {
     /** Reconciliation tool: marks the org's subscription active on a plan without going through checkout. */
     activateSubscription: (orgId: string, planId: string, reason: string) =>
       request<OrganizationDetail>(`/organizations/${id(orgId)}/subscription/activate`, { method: "POST", body: { planId, reason } }),
+    /** Ends access immediately and requires the organization to complete a fresh checkout. */
+    cancelSubscription: (orgId: string, reason: string) =>
+      request<OrganizationDetail>(`/organizations/${id(orgId)}/subscription/cancel`, { method: "POST", body: { reason } }),
   },
 
   payments: {

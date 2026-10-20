@@ -7,7 +7,8 @@ import { CalendarDays, CreditCard, Layers, UsersRound } from "@wellstaq/ui/icons
 import { Modal } from "@wellstaq/ui/modal";
 import { Label } from "@wellstaq/ui/label";
 import { Button } from "@/components/ui/controls";
-import { primaryButton as primaryButtonStyle, secondaryButton as secondaryButtonStyle } from "@/components/ui/button-styles";
+import { dangerButton, primaryButton as primaryButtonStyle, secondaryButton as secondaryButtonStyle } from "@/components/ui/button-styles";
+import { ActionDialog } from "@/components/ui/action-dialog";
 import { adminApi } from "@/services/admin-api";
 import { useDebouncedValue, useResource } from "@/lib/use-resource";
 import { formatDate, formatDateTime, formatMoney, formatNumber, humanize, plural } from "@/lib/format";
@@ -252,9 +253,13 @@ function ActivateSubscriptionDialog({ isOpen, onClose, organizationId, onActivat
   );
 }
 
-export function OrgBillingTab({ organizationId, canManage, onSubscriptionActivated }: { organizationId: string; canManage: boolean; onSubscriptionActivated: (updated: OrganizationDetail) => void }) {
+export function OrgBillingTab({ organization, canManage, onSubscriptionChanged }: { organization: OrganizationDetail; canManage: boolean; onSubscriptionChanged: (updated: OrganizationDetail) => void }) {
+  const organizationId = organization.id;
   const [page, setPage] = useState(1);
   const [isActivateOpen, setIsActivateOpen] = useState(false);
+  const [isCancelOpen, setIsCancelOpen] = useState(false);
+  const canCancelSubscription = organization.subscriptionStatus !== null
+    && (organization.subscriptionStatus !== "cancelled" || organization.platformComped);
   const transactions = useResource(
     (signal) => adminApi.organizations.transactions(organizationId, { offset: (page - 1) * TABLE_PAGE_SIZE, limit: TABLE_PAGE_SIZE }, { signal }),
     [organizationId, page],
@@ -265,12 +270,34 @@ export function OrgBillingTab({ organizationId, canManage, onSubscriptionActivat
       <Toolbar>
         <p className="text-sm text-grey-2">{transactions.data ? plural(transactions.data.total, "transaction") : "Transactions"} for this organization</p>
         {canManage && (
-          <Button type="button" size="sm" className={secondaryButtonStyle} onClick={() => setIsActivateOpen(true)}>
-            Manually activate subscription
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" size="sm" className={secondaryButtonStyle} onClick={() => setIsActivateOpen(true)}>
+              Manually activate subscription
+            </Button>
+            {canCancelSubscription && (
+              <Button type="button" size="sm" className={dangerButton} onClick={() => setIsCancelOpen(true)}>
+                Cancel subscription
+              </Button>
+            )}
+          </div>
         )}
       </Toolbar>
-      <ActivateSubscriptionDialog isOpen={isActivateOpen} onClose={() => setIsActivateOpen(false)} organizationId={organizationId} onActivated={onSubscriptionActivated} />
+      <ActivateSubscriptionDialog isOpen={isActivateOpen} onClose={() => setIsActivateOpen(false)} organizationId={organizationId} onActivated={onSubscriptionChanged} />
+      <ActionDialog
+        isOpen={isCancelOpen}
+        onClose={() => setIsCancelOpen(false)}
+        title={`Cancel ${organization.name}'s subscription?`}
+        description="Access ends immediately, Paystack auto-renewal is disabled, and any free-access override is removed. Payment history is retained, but the organization must complete a new checkout before it can use subscription-protected features again."
+        confirmLabel="Cancel subscription"
+        pendingLabel="Cancelling..."
+        destructive
+        reasonLabel="Reason for cancelling"
+        onConfirm={async (reason) => {
+          const updated = await adminApi.organizations.cancelSubscription(organizationId, reason);
+          onSubscriptionChanged(updated);
+          toast.success(`${organization.name}'s subscription is cancelled`);
+        }}
+      />
       {transactions.isLoading && !transactions.data ? (
         <TableSkeleton columns={5} rows={5} />
       ) : transactions.error ? (
