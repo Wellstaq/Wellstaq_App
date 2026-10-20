@@ -89,7 +89,7 @@ function UsersView() {
           results.setData((current) => current && { ...current, items: current.items.map((person) => (person.id === id ? { ...person, status: nextStatus as AccountStatus } : person)) })
         }
         onDeleted={(id) =>
-          results.setData((current) => current && { ...current, items: current.items.map((person) => person.id === id ? { ...person, firstName: "Deleted", lastName: "User", email: "—", avatarUrl: null, status: "deactivated" } : person) })
+          results.setData((current) => current && { ...current, total: Math.max(0, current.total - 1), items: current.items.filter((person) => person.id !== id) })
         }
       />
     </>

@@ -313,7 +313,7 @@ export default function TeamsPage() {
         closeMemberManagement();
       } else {
         await api.teamMembers.delete(organizationId, selectedMember.id);
-        setMembers((items) => items.map((item) => item.id === selectedMember.id ? { ...item, firstName: "Deleted", lastName: "User", email: "—", avatarUrl: null, roleId: null, roleName: null, organizationRoleId: null, organizationRoleName: null, branchRoles: [], publicProfile: false, status: "inactive" } : item));
+        setMembers((items) => items.filter((item) => item.id !== selectedMember.id));
         toast.success(`${selectedMember.firstName} was deleted.`);
         closeMemberManagement();
       }
