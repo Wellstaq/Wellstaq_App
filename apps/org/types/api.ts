@@ -793,6 +793,7 @@ export interface InsightsOverviewResponse {
   };
   topPerformers: Array<{
     id: string | number;
+    rank: number;
     name: string;
     steps: string;
     score: number;

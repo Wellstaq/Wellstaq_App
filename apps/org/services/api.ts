@@ -678,6 +678,7 @@ kpiSnapshots: {
       },
       topPerformers: (raw.topPerformers ?? []).map((performer) => ({
         id: performer.userId,
+        rank: performer.rank,
         name: `${performer.firstName} ${performer.lastName}`.trim(),
         steps: performer.steps.toLocaleString(),
         score: performer.score,

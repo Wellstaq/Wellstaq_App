@@ -33,7 +33,7 @@ const PULSE_QUESTION_META: {
 function statusBarClass(status: string | null): string {
   if (status === "Priority focus") return "bg-[#D84315]";
   if (status === "Needs attention") return "bg-[#FF9800]";
-  if (status === "Doing well") return "bg-[#4CAF50]";
+  if (status === "Looking good" || status === "Doing well") return "bg-[#4CAF50]";
   return "bg-grey-4"; // no data yet
 }
 

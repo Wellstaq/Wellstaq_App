@@ -210,7 +210,7 @@ export default function InsightsPage() {
                   )}
                 </div>
                 <div className="absolute -bottom-2 -right-1 w-6 h-6 rounded-full bg-[#EA6A05] text-white text-xs font-bold flex items-center justify-center border-2 border-white">
-                  {performer.id}
+                  {performer.rank}
                 </div>
               </div>
               <h4 className="mb-5 text-sm font-medium text-grey-1">{performer.name}</h4>
