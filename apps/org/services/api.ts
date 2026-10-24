@@ -198,10 +198,14 @@ export const api = {
       const qs = buildStatsQuery(params);
       return fromApi<OrgStatsResponse>(`/organizations/${orgId}/stats${qs ? `?${qs}` : ""}`);
     },
-    getActiveUserStats: (orgId: string) =>
-      fromApi<OrgStatsResponse>(`/organizations/${orgId}/stats?user_status=active`),
-    getActivitySummary: (orgId: string) =>
-      fromApi<ActivitySummaryResponse>(`/organizations/${orgId}/activities/summary`),
+    getActiveUserStats: (orgId: string, params: StatsQueryParams = {}) => {
+      const qs = buildStatsQuery({ ...params, userStatus: "active" });
+      return fromApi<OrgStatsResponse>(`/organizations/${orgId}/stats?${qs}`);
+    },
+    getActivitySummary: (orgId: string, params: StatsQueryParams = {}) => {
+      const qs = buildStatsQuery(params);
+      return fromApi<ActivitySummaryResponse>(`/organizations/${orgId}/activities/summary${qs ? `?${qs}` : ""}`);
+    },
 
     getBranchStats: (orgId: string, branchId: string, params: StatsQueryParams = {}) => {
       const qs = buildStatsQuery(params);
@@ -209,14 +213,18 @@ export const api = {
         `/organizations/${orgId}/branches/${branchId}/stats${qs ? `?${qs}` : ""}`,
       );
     },
-    getBranchActiveUserStats: (orgId: string, branchId: string) =>
-      fromApi<OrgStatsResponse>(
-        `/organizations/${orgId}/branches/${branchId}/stats?user_status=active`,
-      ),
-    getBranchActivitySummary: (orgId: string, branchId: string) =>
-      fromApi<ActivitySummaryResponse>(
-        `/organizations/${orgId}/branches/${branchId}/activities/summary`,
-      ),
+    getBranchActiveUserStats: (orgId: string, branchId: string, params: StatsQueryParams = {}) => {
+      const qs = buildStatsQuery({ ...params, userStatus: "active" });
+      return fromApi<OrgStatsResponse>(
+        `/organizations/${orgId}/branches/${branchId}/stats?${qs}`,
+      );
+    },
+    getBranchActivitySummary: (orgId: string, branchId: string, params: StatsQueryParams = {}) => {
+      const qs = buildStatsQuery(params);
+      return fromApi<ActivitySummaryResponse>(
+        `/organizations/${orgId}/branches/${branchId}/activities/summary${qs ? `?${qs}` : ""}`,
+      );
+    },
 
     getBranches: async (orgId: string) => {
       const response = await fromApi<{ items: Branch[]; total: number; offset: number; limit: number }>(

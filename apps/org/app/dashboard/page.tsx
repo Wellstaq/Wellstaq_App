@@ -17,7 +17,21 @@ import { StatCard } from "@/components/dashboard/stat-card";
 import { DashboardEmptyState } from "@/components/dashboard/dashboard-empty-state";
 import { useDashboardScope } from "@/lib/scope";
 import { hasPermission, readablePermission } from "@/lib/permissions";
-import type { StatTrend, ChallengeItem, ChallengeListResponse, LivePulseResponse, EngagementWellbeingTrendPeriod, EngagementWellbeingTrendPoint } from "@/types/api";
+import type { StatTrend, ChallengeItem, ChallengeListResponse, LivePulseResponse, EngagementWellbeingTrendPeriod, EngagementWellbeingTrendPoint, InsightsPeriod } from "@/types/api";
+
+function distributionPeriod(period: StatsPeriod | "", customStart: string, customEnd: string): InsightsPeriod {
+  if (period === "month" || period === "three_months" || period === "six_months" || period === "nine_months" || period === "year") return period;
+  if (period !== "custom" || !customStart) return "year";
+
+  const start = new Date(`${customStart}T00:00:00`);
+  const end = customEnd ? new Date(`${customEnd}T00:00:00`) : new Date();
+  const days = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / 86_400_000) + 1);
+  if (days <= 30) return "month";
+  if (days <= 90) return "three_months";
+  if (days <= 180) return "six_months";
+  if (days <= 270) return "nine_months";
+  return "year";
+}
 
 const PULSE_QUESTION_META: {
   key: keyof Omit<LivePulseResponse, "windowId" | "respondentCount" | "prioritySupportPct" | "needsAttentionPct" | "doingWellPct">;
@@ -106,7 +120,7 @@ export default function DashboardPage() {
     let cancelled = false;
     setDistributionLoading(true);
     api.kpiSnapshots
-      .getOverview(organizationId, "month", selectedBranchId)
+      .getOverview(organizationId, distributionPeriod(period, customStart, customEnd), selectedBranchId)
       .then((result) => {
         if (!cancelled) setWellbeingDistribution(result.charts.healthDistribution ?? []);
       })
@@ -118,7 +132,7 @@ export default function DashboardPage() {
       });
 
     return () => { cancelled = true; };
-  }, [canViewPulse, organizationId, selectedBranchId]);
+  }, [canViewPulse, customEnd, customStart, organizationId, period, selectedBranchId]);
 
   useEffect(() => {
     if (!organizationId || !canViewPulse) {
@@ -160,13 +174,13 @@ export default function DashboardPage() {
           scope.type === "overview"
             ? await Promise.all([
               api.organization.getStats(orgId, statsParams),
-              api.organization.getActiveUserStats(orgId),
-              api.organization.getActivitySummary(orgId),
+              api.organization.getActiveUserStats(orgId, statsParams),
+              api.organization.getActivitySummary(orgId, statsParams),
             ])
             : await Promise.all([
               api.organization.getBranchStats(orgId, scope.branchId, statsParams),
-              api.organization.getBranchActiveUserStats(orgId, scope.branchId),
-              api.organization.getBranchActivitySummary(orgId, scope.branchId),
+              api.organization.getBranchActiveUserStats(orgId, scope.branchId, statsParams),
+              api.organization.getBranchActivitySummary(orgId, scope.branchId, statsParams),
             ]);
 
         if (cancelled) return;
