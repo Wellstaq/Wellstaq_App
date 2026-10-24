@@ -6,10 +6,10 @@ import Link from "next/link";
 import { CalendarDays, Lock, Users, Activity, Building2 } from "@wellstaq/ui/icons";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import {
-  DepartmentPerformanceRadar,
   EngagementChart,
   Leaderboard
 } from "@/components/dashboard/dashboard-charts-dynamic";
+import { HealthDistributionChart } from "@/components/dashboard/insights/charts-dynamic";
 import { useDashboardData } from "@/components/providers/dashboard-data-provider";
 import { api, type StatsPeriod } from "@/services/api";
 import { TrendBadge } from "@/components/dashboard/trend-badge";
@@ -46,6 +46,7 @@ export default function DashboardPage() {
     currentUser,
   } = useDashboardData();
   const { scope } = useDashboardScope();
+  const selectedBranchId = scope.type === "branch" ? scope.branchId : undefined;
   const scopedMetricHref = (path: string) => scope.type === "branch" ? `${path}?branchId=${encodeURIComponent(scope.branchId)}` : path;
 
   const [period, setPeriod] = useState<StatsPeriod | "">("");
@@ -68,6 +69,8 @@ export default function DashboardPage() {
   const [trendPeriod, setTrendPeriod] = useState<EngagementWellbeingTrendPeriod>("week");
   const [trendPoints, setTrendPoints] = useState<EngagementWellbeingTrendPoint[]>([]);
   const [trendsLoading, setTrendsLoading] = useState(true);
+  const [wellbeingDistribution, setWellbeingDistribution] = useState<Array<{ name: string; value: number; color: string }>>([]);
+  const [distributionLoading, setDistributionLoading] = useState(true);
 
   const [challenges, setChallenges] = useState<ChallengeItem[]>([]);
   const [challengesLoading, setChallengesLoading] = useState(true);
@@ -92,6 +95,30 @@ export default function DashboardPage() {
     needsAttentionPct: null,
     doingWellPct: null,
   };
+
+  useEffect(() => {
+    if (!organizationId || !canViewPulse) {
+      setWellbeingDistribution([]);
+      setDistributionLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    setDistributionLoading(true);
+    api.kpiSnapshots
+      .getOverview(organizationId, "month", selectedBranchId)
+      .then((result) => {
+        if (!cancelled) setWellbeingDistribution(result.charts.healthDistribution ?? []);
+      })
+      .catch(() => {
+        if (!cancelled) setWellbeingDistribution([]);
+      })
+      .finally(() => {
+        if (!cancelled) setDistributionLoading(false);
+      });
+
+    return () => { cancelled = true; };
+  }, [canViewPulse, organizationId, selectedBranchId]);
 
   useEffect(() => {
     if (!organizationId || !canViewPulse) {
@@ -390,8 +417,12 @@ export default function DashboardPage() {
                 )}
               </div>
 
-              {/* Department Performance */}
-              <DepartmentPerformanceRadar />
+              {/* Wellbeing Distribution */}
+              {distributionLoading ? (
+                <div className="h-[380px] animate-pulse rounded-[12px] bg-grey-5" aria-label="Loading wellbeing distribution" />
+              ) : (
+                <HealthDistributionChart data={wellbeingDistribution} />
+              )}
             </div>
 
             {/* Right Column (spans 2) */}
